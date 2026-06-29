@@ -21,5 +21,6 @@
   "overrides": {
     "multer": "2.2.0",
     "postcss": "8.5.10"
-  }
+  },
+  "packageManager": "npm@10.9.2"
 }
