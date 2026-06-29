@@ -72,7 +72,7 @@ export default function KiaHomePage() {
           <div className="login-dialog" role="dialog" aria-modal="true" aria-labelledby="login-heading" ref={dialogRef} onMouseDown={(event) => event.stopPropagation()}>
             <button className="dialog-close" type="button" aria-label="Zamknij okno logowania" onClick={() => setLoginOpen(false)}>×</button>
             <h2 id="login-heading">Logowanie prowadzącego</h2>
-            <p>Dane logowania są weryfikowane przez zabezpieczoną usługę uwierzytelniania. W statycznym trybie demo użyj loginu <strong>demo</strong> i hasła <strong>demo12345</strong>.</p>
+            <p>Dane logowania są weryfikowane przez zabezpieczoną usługę uwierzytelniania. W statycznym trybie demo użyj loginu <strong>{DEMO_USERNAME}</strong> i hasła <strong>{DEMO_PASSWORD}</strong>.</p>
             <form onSubmit={submitLogin} className="login-form">
               <label htmlFor="login">Login</label>
               <input id="login" name="login" type="text" autoComplete="username" required />
