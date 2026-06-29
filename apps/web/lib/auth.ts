@@ -1,6 +1,9 @@
 const SESSION_KEY = "ndp_tests_instructor_token";
 const DEMO_SESSION_TOKEN = "demo-instructor-session";
 
+export const DEMO_USERNAME = process.env.NEXT_PUBLIC_DEMO_USERNAME || "demo";
+export const DEMO_PASSWORD = process.env.NEXT_PUBLIC_DEMO_PASSWORD || "demo12345";
+
 function authApiBase(): string | null {
   return process.env.NEXT_PUBLIC_AUTH_API_URL?.replace(/\/$/, "") || null;
 }
