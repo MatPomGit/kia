@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { FormEvent, useEffect, useRef, useState } from "react";
 import { Footer } from "@/components/Footer";
-import { loginInstructor } from "@/lib/auth";
+import { DEMO_PASSWORD, DEMO_USERNAME, loginInstructor } from "@/lib/auth";
 
 const subjects = [
   { name: "Narzędzia dla programistów", href: "/kia.ndp", available: true },
