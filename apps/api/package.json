@@ -2,8 +2,8 @@
   "name": "@ndp_tests/api",
   "private": true,
   "scripts": {
-    "start:dev": "node node_modules/@nestjs/cli/bin/nest.js start --watch",
-    "build": "node node_modules/@nestjs/cli/bin/nest.js build",
+    "start:dev": "nest start --watch",
+    "build": "nest build",
     "start": "node dist/main.js",
     "lint": "tsc --noEmit"
   },
