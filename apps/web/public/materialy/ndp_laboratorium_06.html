@@ -1,0 +1,583 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Laboratorium 6 z przedmiotu Narzędzia dla programistów: system kontroli wersji Git, inicjowanie repozytorium, commit, tagi, repozytoria lokalne i zdalne, synchronizacja, konflikty, gałęzie i praca zespołowa.">
+  <title>Narzędzia dla programistów — Laboratorium 6</title>
+  <style>
+    :root{
+      --bg:#f4f7f9;
+      --paper:#ffffff;
+      --ink:#17212b;
+      --muted:#5d6975;
+      --line:#d9e1e7;
+      --accent:#155e75;
+      --accent-2:#0f766e;
+      --soft:#e8f3f6;
+      --warn:#fff7df;
+      --danger:#fff0f0;
+      --ok:#eaf7ef;
+      --code:#101820;
+      --shadow:0 8px 30px rgba(20,35,50,.08);
+      --radius:14px;
+      --max:1180px;
+    }
+    *{box-sizing:border-box}
+    html{scroll-behavior:smooth}
+    body{
+      margin:0;
+      font-family:Inter,ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
+      color:var(--ink);
+      background:var(--bg);
+      line-height:1.62;
+    }
+    a{color:var(--accent);text-decoration:none}
+    a:hover{text-decoration:underline}
+    header{
+      background:linear-gradient(135deg,#0b3444 0%,#155e75 58%,#0f766e 100%);
+      color:#fff;
+      padding:56px 24px 44px;
+    }
+    .hero{max-width:var(--max);margin:auto}
+    .eyebrow{
+      font-size:.82rem;
+      letter-spacing:.12em;
+      text-transform:uppercase;
+      opacity:.82;
+      font-weight:700;
+    }
+    h1{font-size:clamp(2rem,5vw,4.2rem);line-height:1.05;margin:.35rem 0 1rem}
+    .lead{max-width:920px;font-size:1.14rem;opacity:.94}
+    .meta{display:flex;flex-wrap:wrap;gap:10px;margin-top:24px}
+    .pill{
+      border:1px solid rgba(255,255,255,.35);
+      background:rgba(255,255,255,.09);
+      padding:7px 11px;border-radius:999px;font-size:.92rem
+    }
+    .layout{
+      max-width:var(--max);
+      margin:26px auto 70px;
+      padding:0 20px;
+      display:grid;
+      grid-template-columns:280px minmax(0,1fr);
+      gap:26px;
+    }
+    nav{
+      position:sticky;top:18px;align-self:start;
+      background:var(--paper);border:1px solid var(--line);
+      border-radius:var(--radius);padding:16px;box-shadow:var(--shadow)
+    }
+    nav strong{display:block;margin:2px 0 10px}
+    nav a{
+      display:block;padding:8px 10px;border-radius:9px;color:var(--ink);
+      font-size:.94rem
+    }
+    nav a:hover{background:var(--soft);text-decoration:none}
+    main{min-width:0}
+    section{
+      background:var(--paper);border:1px solid var(--line);
+      border-radius:var(--radius);padding:30px;margin-bottom:22px;box-shadow:var(--shadow)
+    }
+    h2{font-size:1.65rem;margin:0 0 18px;line-height:1.25}
+    h3{font-size:1.15rem;margin:28px 0 10px}
+    p{margin:.6rem 0}
+    ul,ol{padding-left:1.3rem}
+    li{margin:.38rem 0}
+    .grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px}
+    .card{
+      border:1px solid var(--line);border-radius:12px;padding:18px;background:#fbfcfd
+    }
+    .card h3{margin:0 0 8px}
+    .callout{
+      padding:16px 18px;border-left:5px solid var(--accent);
+      background:var(--soft);border-radius:10px;margin:16px 0
+    }
+    .callout.warn{background:var(--warn);border-left-color:#b7791f}
+    .callout.danger{background:var(--danger);border-left-color:#b42318}
+    .callout.ok{background:var(--ok);border-left-color:#15803d}
+    .edu{
+      margin:14px 0 18px;padding:15px 17px;border:1px solid #cfe0e7;
+      border-radius:11px;background:#f7fbfc;color:#283843
+    }
+    .edu strong{color:var(--accent)}
+    code{
+      font-family:"SFMono-Regular",Consolas,"Liberation Mono",monospace;
+      font-size:.94em
+    }
+    pre{
+      margin:12px 0;background:var(--code);color:#eaf2f8;
+      border-radius:12px;padding:17px 48px 17px 17px;overflow:auto;position:relative
+    }
+    .copy{
+      position:absolute;right:10px;top:10px;border:0;border-radius:7px;
+      padding:6px 9px;cursor:pointer;background:#253744;color:#fff;font-size:.78rem
+    }
+    table{width:100%;border-collapse:collapse;margin:14px 0;font-size:.95rem}
+    th,td{border-bottom:1px solid var(--line);padding:11px 10px;text-align:left;vertical-align:top}
+    th{background:#f2f6f8}
+    .task{
+      display:flex;gap:12px;align-items:flex-start;padding:12px 0;border-bottom:1px solid var(--line)
+    }
+    .task:last-child{border-bottom:0}
+    .task input{margin-top:5px;transform:scale(1.2)}
+    .task label{cursor:pointer}
+    .task small{display:block;color:var(--muted)}
+    .progress{
+      height:12px;background:#e7edf1;border-radius:999px;overflow:hidden;margin:10px 0 4px
+    }
+    .progress > span{
+      display:block;height:100%;width:0;background:linear-gradient(90deg,var(--accent),var(--accent-2));
+      transition:width .25s ease
+    }
+    .progress-text{font-size:.9rem;color:var(--muted)}
+    .note{font-size:.9rem;color:var(--muted)}
+    .flow{
+      display:grid;grid-template-columns:repeat(5,minmax(120px,1fr));gap:10px;margin:14px 0
+    }
+    .flow div{
+      border:1px solid var(--line);background:#fbfcfd;border-radius:10px;padding:12px;text-align:center
+    }
+    footer{
+      max-width:var(--max);margin:0 auto 40px;padding:0 20px;color:var(--muted);font-size:.9rem
+    }
+    @media (max-width:980px){.flow{grid-template-columns:1fr 1fr}}
+    @media (max-width:900px){
+      .layout{grid-template-columns:1fr}
+      nav{position:static}
+      .grid{grid-template-columns:1fr}
+    }
+    @media (max-width:560px){.flow{grid-template-columns:1fr}}
+    @media print{
+      body{background:#fff}
+      header{background:#fff;color:#000;padding:20px 0}
+      nav,.copy{display:none}
+      .layout{display:block;margin:0;max-width:none;padding:0}
+      section{box-shadow:none;break-inside:avoid;border-color:#bbb}
+      footer{margin-top:20px}
+    }
+  </style>
+</head>
+<body>
+<header>
+  <div class="hero">
+    <div class="eyebrow">Narzędzia dla programistów</div>
+    <h1>Laboratorium 6<br>System kontroli wersji Git</h1>
+    <p class="lead">
+      Inicjowanie repozytorium, rejestrowanie zmian, historia i tagi, klonowanie,
+      praca z repozytoriami zdalnymi, synchronizacja, konflikty, gałęzie
+      oraz podstawy współpracy zespołowej.
+    </p>
+    <div class="meta">
+      <span class="pill">czas: 2 × 45 min</span>
+      <span class="pill">tryb: indywidualny + zespołowy</span>
+      <span class="pill">narzędzie: Git</span>
+      <span class="pill">poziom: średni</span>
+    </div>
+  </div>
+</header>
+
+<div class="layout">
+  <nav aria-label="Spis treści">
+    <strong>Spis treści</strong>
+    <a href="#cele">1. Cele</a>
+    <a href="#konfiguracja">2. Konfiguracja</a>
+    <a href="#repo">3. Inicjowanie repozytorium</a>
+    <a href="#historia">4. Historia, tagi i status</a>
+    <a href="#lokalne">5. Klonowanie lokalne</a>
+    <a href="#zdalne">6. Repozytoria zdalne</a>
+    <a href="#synchronizacja">7. Synchronizacja</a>
+    <a href="#konflikty">8. Konflikty</a>
+    <a href="#zespol">9. Praca zespołowa</a>
+    <a href="#galezie">10. Gałęzie</a>
+    <a href="#diagnostyka">11. Diagnostyka</a>
+    <a href="#lista">12. Lista kontrolna</a>
+    <a href="#zakonczenie">13. Zakończenie</a>
+  </nav>
+
+  <main>
+    <section id="cele">
+      <h2>1. Cele i rezultaty uczenia się</h2>
+      <p class="edu"><strong>Znaczenie praktyczne.</strong> Git rejestruje historię zmian w plikach, umożliwia cofanie się do wcześniejszych wersji i wspiera równoległą pracę wielu osób. Jest podstawowym narzędziem w projektach programistycznych, badawczych i dokumentacyjnych.</p>
+
+      <div class="grid">
+        <div class="card">
+          <h3>Repozytorium</h3>
+          <p>Tworzenie i klonowanie repozytorium oraz rozumienie katalogu roboczego.</p>
+        </div>
+        <div class="card">
+          <h3>Historia</h3>
+          <p>Dodawanie zmian, commit, log, tagi i identyfikatory SHA.</p>
+        </div>
+        <div class="card">
+          <h3>Synchronizacja</h3>
+          <p>Remote, push, fetch, pull i scalanie zmian.</p>
+        </div>
+        <div class="card">
+          <h3>Współpraca</h3>
+          <p>Gałęzie, konflikty, merge, blame i praca zespołowa.</p>
+        </div>
+      </div>
+
+      <div class="flow">
+        <div><strong>1.</strong><br>modyfikacja</div>
+        <div><strong>2.</strong><br><code>git add</code></div>
+        <div><strong>3.</strong><br><code>git commit</code></div>
+        <div><strong>4.</strong><br><code>git pull</code></div>
+        <div><strong>5.</strong><br><code>git push</code></div>
+      </div>
+    </section>
+
+    <section id="konfiguracja">
+      <h2>2. Konfiguracja i identyfikacja stanowiska</h2>
+      <p class="edu"><strong>Tożsamość autora.</strong> Każdy commit zawiera nazwę i adres e-mail autora. Dane te powinny identyfikować osobę wykonującą zmianę, ponieważ stają się częścią historii repozytorium.</p>
+
+      <h3>2.1. Sprawdzenie konfiguracji</h3>
+      <pre><button class="copy">Kopiuj</button><code>git config --global user.name
+git config --global user.email</code></pre>
+
+      <h3>2.2. Ustawienie danych</h3>
+      <pre><button class="copy">Kopiuj</button><code>git config --global user.name "Imię Nazwisko"
+git config --global user.email "adres@example.com"</code></pre>
+
+      <div class="callout">
+        Bez opcji <code>--global</code> ustawienie obowiązuje tylko w bieżącym repozytorium. Jest to dobre rozwiązanie, gdy dla różnych projektów używa się różnych adresów e-mail.
+      </div>
+
+      <h3>2.3. Numer stanowiska</h3>
+      <pre><button class="copy">Kopiuj</button><code>echo "$HOST"
+hostname</code></pre>
+
+      <h3>2.4. Adresy repozytoriów laboratoryjnych</h3>
+      <table>
+        <thead><tr><th>Tryb studiów</th><th>Repozytorium prywatne</th><th>Repozytorium wspólne</th></tr></thead>
+        <tbody>
+          <tr><td>stacjonarne</td><td><code>git@10.10.2.18:NDP_Lxx_Syy.git</code></td><td><code>git@10.10.2.18:NDP_Lxx.git</code></td></tr>
+          <tr><td>niestacjonarne</td><td><code>git@10.10.2.18:NDP_Zxx_Syy.git</code></td><td><code>git@10.10.2.18:NDP_Zxx.git</code></td></tr>
+        </tbody>
+      </table>
+
+      <p class="note"><code>xx</code> oznacza numer grupy, a <code>yy</code> numer stanowiska.</p>
+
+      <h3>2.5. Wariant bez dostępu do serwera</h3>
+      <pre><button class="copy">Kopiuj</button><code>mkdir -p "$HOME/cw6/repo"
+cd "$HOME/cw6/repo"
+git init --bare .</code></pre>
+
+      <p class="edu"><strong>Repozytorium bare.</strong> Repozytorium typu <code>bare</code> nie ma katalogu roboczego. Służy jako centralny punkt wymiany zmian, podobnie jak repozytorium na serwerze.</p>
+    </section>
+
+    <section id="repo">
+      <h2>3. Inicjowanie repozytorium</h2>
+      <p class="edu"><strong>Trzy obszary Git.</strong> Git rozróżnia katalog roboczy, indeks oraz bazę commitów. Zmiana wykonana w pliku nie trafia automatycznie do historii — najpierw musi zostać dodana do indeksu.</p>
+
+      <h3>3.1. Utworzenie repozytorium</h3>
+      <pre><button class="copy">Kopiuj</button><code>mkdir -p "$HOME/cw6/pryw"
+cd "$HOME/cw6/pryw"
+git init .</code></pre>
+
+      <h3>3.2. Dodanie pierwszego pliku</h3>
+      <pre><button class="copy">Kopiuj</button><code>cp /sciezka/do/raport.tex .
+git add raport.tex
+git commit -m "Dodanie początkowej wersji raportu"</code></pre>
+
+      <h3>3.3. Sprawdzenie stanu</h3>
+      <pre><button class="copy">Kopiuj</button><code>git status</code></pre>
+
+      <div class="callout ok">
+        Komunikat <code>working tree clean</code> oznacza, że katalog roboczy nie zawiera zmian względem ostatniego commitu.
+      </div>
+    </section>
+
+    <section id="historia">
+      <h2>4. Historia, status i tagi</h2>
+      <p class="edu"><strong>Commit jako punkt historii.</strong> Commit zapisuje stan przygotowanych plików wraz z autorem, datą, opisem i identyfikatorem. Nie jest kopią całego projektu w sensie użytkowym, lecz elementem grafu historii.</p>
+
+      <h3>4.1. Kolejna zmiana</h3>
+      <pre><button class="copy">Kopiuj</button><code>git add raport.tex
+git commit -m "Aktualizacja autora i dodanie sekcji Nowość"</code></pre>
+
+      <h3>4.2. Historia</h3>
+      <pre><button class="copy">Kopiuj</button><code>git log
+git log --oneline --graph --decorate --all</code></pre>
+
+      <p class="edu"><strong>SHA.</strong> Każdy commit ma unikatowy skrót kryptograficzny. W codziennej pracy zwykle wystarcza jego początkowy fragment, o ile jednoznacznie wskazuje commit.</p>
+
+      <h3>4.3. Tag</h3>
+      <pre><button class="copy">Kopiuj</button><code>git tag MojaEtykieta
+git show MojaEtykieta</code></pre>
+
+      <h3>4.4. Commit wszystkich śledzonych zmian</h3>
+      <pre><button class="copy">Kopiuj</button><code>git commit -am "Kolejna zmiana raportu"</code></pre>
+
+      <div class="callout warn">
+        Opcja <code>-a</code> obejmuje tylko pliki już śledzone. Nowe pliki nadal wymagają wcześniejszego <code>git add</code>.
+      </div>
+    </section>
+
+    <section id="lokalne">
+      <h2>5. Praca lokalna i klonowanie</h2>
+      <p class="edu"><strong>Klon.</strong> <code>git clone</code> tworzy nowe repozytorium zawierające historię, gałęzie i konfigurację zdalnego źródła. Nie jest to zwykłe kopiowanie katalogu.</p>
+
+      <pre><button class="copy">Kopiuj</button><code>mkdir -p "$HOME/cw6/lok"
+cd "$HOME/cw6/lok"
+git clone "file://$HOME/cw6/pryw" .</code></pre>
+
+      <h3>5.1. Dodanie kodu C</h3>
+      <pre><button class="copy">Kopiuj</button><code>mkdir -p kod
+
+cat &gt; kod/start.c &lt;&lt;'EOF'
+#include &lt;stdio.h&gt;
+
+int main(void)
+{
+    puts("Hello world");
+    return 0;
+}
+EOF
+
+git add kod/start.c
+git commit -m "Dodanie programu Hello world"</code></pre>
+
+      <div class="callout">
+        Kropka na końcu <code>git clone ... .</code> oznacza klonowanie bezpośrednio do bieżącego katalogu.
+      </div>
+    </section>
+
+    <section id="zdalne">
+      <h2>6. Repozytoria zdalne</h2>
+      <p class="edu"><strong>Remote jako alias.</strong> Nazwa <code>origin</code> lub <code>serwer</code> jest lokalnym skrótem adresu repozytorium. Można zdefiniować wiele różnych zdalnych źródeł.</p>
+
+      <h3>6.1. Lista zdalnych repozytoriów</h3>
+      <pre><button class="copy">Kopiuj</button><code>git remote -v</code></pre>
+
+      <h3>6.2. Dodanie repozytorium</h3>
+      <pre><button class="copy">Kopiuj</button><code>git remote add serwer REPO_PRYWATNE</code></pre>
+
+      <h3>6.3. Pierwsze wysłanie gałęzi</h3>
+      <pre><button class="copy">Kopiuj</button><code>git push --set-upstream serwer main</code></pre>
+
+      <p class="edu"><strong>Upstream.</strong> Ustawienie gałęzi śledzonej pozwala później używać skróconych poleceń <code>git push</code> i <code>git pull</code> bez każdorazowego podawania remote i nazwy gałęzi.</p>
+
+      <div class="callout warn">
+        W starszych repozytoriach domyślna gałąź może nazywać się <code>master</code>. Sprawdź ją poleceniem <code>git branch --show-current</code>.
+      </div>
+    </section>
+
+    <section id="synchronizacja">
+      <h2>7. Synchronizacja zmian</h2>
+      <p class="edu"><strong>Pobieranie i scalanie.</strong> <code>fetch</code> pobiera historię ze zdalnego repozytorium, ale nie zmienia katalogu roboczego. <code>merge</code> integruje pobraną historię z bieżącą gałęzią.</p>
+
+      <h3>7.1. Pobranie zmian</h3>
+      <pre><button class="copy">Kopiuj</button><code>git fetch origin
+git merge --ff-only origin/main</code></pre>
+
+      <p class="edu"><strong>Fast-forward.</strong> Scalanie typu fast-forward przesuwa wskaźnik gałęzi do przodu bez tworzenia dodatkowego commitu, gdy lokalna historia nie zawiera własnych rozbieżnych zmian.</p>
+
+      <h3>7.2. Zmiana i wysłanie</h3>
+      <pre><button class="copy">Kopiuj</button><code>git commit -am "Dodanie nowej sekcji raportu"
+git push</code></pre>
+
+      <h3>7.3. Polecenie pull</h3>
+      <pre><button class="copy">Kopiuj</button><code>git config pull.rebase false
+git pull</code></pre>
+
+      <div class="callout">
+        <code>git pull</code> jest skrótem dla pobrania zmian i ich integracji. W zależności od konfiguracji może wykonywać merge albo rebase.
+      </div>
+    </section>
+
+    <section id="konflikty">
+      <h2>8. Konflikty scalania</h2>
+      <p class="edu"><strong>Kiedy powstaje konflikt?</strong> Git potrafi automatycznie połączyć zmiany, jeśli dotyczą różnych fragmentów pliku. Konflikt pojawia się, gdy dwie gałęzie zmieniają ten sam obszar w niezgodny sposób.</p>
+
+      <h3>8.1. Znaczniki konfliktu</h3>
+      <pre><button class="copy">Kopiuj</button><code>&lt;&lt;&lt;&lt;&lt;&lt;&lt; HEAD
+Wersja lokalna
+=======
+Wersja z repozytorium zdalnego
+&gt;&gt;&gt;&gt;&gt;&gt;&gt; origin/main</code></pre>
+
+      <h3>8.2. Procedura rozwiązania</h3>
+      <ol>
+        <li>Otwórz każdy skonfliktowany plik.</li>
+        <li>Wybierz poprawną treść lub połącz obie wersje.</li>
+        <li>Usuń znaczniki konfliktu.</li>
+        <li>Dodaj poprawiony plik do indeksu.</li>
+        <li>Zatwierdź wynik scalania.</li>
+      </ol>
+
+      <pre><button class="copy">Kopiuj</button><code>git status
+git add raport.tex
+git commit -m "Rozwiązanie konfliktu w raporcie"
+git push</code></pre>
+
+      <div class="callout danger">
+        Nie zatwierdzaj pliku zawierającego znaczniki <code>&lt;&lt;&lt;&lt;&lt;&lt;&lt;</code>, <code>=======</code> i <code>&gt;&gt;&gt;&gt;&gt;&gt;&gt;</code>. Oznacza to, że konflikt nie został rozwiązany.
+      </div>
+    </section>
+
+    <section id="zespol">
+      <h2>9. Praca zespołowa</h2>
+      <p class="edu"><strong>Wspólna historia.</strong> Repozytorium zespołowe powinno zawierać logicznie podzielone zmiany, czytelne opisy commitów i strukturę plików minimalizującą ryzyko konfliktów.</p>
+
+      <h3>9.1. Klonowanie repozytorium wspólnego</h3>
+      <pre><button class="copy">Kopiuj</button><code>mkdir -p "$HOME/cw6/wsp"
+cd "$HOME/cw6/wsp"
+git clone REPO_WSPOLNE .</code></pre>
+
+      <h3>9.2. Własny rozdział</h3>
+      <pre><button class="copy">Kopiuj</button><code>mkdir -p NUMER_INDEKSU
+
+cat &gt; NUMER_INDEKSU/tresc.tex &lt;&lt;'EOF'
+\chapter{Mój tytuł rozdziału}
+\section{Nazwa punktu}
+
+A tu można wstawić dowolny tekst lub rysunek.
+EOF</code></pre>
+
+      <p>W pliku głównym dodaj:</p>
+      <pre><button class="copy">Kopiuj</button><code>\include{NUMER_INDEKSU/tresc.tex}</code></pre>
+
+      <h3>9.3. Zatwierdzenie</h3>
+      <pre><button class="copy">Kopiuj</button><code>git add wspolna.tex NUMER_INDEKSU/tresc.tex
+git commit -m "Dodanie rozdziału NUMER_INDEKSU"
+git pull
+git push</code></pre>
+
+      <div class="callout warn">
+        Przed wysłaniem zmian wykonaj <code>git pull</code>. Zmniejsza to ryzyko odrzucenia operacji push z powodu nowszych zmian na serwerze.
+      </div>
+    </section>
+
+    <section id="galezie">
+      <h2>10. Gałęzie i scalanie</h2>
+      <p class="edu"><strong>Gałąź jako wskaźnik.</strong> Gałąź nie jest osobną kopią całego projektu. Jest ruchomym wskaźnikiem na commit, który umożliwia rozwój funkcji bez bezpośredniej modyfikacji głównej linii historii.</p>
+
+      <h3>10.1. Utworzenie gałęzi</h3>
+      <pre><button class="copy">Kopiuj</button><code>git switch -c vNUMER_INDEKSU</code></pre>
+
+      <p>Alternatywa zgodna ze starszymi wersjami Git:</p>
+      <pre><button class="copy">Kopiuj</button><code>git checkout -b vNUMER_INDEKSU</code></pre>
+
+      <h3>10.2. Commit i push gałęzi</h3>
+      <pre><button class="copy">Kopiuj</button><code>git commit -am "Rozwinięcie własnego rozdziału"
+git push --set-upstream origin vNUMER_INDEKSU</code></pre>
+
+      <h3>10.3. Scalenie z gałęzią główną</h3>
+      <pre><button class="copy">Kopiuj</button><code>git switch main
+git pull
+git merge vNUMER_INDEKSU
+git push</code></pre>
+
+      <h3>10.4. Usunięcie lokalnej gałęzi</h3>
+      <pre><button class="copy">Kopiuj</button><code>git branch -d vNUMER_INDEKSU</code></pre>
+
+      <div class="callout">
+        Opcja <code>-d</code> usuwa gałąź tylko wtedy, gdy została scalona. Opcja <code>-D</code> wymusza usunięcie i powinna być używana ostrożnie.
+      </div>
+    </section>
+
+    <section id="diagnostyka">
+      <h2>11. Diagnostyka i analiza historii</h2>
+      <p class="edu"><strong>Ślad audytowy.</strong> Git pozwala sprawdzić nie tylko bieżący stan, ale również autora każdej linii, strukturę gałęzi i zawartość repozytorium zdalnego.</p>
+
+      <h3>11.1. Autorzy linii</h3>
+      <pre><button class="copy">Kopiuj</button><code>git blame wspolna.tex
+git blame NUMER_INDEKSU/tresc.tex</code></pre>
+
+      <h3>11.2. Gałęzie lokalne i zdalne</h3>
+      <pre><button class="copy">Kopiuj</button><code>git branch
+git branch -r
+git branch -a</code></pre>
+
+      <h3>11.3. Referencje na serwerze</h3>
+      <pre><button class="copy">Kopiuj</button><code>git ls-remote origin</code></pre>
+
+      <h3>11.4. Czytelny graf historii</h3>
+      <pre><button class="copy">Kopiuj</button><code>git log --graph --oneline --decorate --all</code></pre>
+    </section>
+
+    <section id="lista">
+      <h2>12. Lista kontrolna laboratorium</h2>
+      <p class="edu"><strong>Kryterium wykonania.</strong> Zaznaczenie zadania oznacza, że potrafisz wyjaśnić różnicę między katalogiem roboczym, indeksem, commitem, gałęzią lokalną i gałęzią zdalną.</p>
+
+      <div class="progress" aria-label="Postęp"><span id="bar"></span></div>
+      <div class="progress-text" id="progressText">0 z 15 zadań wykonanych</div>
+
+      <div class="task"><input type="checkbox" id="t1"><label for="t1">Sprawdziłem konfigurację autora Git.</label></div>
+      <div class="task"><input type="checkbox" id="t2"><label for="t2">Ustaliłem adres repozytorium prywatnego i wspólnego.</label></div>
+      <div class="task"><input type="checkbox" id="t3"><label for="t3">Zainicjowałem repozytorium.</label></div>
+      <div class="task"><input type="checkbox" id="t4"><label for="t4">Dodałem plik do indeksu i wykonałem commit.</label></div>
+      <div class="task"><input type="checkbox" id="t5"><label for="t5">Przeanalizowałem <code>git status</code> i <code>git log</code>.</label></div>
+      <div class="task"><input type="checkbox" id="t6"><label for="t6">Utworzyłem tag.</label></div>
+      <div class="task"><input type="checkbox" id="t7"><label for="t7">Sklonowałem repozytorium lokalne.</label></div>
+      <div class="task"><input type="checkbox" id="t8"><label for="t8">Dodałem repozytorium zdalne.</label></div>
+      <div class="task"><input type="checkbox" id="t9"><label for="t9">Wysłałem gałąź przez <code>git push</code>.</label></div>
+      <div class="task"><input type="checkbox" id="t10"><label for="t10">Pobrałem zmiany przez <code>fetch</code> lub <code>pull</code>.</label></div>
+      <div class="task"><input type="checkbox" id="t11"><label for="t11">Rozwiązałem konflikt scalania.</label></div>
+      <div class="task"><input type="checkbox" id="t12"><label for="t12">Utworzyłem i wysłałem własną gałąź.</label></div>
+      <div class="task"><input type="checkbox" id="t13"><label for="t13">Scaliłem gałąź z <code>main</code>.</label></div>
+      <div class="task"><input type="checkbox" id="t14"><label for="t14">Użyłem <code>git blame</code>.</label></div>
+      <div class="task"><input type="checkbox" id="t15"><label for="t15">Wyświetliłem graf historii i gałęzie zdalne.</label></div>
+
+      <p class="note">Stan listy jest zapisywany lokalnie w przeglądarce.</p>
+    </section>
+
+    <section id="zakonczenie">
+      <h2>13. Zakończenie ćwiczenia</h2>
+      <p class="edu"><strong>Archiwizacja.</strong> Repozytorium zdalne powinno zawierać wszystkie wymagane commity. Kopiowanie wyłącznie plików roboczych nie zachowuje historii Git.</p>
+
+      <ol>
+        <li>Sprawdź stan repozytoriów poleceniem <code>git status</code>.</li>
+        <li>Upewnij się, że wszystkie wymagane zmiany zostały wysłane.</li>
+        <li>Zapisz adres repozytorium oraz nazwę ostatniego commitu lub tagu.</li>
+        <li>Po akceptacji prowadzącego usuń katalog ćwiczeniowy.</li>
+      </ol>
+
+      <pre><button class="copy">Kopiuj</button><code>rm -rf "$HOME/cw6"</code></pre>
+
+      <div class="callout danger">
+        Przed usunięciem sprawdź, czy ostatnie zmiany są widoczne w repozytorium zdalnym. Niewysłane commity zostaną utracone razem z katalogiem lokalnym.
+      </div>
+    </section>
+  </main>
+</div>
+
+<footer>
+  <p><strong>Narzędzia dla programistów — Laboratorium 6.</strong> Opracowanie dydaktyczne: dr inż. Mateusz Pomianek.</p>
+  <p>Materiał przygotowano jako samodzielny plik HTML do publikacji w GitHub Pages.</p>
+</footer>
+
+<script>
+  document.querySelectorAll('.copy').forEach(btn => {
+    btn.addEventListener('click', async () => {
+      const code = btn.parentElement.querySelector('code').innerText;
+      await navigator.clipboard.writeText(code);
+      const old = btn.textContent;
+      btn.textContent = 'Skopiowano';
+      setTimeout(() => btn.textContent = old, 1200);
+    });
+  });
+
+  const tasks = [...document.querySelectorAll('.task input')];
+  const bar = document.getElementById('bar');
+  const text = document.getElementById('progressText');
+
+  function updateProgress(){
+    const done = tasks.filter(t => t.checked).length;
+    bar.style.width = (done / tasks.length * 100) + '%';
+    text.textContent = `${done} z ${tasks.length} zadań wykonanych`;
+    localStorage.setItem('ndp-lab6-progress', JSON.stringify(tasks.map(t => t.checked)));
+  }
+
+  try{
+    const saved = JSON.parse(localStorage.getItem('ndp-lab6-progress') || '[]');
+    tasks.forEach((t,i) => t.checked = Boolean(saved[i]));
+  }catch(e){}
+
+  tasks.forEach(t => t.addEventListener('change', updateProgress));
+  updateProgress();
+</script>
+</body>
+</html>

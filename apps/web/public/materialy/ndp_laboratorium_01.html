@@ -1,0 +1,447 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Laboratorium 1 z przedmiotu Narzędzia dla programistów: organizacja pracy, macOS, terminal, weryfikacja środowiska, zasady zaliczenia i bezpieczne użycie narzędzi AI.">
+  <title>Narzędzia dla programistów — Laboratorium 1</title>
+  <style>
+    :root{
+      --bg:#f4f7f9;
+      --paper:#ffffff;
+      --ink:#17212b;
+      --muted:#5d6975;
+      --line:#d9e1e7;
+      --accent:#155e75;
+      --accent-2:#0f766e;
+      --soft:#e8f3f6;
+      --warn:#fff7df;
+      --danger:#fff0f0;
+      --ok:#eaf7ef;
+      --code:#101820;
+      --shadow:0 8px 30px rgba(20,35,50,.08);
+      --radius:14px;
+      --max:1180px;
+    }
+    *{box-sizing:border-box}
+    html{scroll-behavior:smooth}
+    body{
+      margin:0;
+      font-family:Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      color:var(--ink);
+      background:var(--bg);
+      line-height:1.62;
+    }
+    a{color:var(--accent);text-decoration:none}
+    a:hover{text-decoration:underline}
+    header{
+      background:linear-gradient(135deg,#0b3444 0%,#155e75 58%,#0f766e 100%);
+      color:white;
+      padding:56px 24px 44px;
+    }
+    .hero{max-width:var(--max);margin:auto}
+    .eyebrow{
+      font-size:.82rem;
+      letter-spacing:.12em;
+      text-transform:uppercase;
+      opacity:.82;
+      font-weight:700;
+    }
+    h1{font-size:clamp(2rem,5vw,4.2rem);line-height:1.05;margin:.35rem 0 1rem}
+    .lead{max-width:820px;font-size:1.14rem;opacity:.94}
+    .meta{
+      display:flex;flex-wrap:wrap;gap:10px;margin-top:24px
+    }
+    .pill{
+      border:1px solid rgba(255,255,255,.35);
+      background:rgba(255,255,255,.09);
+      padding:7px 11px;border-radius:999px;font-size:.92rem
+    }
+    .layout{
+      max-width:var(--max);
+      margin:26px auto 70px;
+      padding:0 20px;
+      display:grid;
+      grid-template-columns:280px minmax(0,1fr);
+      gap:26px;
+    }
+    nav{
+      position:sticky;top:18px;align-self:start;
+      background:var(--paper);border:1px solid var(--line);
+      border-radius:var(--radius);padding:16px;
+      box-shadow:var(--shadow)
+    }
+    nav strong{display:block;margin:2px 0 10px}
+    nav a{
+      display:block;padding:8px 10px;border-radius:9px;color:var(--ink);
+      font-size:.94rem
+    }
+    nav a:hover{background:var(--soft);text-decoration:none}
+    main{min-width:0}
+    section{
+      background:var(--paper);border:1px solid var(--line);
+      border-radius:var(--radius);padding:30px;
+      margin-bottom:22px;box-shadow:var(--shadow)
+    }
+    h2{font-size:1.65rem;margin:0 0 18px;line-height:1.25}
+    h3{font-size:1.15rem;margin:28px 0 10px}
+    p{margin:.6rem 0}
+    ul,ol{padding-left:1.3rem}
+    li{margin:.38rem 0}
+    .grid{
+      display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px
+    }
+    .card{
+      border:1px solid var(--line);border-radius:12px;padding:18px;background:#fbfcfd
+    }
+    .card h3{margin:0 0 8px}
+    .callout{
+      padding:16px 18px;border-left:5px solid var(--accent);
+      background:var(--soft);border-radius:10px;margin:16px 0
+    }
+    .callout.warn{background:var(--warn);border-left-color:#b7791f}
+    .callout.danger{background:var(--danger);border-left-color:#b42318}
+    .callout.ok{background:var(--ok);border-left-color:#15803d}
+    code{
+      font-family:"SFMono-Regular",Consolas,"Liberation Mono",monospace;
+      font-size:.94em
+    }
+    pre{
+      margin:12px 0;background:var(--code);color:#eaf2f8;
+      border-radius:12px;padding:17px 48px 17px 17px;overflow:auto;position:relative
+    }
+    .copy{
+      position:absolute;right:10px;top:10px;border:0;border-radius:7px;
+      padding:6px 9px;cursor:pointer;background:#253744;color:white;font-size:.78rem
+    }
+    table{width:100%;border-collapse:collapse;margin:14px 0;font-size:.95rem}
+    th,td{border-bottom:1px solid var(--line);padding:11px 10px;text-align:left;vertical-align:top}
+    th{background:#f2f6f8}
+    .task{
+      display:flex;gap:12px;align-items:flex-start;padding:12px 0;border-bottom:1px solid var(--line)
+    }
+    .task:last-child{border-bottom:0}
+    .task input{margin-top:5px;transform:scale(1.2)}
+    .task label{cursor:pointer}
+    .task small{display:block;color:var(--muted)}
+    .progress{
+      height:12px;background:#e7edf1;border-radius:999px;overflow:hidden;margin:10px 0 4px
+    }
+    .progress > span{
+      display:block;height:100%;width:0;background:linear-gradient(90deg,var(--accent),var(--accent-2));
+      transition:width .25s ease
+    }
+    .progress-text{font-size:.9rem;color:var(--muted)}
+    .kbd{
+      display:inline-block;border:1px solid #aeb8c0;border-bottom-width:2px;
+      background:#fff;padding:1px 6px;border-radius:5px;font-size:.88em;font-family:inherit
+    }
+    .two-col{columns:2;column-gap:32px}
+    .note{font-size:.9rem;color:var(--muted)}
+    footer{
+      max-width:var(--max);margin:0 auto 40px;padding:0 20px;color:var(--muted);font-size:.9rem
+    }
+    @media (max-width:900px){
+      .layout{grid-template-columns:1fr}
+      nav{position:static}
+      .grid{grid-template-columns:1fr}
+      .two-col{columns:1}
+    }
+    @media print{
+      body{background:white}
+      header{background:white;color:black;padding:20px 0}
+      nav,.copy{display:none}
+      .layout{display:block;margin:0;max-width:none;padding:0}
+      section{box-shadow:none;break-inside:avoid;border-color:#bbb}
+      footer{margin-top:20px}
+    }
+  </style>
+</head>
+<body>
+<header>
+  <div class="hero">
+    <div class="eyebrow">Narzędzia dla programistów</div>
+    <h1>Laboratorium 1<br>Środowisko pracy programisty</h1>
+    <p class="lead">
+      Wprowadzenie do organizacji zajęć, obsługi stanowiska laboratoryjnego, pracy z terminalem
+      oraz weryfikacji narzędzi wykorzystywanych w kolejnych laboratoriach: Bash, LaTeX i Git.
+    </p>
+    <div class="meta">
+      <span class="pill">czas: 2 × 45 min</span>
+      <span class="pill">tryb: praca indywidualna</span>
+      <span class="pill">system: macOS / środowisko uniksowe</span>
+      <span class="pill">poziom: wprowadzający</span>
+    </div>
+  </div>
+</header>
+
+<div class="layout">
+  <nav aria-label="Spis treści">
+    <strong>Spis treści</strong>
+    <a href="#cele">1. Cele i rezultaty</a>
+    <a href="#organizacja">2. Organizacja zajęć</a>
+    <a href="#macos">3. Interfejs macOS</a>
+    <a href="#pliki">4. Pliki i aplikacje</a>
+    <a href="#terminal">5. Terminal</a>
+    <a href="#narzedzia">6. Weryfikacja narzędzi</a>
+    <a href="#konta">7. Konta uczelniane</a>
+    <a href="#ai">8. Narzędzia AI</a>
+    <a href="#zadania">9. Lista zadań</a>
+    <a href="#zakonczenie">10. Zakończenie</a>
+  </nav>
+
+  <main>
+    <section id="cele">
+      <h2>1. Cele i rezultaty uczenia się</h2>
+      <p>Po zakończeniu laboratorium student powinien:</p>
+      <div class="grid">
+        <div class="card">
+          <h3>Środowisko systemowe</h3>
+          <p>Rozpoznawać podstawowe elementy interfejsu macOS, uruchamiać aplikacje, zarządzać oknami i wykonywać proste operacje na plikach.</p>
+        </div>
+        <div class="card">
+          <h3>Terminal</h3>
+          <p>Uruchamiać powłokę, wykonywać polecenia, interpretować standardowe wyjście programu oraz zakończyć sesję.</p>
+        </div>
+        <div class="card">
+          <h3>Narzędzia</h3>
+          <p>Sprawdzić dostępność i wersje kompilatora, systemu LaTeX, Git oraz edytora VIM.</p>
+        </div>
+        <div class="card">
+          <h3>Organizacja pracy</h3>
+          <p>Znać zasady zaliczenia, sposób przekazywania plików i podstawowe wymagania dotyczące samodzielności.</p>
+        </div>
+      </div>
+      <div class="callout">
+        Laboratorium 1 ma charakter przygotowawczy. Umiejętności ćwiczone tutaj będą używane podczas wszystkich następnych zajęć.
+      </div>
+    </section>
+
+    <section id="organizacja">
+      <h2>2. Organizacja zajęć</h2>
+      <p>Przedmiot obejmuje sześć laboratoriów. Kolejne instrukcje dotyczą poleceń Bash, skryptów powłoki, tworzenia dokumentów LaTeX oraz pracy z systemem kontroli wersji Git.</p>
+      <table>
+        <thead><tr><th>Laboratorium</th><th>Zakres</th><th>Główny rezultat</th></tr></thead>
+        <tbody>
+          <tr><td>1</td><td>Środowisko pracy</td><td>Przygotowane stanowisko i znajomość zasad</td></tr>
+          <tr><td>2</td><td>Polecenia Bash</td><td>Operacje na plikach, strumienie, kody zakończenia</td></tr>
+          <tr><td>3</td><td>Skrypty Bash</td><td>Warunki, pętle, zmienne, VIM</td></tr>
+          <tr><td>4</td><td>Podstawy LaTeX</td><td>Struktura dokumentu, tabele, wzory, odwołania</td></tr>
+          <tr><td>5</td><td>Pakiety i makra LaTeX</td><td>Konfiguracja dokumentu, bibliografia, listingi</td></tr>
+          <tr><td>6</td><td>Git</td><td>Commity, gałęzie, zdalne repozytoria, konflikty</td></tr>
+        </tbody>
+      </table>
+      <div class="callout warn">
+        Szczegółowe progi ocen, terminy i zasady poprawy ustala prowadzący dla danego semestru. Informacje przekazane na pierwszych zajęciach mają pierwszeństwo przed starszymi wersjami instrukcji.
+      </div>
+    </section>
+
+    <section id="macos">
+      <h2>3. Podstawy obsługi macOS</h2>
+      <h3>3.1. Najważniejsze elementy interfejsu</h3>
+      <ul>
+        <li><strong>Dock</strong> — pasek szybkiego uruchamiania aplikacji.</li>
+        <li><strong>Finder</strong> — menedżer plików; odpowiada za przeglądanie katalogów.</li>
+        <li><strong>Pasek menu</strong> — jego zawartość zależy od aktywnej aplikacji.</li>
+        <li><strong>Launchpad lub Spotlight</strong> — wyszukiwanie i uruchamianie aplikacji.</li>
+      </ul>
+      <h3>3.2. Przydatne skróty</h3>
+      <table>
+        <thead><tr><th>Skrót</th><th>Działanie</th></tr></thead>
+        <tbody>
+          <tr><td><span class="kbd">⌘</span> + <span class="kbd">Tab</span></td><td>Przełączanie między aplikacjami</td></tr>
+          <tr><td><span class="kbd">⌘</span> + <span class="kbd">Q</span></td><td>Całkowite zakończenie aplikacji</td></tr>
+          <tr><td><span class="kbd">⌘</span> + <span class="kbd">Shift</span> + <span class="kbd">3</span></td><td>Zrzut całego ekranu</td></tr>
+          <tr><td><span class="kbd">⌘</span> + <span class="kbd">Shift</span> + <span class="kbd">4</span></td><td>Zrzut wybranego obszaru</td></tr>
+          <tr><td><span class="kbd">Spacja</span></td><td>Szybki podgląd zaznaczonego pliku</td></tr>
+          <tr><td><span class="kbd">⌘</span> + <span class="kbd">Shift</span> + <span class="kbd">.</span></td><td>Pokazanie lub ukrycie plików ukrytych</td></tr>
+        </tbody>
+      </table>
+      <div class="callout">
+        Zamknięcie okna czerwonym przyciskiem nie zawsze kończy aplikację. W macOS aplikacja może nadal działać w tle.
+      </div>
+    </section>
+
+    <section id="pliki">
+      <h2>4. Ćwiczenie: pliki i aplikacje</h2>
+      <ol>
+        <li>Uruchom edytor tekstu i utwórz dokument zawierający kilka zdań.</li>
+        <li>Zapisz plik w katalogu domowym jako <code>lorem.rtf</code>.</li>
+        <li>Odszukaj plik w Finderze i użyj szybkiego podglądu.</li>
+        <li>Utwórz katalog <code>cw1</code> w katalogu domowym.</li>
+        <li>Skopiuj plik do katalogu <code>cw1</code> i zmień jego nazwę na <code>epopeja.rtf</code>.</li>
+        <li>Otwórz kopię w innej aplikacji, zmodyfikuj treść i zapisz zmiany.</li>
+        <li>Porównaj oba pliki i wyjaśnij różnicę między kopiowaniem a przenoszeniem.</li>
+      </ol>
+      <div class="callout ok">
+        Kryterium wykonania: w katalogu domowym istnieją dwa różne pliki, a student potrafi wskazać ich ścieżki.
+      </div>
+    </section>
+
+    <section id="terminal">
+      <h2>5. Terminal i pierwsze polecenia</h2>
+      <p>Terminal umożliwia bezpośrednią komunikację z systemem za pomocą poleceń tekstowych. W kolejnych laboratoriach będzie podstawowym narzędziem pracy.</p>
+      <h3>5.1. Identyfikacja środowiska</h3>
+      <pre><button class="copy">Kopiuj</button><code>whoami
+pwd
+echo "$SHELL"
+uname -a</code></pre>
+      <table>
+        <thead><tr><th>Polecenie</th><th>Znaczenie</th></tr></thead>
+        <tbody>
+          <tr><td><code>whoami</code></td><td>Nazwa aktualnego użytkownika</td></tr>
+          <tr><td><code>pwd</code></td><td>Pełna ścieżka bieżącego katalogu</td></tr>
+          <tr><td><code>echo "$SHELL"</code></td><td>Ścieżka domyślnej powłoki</td></tr>
+          <tr><td><code>uname -a</code></td><td>Podstawowe informacje o systemie</td></tr>
+        </tbody>
+      </table>
+      <h3>5.2. Bezpieczne zasady pracy</h3>
+      <ul>
+        <li>Przed wykonaniem polecenia sprawdź bieżący katalog poleceniem <code>pwd</code>.</li>
+        <li>Nie używaj <code>sudo</code>, jeżeli instrukcja lub prowadzący tego nie wymaga.</li>
+        <li>Nie kopiuj poleceń bez zrozumienia ich działania.</li>
+        <li>Szczególną ostrożność zachowaj przy <code>rm</code>, <code>mv</code> i przekierowaniu <code>&gt;</code>.</li>
+      </ul>
+      <div class="callout danger">
+        Polecenie <code>rm -rf</code> usuwa dane bez przenoszenia ich do kosza. Wykonuj je wyłącznie dla jednoznacznie wskazanego katalogu ćwiczeniowego.
+      </div>
+    </section>
+
+    <section id="narzedzia">
+      <h2>6. Weryfikacja narzędzi</h2>
+      <p>Uruchom poniższe polecenia. Numery wersji mogą różnić się od przykładów w starszych instrukcjach; istotne jest poprawne uruchomienie programu.</p>
+      <pre><button class="copy">Kopiuj</button><code>xcodebuild -version
+latex --version
+git --version
+vim --version</code></pre>
+      <table>
+        <thead><tr><th>Narzędzie</th><th>Zastosowanie w przedmiocie</th><th>Oczekiwany wynik</th></tr></thead>
+        <tbody>
+          <tr><td>Xcode Command Line Tools</td><td>Kompilatory i narzędzia systemowe</td><td>Informacja o wersji albo ścieżce narzędzia</td></tr>
+          <tr><td>LaTeX</td><td>Skład dokumentów technicznych</td><td>Wersja pdfTeX/TeX Live</td></tr>
+          <tr><td>Git</td><td>Kontrola wersji</td><td>Numer wersji Git</td></tr>
+          <tr><td>VIM</td><td>Edycja tekstu w terminalu</td><td>Informacja o wersji i funkcjach</td></tr>
+        </tbody>
+      </table>
+      <div class="callout warn">
+        Brak narzędzia lub komunikat „command not found” należy zgłosić prowadzącemu przed rozpoczęciem kolejnych laboratoriów.
+      </div>
+    </section>
+
+    <section id="konta">
+      <h2>7. Konta i przekazywanie plików</h2>
+      <p>Na pierwszych zajęciach należy sprawdzić dostęp do systemów wymaganych przez prowadzącego, w szczególności:</p>
+      <ul>
+        <li>uczelnianego konta pocztowego i usług Microsoft 365,</li>
+        <li>platformy do przesyłania sprawozdań,</li>
+        <li>systemu materiałów dydaktycznych,</li>
+        <li>repozytoriów używanych podczas laboratorium Git.</li>
+      </ul>
+      <div class="callout">
+        Nie umieszczaj w sprawozdaniach haseł, tokenów, kluczy SSH ani innych danych uwierzytelniających. Zrzuty ekranu należy przed wysłaniem sprawdzić pod kątem danych osobowych.
+      </div>
+      <h3>Minimalna zawartość sprawozdania z laboratorium 1</h3>
+      <ol>
+        <li>Imię, nazwisko, numer indeksu i grupa.</li>
+        <li>Krótka charakterystyka stanowiska.</li>
+        <li>Wyniki poleceń sprawdzających wersje narzędzi.</li>
+        <li>Opis napotkanych problemów i sposobu ich rozwiązania.</li>
+        <li>Oświadczenie, że pliki ćwiczeniowe zostały usunięte ze stanowiska.</li>
+      </ol>
+    </section>
+
+    <section id="ai">
+      <h2>8. Odpowiedzialne użycie narzędzi AI</h2>
+      <p>Narzędzia generatywne mogą wspierać naukę, ale nie zastępują rozumienia wykonywanych poleceń. W tym laboratorium należy przećwiczyć krytyczną ocenę odpowiedzi.</p>
+      <h3>8.1. Zadanie analityczne</h3>
+      <ol>
+        <li>Zadaj narzędziu AI pytanie techniczne wymagające wskazania źródeł.</li>
+        <li>Sprawdź, czy podane publikacje faktycznie istnieją.</li>
+        <li>Porównaj co najmniej dwa źródła niezależne od odpowiedzi modelu.</li>
+        <li>Wskaż przynajmniej jedno ograniczenie lub ryzyko odpowiedzi.</li>
+      </ol>
+      <h3>8.2. Zalecany schemat zapytania</h3>
+      <pre><button class="copy">Kopiuj</button><code>Wyjaśnij [zagadnienie] na poziomie studiów wyższych.
+Zdefiniuj kluczowe pojęcia, podaj przykład zastosowania
+i wskaż źródła pierwotne. Oddziel fakty od hipotez.
+Nie wymyślaj publikacji, DOI ani wyników badań.</code></pre>
+      <div class="callout warn">
+        Odpowiedź modelu językowego nie jest źródłem naukowym. Źródłem są zweryfikowane publikacje, dokumentacja techniczna lub materiały producenta.
+      </div>
+    </section>
+
+    <section id="zadania">
+      <h2>9. Lista kontrolna laboratorium</h2>
+      <div class="progress" aria-label="Postęp"><span id="bar"></span></div>
+      <div class="progress-text" id="progressText">0 z 10 zadań wykonanych</div>
+
+      <div class="task"><input type="checkbox" id="t1"><label for="t1">Rozpoznałem elementy interfejsu macOS.<small>Dock, Finder, pasek menu, uruchamianie aplikacji.</small></label></div>
+      <div class="task"><input type="checkbox" id="t2"><label for="t2">Utworzyłem i skopiowałem plik tekstowy.<small>Potrafię wskazać jego pełną ścieżkę.</small></label></div>
+      <div class="task"><input type="checkbox" id="t3"><label for="t3">Przetestowałem szybki podgląd i skróty klawiszowe.</label></div>
+      <div class="task"><input type="checkbox" id="t4"><label for="t4">Uruchomiłem Terminal i wykonałem polecenia identyfikacyjne.</label></div>
+      <div class="task"><input type="checkbox" id="t5"><label for="t5">Sprawdziłem wersję narzędzi kompilacyjnych.</label></div>
+      <div class="task"><input type="checkbox" id="t6"><label for="t6">Sprawdziłem instalację LaTeX.</label></div>
+      <div class="task"><input type="checkbox" id="t7"><label for="t7">Sprawdziłem instalację Git.</label></div>
+      <div class="task"><input type="checkbox" id="t8"><label for="t8">Sprawdziłem instalację VIM.</label></div>
+      <div class="task"><input type="checkbox" id="t9"><label for="t9">Zweryfikowałem dostęp do wymaganych systemów uczelnianych.</label></div>
+      <div class="task"><input type="checkbox" id="t10"><label for="t10">Przeanalizowałem odpowiedź narzędzia AI i sprawdziłem źródła.</label></div>
+      <p class="note">Stan listy jest zapisywany lokalnie w przeglądarce.</p>
+    </section>
+
+    <section id="zakonczenie">
+      <h2>10. Zakończenie ćwiczenia</h2>
+      <ol>
+        <li>Zapisz potrzebne wyniki i przygotuj sprawozdanie.</li>
+        <li>Usuń utworzony katalog ćwiczeniowy:</li>
+      </ol>
+      <pre><button class="copy">Kopiuj</button><code>rm -rf "$HOME/cw1"</code></pre>
+      <ol start="3">
+        <li>Usuń pozostałe pliki testowe z katalogu domowego.</li>
+        <li>Opróżnij kosz, jeśli wymaga tego regulamin laboratorium.</li>
+        <li>Zakończ sesję terminala poleceniem <code>exit</code> lub skrótem <span class="kbd">Ctrl</span> + <span class="kbd">D</span>.</li>
+        <li>Wyloguj się ze wszystkich usług, w których użyto danych uczelnianych.</li>
+      </ol>
+      <div class="callout ok">
+        Stan końcowy: na stanowisku nie pozostają prywatne pliki, dane logowania ani aktywne sesje użytkownika.
+      </div>
+    </section>
+  </main>
+</div>
+
+<footer>
+  <p><strong>Narzędzia dla programistów — Laboratorium 1.</strong> Opracowanie dydaktyczne: dr inż. Mateusz Pomianek.</p>
+  <p>Materiał opracowano na podstawie zestawu instrukcji laboratoriów 1–6. Strona jest samodzielnym plikiem HTML i może zostać opublikowana w GitHub Pages.</p>
+</footer>
+
+<script>
+  document.querySelectorAll('.copy').forEach(btn => {
+    btn.addEventListener('click', async () => {
+      const code = btn.parentElement.querySelector('code').innerText;
+      await navigator.clipboard.writeText(code);
+      const old = btn.textContent;
+      btn.textContent = 'Skopiowano';
+      setTimeout(() => btn.textContent = old, 1200);
+    });
+  });
+
+  const tasks = [...document.querySelectorAll('.task input')];
+  const bar = document.getElementById('bar');
+  const text = document.getElementById('progressText');
+
+  function updateProgress(){
+    const done = tasks.filter(t => t.checked).length;
+    bar.style.width = (done / tasks.length * 100) + '%';
+    text.textContent = `${done} z ${tasks.length} zadań wykonanych`;
+    localStorage.setItem('ndp-lab1-progress', JSON.stringify(tasks.map(t => t.checked)));
+  }
+
+  try{
+    const saved = JSON.parse(localStorage.getItem('ndp-lab1-progress') || '[]');
+    tasks.forEach((t,i) => t.checked = Boolean(saved[i]));
+  }catch(e){}
+
+  tasks.forEach(t => t.addEventListener('change', updateProgress));
+  updateProgress();
+</script>
+</body>
+</html>

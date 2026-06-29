@@ -1,0 +1,600 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Laboratorium 5 z przedmiotu Narzędzia dla programistów: pakiety LaTeX, własne makra, konfiguracja podpisów, listy, wzory, kolory, listingi, metadane PDF, załączniki, bibliografia BibTeX i circuitikz.">
+  <title>Narzędzia dla programistów — Laboratorium 5</title>
+  <style>
+    :root{
+      --bg:#f4f7f9;
+      --paper:#ffffff;
+      --ink:#17212b;
+      --muted:#5d6975;
+      --line:#d9e1e7;
+      --accent:#155e75;
+      --accent-2:#0f766e;
+      --soft:#e8f3f6;
+      --warn:#fff7df;
+      --danger:#fff0f0;
+      --ok:#eaf7ef;
+      --code:#101820;
+      --shadow:0 8px 30px rgba(20,35,50,.08);
+      --radius:14px;
+      --max:1180px;
+    }
+    *{box-sizing:border-box}
+    html{scroll-behavior:smooth}
+    body{
+      margin:0;
+      font-family:Inter,ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
+      color:var(--ink);
+      background:var(--bg);
+      line-height:1.62;
+    }
+    a{color:var(--accent);text-decoration:none}
+    a:hover{text-decoration:underline}
+    header{
+      background:linear-gradient(135deg,#0b3444 0%,#155e75 58%,#0f766e 100%);
+      color:#fff;
+      padding:56px 24px 44px;
+    }
+    .hero{max-width:var(--max);margin:auto}
+    .eyebrow{
+      font-size:.82rem;
+      letter-spacing:.12em;
+      text-transform:uppercase;
+      opacity:.82;
+      font-weight:700;
+    }
+    h1{font-size:clamp(2rem,5vw,4.2rem);line-height:1.05;margin:.35rem 0 1rem}
+    .lead{max-width:920px;font-size:1.14rem;opacity:.94}
+    .meta{display:flex;flex-wrap:wrap;gap:10px;margin-top:24px}
+    .pill{
+      border:1px solid rgba(255,255,255,.35);
+      background:rgba(255,255,255,.09);
+      padding:7px 11px;border-radius:999px;font-size:.92rem
+    }
+    .layout{
+      max-width:var(--max);
+      margin:26px auto 70px;
+      padding:0 20px;
+      display:grid;
+      grid-template-columns:280px minmax(0,1fr);
+      gap:26px;
+    }
+    nav{
+      position:sticky;top:18px;align-self:start;
+      background:var(--paper);border:1px solid var(--line);
+      border-radius:var(--radius);padding:16px;box-shadow:var(--shadow)
+    }
+    nav strong{display:block;margin:2px 0 10px}
+    nav a{
+      display:block;padding:8px 10px;border-radius:9px;color:var(--ink);
+      font-size:.94rem
+    }
+    nav a:hover{background:var(--soft);text-decoration:none}
+    main{min-width:0}
+    section{
+      background:var(--paper);border:1px solid var(--line);
+      border-radius:var(--radius);padding:30px;margin-bottom:22px;box-shadow:var(--shadow)
+    }
+    h2{font-size:1.65rem;margin:0 0 18px;line-height:1.25}
+    h3{font-size:1.15rem;margin:28px 0 10px}
+    p{margin:.6rem 0}
+    ul,ol{padding-left:1.3rem}
+    li{margin:.38rem 0}
+    .grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px}
+    .card{
+      border:1px solid var(--line);border-radius:12px;padding:18px;background:#fbfcfd
+    }
+    .card h3{margin:0 0 8px}
+    .callout{
+      padding:16px 18px;border-left:5px solid var(--accent);
+      background:var(--soft);border-radius:10px;margin:16px 0
+    }
+    .callout.warn{background:var(--warn);border-left-color:#b7791f}
+    .callout.danger{background:var(--danger);border-left-color:#b42318}
+    .callout.ok{background:var(--ok);border-left-color:#15803d}
+    .edu{
+      margin:14px 0 18px;padding:15px 17px;border:1px solid #cfe0e7;
+      border-radius:11px;background:#f7fbfc;color:#283843
+    }
+    .edu strong{color:var(--accent)}
+    code{
+      font-family:"SFMono-Regular",Consolas,"Liberation Mono",monospace;
+      font-size:.94em
+    }
+    pre{
+      margin:12px 0;background:var(--code);color:#eaf2f8;
+      border-radius:12px;padding:17px 48px 17px 17px;overflow:auto;position:relative
+    }
+    .copy{
+      position:absolute;right:10px;top:10px;border:0;border-radius:7px;
+      padding:6px 9px;cursor:pointer;background:#253744;color:#fff;font-size:.78rem
+    }
+    table{width:100%;border-collapse:collapse;margin:14px 0;font-size:.95rem}
+    th,td{border-bottom:1px solid var(--line);padding:11px 10px;text-align:left;vertical-align:top}
+    th{background:#f2f6f8}
+    .task{
+      display:flex;gap:12px;align-items:flex-start;padding:12px 0;border-bottom:1px solid var(--line)
+    }
+    .task:last-child{border-bottom:0}
+    .task input{margin-top:5px;transform:scale(1.2)}
+    .task label{cursor:pointer}
+    .task small{display:block;color:var(--muted)}
+    .progress{
+      height:12px;background:#e7edf1;border-radius:999px;overflow:hidden;margin:10px 0 4px
+    }
+    .progress > span{
+      display:block;height:100%;width:0;background:linear-gradient(90deg,var(--accent),var(--accent-2));
+      transition:width .25s ease
+    }
+    .progress-text{font-size:.9rem;color:var(--muted)}
+    .note{font-size:.9rem;color:var(--muted)}
+    .result{
+      border:1px solid var(--line);background:#fbfcfd;border-radius:12px;padding:18px;
+      margin:12px 0
+    }
+    footer{
+      max-width:var(--max);margin:0 auto 40px;padding:0 20px;color:var(--muted);font-size:.9rem
+    }
+    @media (max-width:900px){
+      .layout{grid-template-columns:1fr}
+      nav{position:static}
+      .grid{grid-template-columns:1fr}
+    }
+    @media print{
+      body{background:#fff}
+      header{background:#fff;color:#000;padding:20px 0}
+      nav,.copy{display:none}
+      .layout{display:block;margin:0;max-width:none;padding:0}
+      section{box-shadow:none;break-inside:avoid;border-color:#bbb}
+      footer{margin-top:20px}
+    }
+  </style>
+</head>
+<body>
+<header>
+  <div class="hero">
+    <div class="eyebrow">Narzędzia dla programistów</div>
+    <h1>Laboratorium 5<br>Pakiety LaTeX i własne makra</h1>
+    <p class="lead">
+      Rozszerzanie dokumentu LaTeX za pomocą pakietów, modyfikacja numeracji i podpisów,
+      definiowanie makr, konfiguracja list i listingów, kolory, metadane PDF, załączniki,
+      bibliografia BibTeX oraz rysowanie obwodów w circuitikz.
+    </p>
+    <div class="meta">
+      <span class="pill">czas: 2 × 45 min</span>
+      <span class="pill">tryb: praca indywidualna</span>
+      <span class="pill">narzędzia: VS Code + LaTeX + BibTeX</span>
+      <span class="pill">poziom: średni</span>
+    </div>
+  </div>
+</header>
+
+<div class="layout">
+  <nav aria-label="Spis treści">
+    <strong>Spis treści</strong>
+    <a href="#cele">1. Cele</a>
+    <a href="#start">2. Przygotowanie</a>
+    <a href="#standardy">3. Polskie standardy składu</a>
+    <a href="#makra">4. Własne makra</a>
+    <a href="#listy">5. Listy i środowiska</a>
+    <a href="#matematyka">6. Matematyka</a>
+    <a href="#kolory">7. Kolory</a>
+    <a href="#listingi">8. Listingi kodu</a>
+    <a href="#pdf">9. Metadane i załączniki</a>
+    <a href="#bibtex">10. Bibliografia</a>
+    <a href="#circuitikz">11. Circuitikz</a>
+    <a href="#lista">12. Lista kontrolna</a>
+    <a href="#zakonczenie">13. Zakończenie</a>
+  </nav>
+
+  <main>
+    <section id="cele">
+      <h2>1. Cele i rezultaty uczenia się</h2>
+      <p class="edu"><strong>Znaczenie praktyczne.</strong> Pakiety rozszerzają możliwości LaTeX bez konieczności samodzielnego implementowania całych mechanizmów. Makra pozwalają natomiast ujednolicić skład i ograniczyć powtarzanie kodu źródłowego.</p>
+      <div class="grid">
+        <div class="card">
+          <h3>Konfiguracja dokumentu</h3>
+          <p>Dostosowanie podpisów, numeracji i elementów typograficznych do przyjętego standardu.</p>
+        </div>
+        <div class="card">
+          <h3>Reużywalność</h3>
+          <p>Definiowanie własnych poleceń i globalnych stylów.</p>
+        </div>
+        <div class="card">
+          <h3>Treści techniczne</h3>
+          <p>Wzory, listingi kodu, kolory, bibliografia i załączniki.</p>
+        </div>
+        <div class="card">
+          <h3>Dokument końcowy</h3>
+          <p>Metadane PDF, osadzone pliki i elementy grafiki wektorowej.</p>
+        </div>
+      </div>
+    </section>
+
+    <section id="start">
+      <h2>2. Przygotowanie dokumentu</h2>
+      <p class="edu"><strong>Kontrola punktu startowego.</strong> Przed wprowadzeniem zmian należy skompilować dokument bazowy. Dzięki temu wiadomo, czy późniejsze błędy wynikają z nowych modyfikacji, czy z niepoprawnego środowiska lub brakujących plików.</p>
+
+      <ol>
+        <li>Pobierz i rozpakuj archiwum startowe.</li>
+        <li>Otwórz plik <code>wprowadzenie.tex</code>.</li>
+        <li>Sprawdź obecność plików pomocniczych, np. <code>fragmenty.tex</code>, <code>zrodlo.c</code> i <code>zbior.bib</code>.</li>
+        <li>Skompiluj dokument przed rozpoczęciem pracy.</li>
+      </ol>
+
+      <pre><button class="copy">Kopiuj</button><code>pdflatex wprowadzenie.tex</code></pre>
+
+      <div class="callout warn">
+        Nie kopiuj kodu LaTeX bezpośrednio z pliku PDF, jeżeli dostępny jest plik tekstowy z listingami. PDF może zawierać typograficzne cudzysłowy, ligatury lub niewidoczne znaki.
+      </div>
+    </section>
+
+    <section id="standardy">
+      <h2>3. Dostosowanie do krajowych standardów składu</h2>
+      <p class="edu"><strong>Po co zmieniać podpisy?</strong> W publikacjach technicznych stosuje się określone konwencje skrótów, kropek i położenia podpisów. Pakiet <code>caption</code> pozwala sterować tymi elementami globalnie i spójnie.</p>
+
+      <h3>3.1. Podpisy rysunków</h3>
+      <pre><button class="copy">Kopiuj</button><code>\usepackage{caption}
+
+\DeclareCaptionLabelFormat{cfscr}{#1 #2}
+\DeclareCaptionFont{ftscr}{\fontsize{10}{12pt}\selectfont}
+\DeclareCaptionLabelSeparator{labscr}{~}
+
+\captionsetup[figure]{
+  name={Rys. },
+  labelformat=cfscr,
+  labelfont=ftscr,
+  labelseparator=labscr,
+  textfont=ftscr,
+  position=bottom,
+  skip=3pt
+}
+
+\makeatletter
+\renewcommand\thechapter{\@arabic\c@chapter.}
+\renewcommand\thefigure{%
+  \ifnum\c@chapter>\z@\thechapter\fi
+  \@arabic\c@figure.
+}
+\makeatother</code></pre>
+
+      <h3>3.2. Podpisy tabel</h3>
+      <pre><button class="copy">Kopiuj</button><code>\captionsetup[table]{
+  name={Tab. },
+  labelformat=cfscr,
+  labelfont=ftscr,
+  labelseparator=labscr,
+  textfont=ftscr,
+  position=top,
+  skip=3pt
+}
+
+\makeatletter
+\renewcommand\thetable{%
+  \ifnum\c@chapter>\z@\thechapter\fi
+  \@arabic\c@table.
+}
+\makeatother</code></pre>
+
+      <div class="callout">
+        Polecenia zawierające znak <code>@</code> wymagają otoczenia przez <code>\makeatletter</code> i <code>\makeatother</code>. Znak ten jest zwykle zarezerwowany dla poleceń wewnętrznych LaTeX.
+      </div>
+    </section>
+
+    <section id="makra">
+      <h2>4. Definiowanie własnych makr</h2>
+      <p class="edu"><strong>Makro jako abstrakcja.</strong> Własne polecenie ukrywa szczegóły formatowania. Jeżeli styl zmieni się później, wystarczy poprawić jedną definicję zamiast wszystkich wystąpień w dokumencie.</p>
+
+      <h3>4.1. Numeracja sekcji, podsekcji i równań</h3>
+      <pre><button class="copy">Kopiuj</button><code>\makeatletter
+\renewcommand\thesection{\thechapter\@arabic\c@section.}
+\renewcommand\thesubsection{\thesection\@arabic\c@subsection.}
+\renewcommand\theequation{\thechapter\@arabic\c@equation}
+\makeatother</code></pre>
+
+      <h3>4.2. Własne polecenie <code>\kod</code></h3>
+      <pre><button class="copy">Kopiuj</button><code>\newcommand{\kod}[1]{\texttt{#1}}</code></pre>
+
+      <pre><button class="copy">Kopiuj</button><code>W~języku C funkcja \kod{main} oznacza miejsce,
+od którego rozpocznie się wykonywanie programu.
+Wewnątrz niej znajduje się deklaracja zmiennej
+\kod{i} typu \kod{int}.</code></pre>
+
+      <div class="callout ok">
+        Parametr <code>#1</code> oznacza pierwszy argument makra. Wywołanie <code>\kod{main}</code> przekazuje tekst <code>main</code> do definicji polecenia.
+      </div>
+    </section>
+
+    <section id="listy">
+      <h2>5. Pakiet enumitem i konfiguracja list</h2>
+      <p class="edu"><strong>Globalne i lokalne style.</strong> Pakiet <code>enumitem</code> umożliwia osobne ustawienia dla całego dokumentu oraz dla pojedynczej listy. To lepsze rozwiązanie niż ręczne modyfikowanie każdej pozycji.</p>
+
+      <h3>5.1. Ustawienia globalne</h3>
+      <pre><button class="copy">Kopiuj</button><code>\usepackage{enumitem}
+
+\setlist[itemize]{label=---,nosep}
+\setlist[enumerate]{nosep}</code></pre>
+
+      <h3>5.2. Lista z lokalnym stylem</h3>
+      <pre><button class="copy">Kopiuj</button><code>\begin{itemize}[
+  label=*,
+  leftmargin=2.25\parindent
+]
+  \item Pierwszy element
+  \item Drugi element
+  \item Trzeci element
+\end{itemize}</code></pre>
+
+      <div class="callout warn">
+        Parametr <code>leftmargin</code> nie służy do tworzenia kolejnych poziomów zagnieżdżenia. Dla poziomów list używa się osobnych konfiguracji, np. <code>\setlist[itemize,2]{...}</code>.
+      </div>
+    </section>
+
+    <section id="matematyka">
+      <h2>6. Pakiet amsmath i wzory</h2>
+      <p class="edu"><strong>Rozszerzony skład matematyczny.</strong> Pakiet <code>amsmath</code> zapewnia środowiska do macierzy, układów równań, wyrównywania wzorów i poprawnych odwołań.</p>
+
+      <pre><button class="copy">Kopiuj</button><code>\usepackage{amsmath}</code></pre>
+
+      <h3>6.1. Układ równań</h3>
+      <pre><button class="copy">Kopiuj</button><code>\begin{equation}
+\left\{
+\begin{matrix}
+y = 2x - 2 \\
+x = -3y + 2
+\end{matrix}
+\right.
+\label{eq:uklad}
+\end{equation}</code></pre>
+
+      <h3>6.2. Odwołanie do równania</h3>
+      <pre><button class="copy">Kopiuj</button><code>Układ przedstawiono w równaniu~\eqref{eq:uklad}.</code></pre>
+
+      <div class="callout">
+        <code>\eqref</code> automatycznie dodaje nawiasy wokół numeru równania, dlatego jest lepsze od ręcznego zapisu <code>(\ref{...})</code>.
+      </div>
+    </section>
+
+    <section id="kolory">
+      <h2>7. Definiowanie i używanie kolorów</h2>
+      <p class="edu"><strong>Kolor jako element stylu.</strong> Nazwany kolor można zdefiniować raz i używać w wielu miejscach. Ułatwia to zachowanie zgodności z identyfikacją wizualną instytucji.</p>
+
+      <pre><button class="copy">Kopiuj</button><code>\usepackage{xcolor}
+
+\DefineNamedColor{named}{wydzialowy}{rgb}{
+  0.2941,0.6274,0.647
+}</code></pre>
+
+      <pre><button class="copy">Kopiuj</button><code>\textcolor{wydzialowy}{
+  Tekst w kolorze wydziałowym.
+}
+
+\textcolor{red}{
+  Tekst w kolorze czerwonym.
+}</code></pre>
+
+      <div class="callout warn">
+        Kolor nie powinien być jedynym nośnikiem znaczenia. W dokumentach dostępnych cyfrowo należy uwzględnić osoby z zaburzeniami rozpoznawania barw oraz wydruk czarno-biały.
+      </div>
+    </section>
+
+    <section id="listingi">
+      <h2>8. Listingi kodu źródłowego</h2>
+      <p class="edu"><strong>Kod jako treść techniczna.</strong> Pakiet listingów zachowuje wcięcia, numeruje wiersze i wyróżnia elementy składni. Jest przeznaczony do prezentacji kodu, a nie do jego wykonywania.</p>
+
+      <h3>8.1. Dołączenie pakietu</h3>
+      <pre><button class="copy">Kopiuj</button><code>\usepackage[final]{listingsutf8}</code></pre>
+
+      <h3>8.2. Globalna konfiguracja</h3>
+      <pre><button class="copy">Kopiuj</button><code>\lstset{
+  language={[ANSI]C},
+  showspaces=false,
+  showtabs=false,
+  frame=single,
+  numbers=left,
+  stepnumber=1,
+  extendedchars=true,
+  basicstyle=\ttfamily\small,
+  keywordstyle=\fontfamily{lmtt}\fontseries{b}
+    \selectfont\small\color{blue},
+  stringstyle=\color{olive},
+  commentstyle=\color{green}\itshape,
+  showstringspaces=false
+}</code></pre>
+
+      <h3>8.3. Wczytanie pliku</h3>
+      <pre><button class="copy">Kopiuj</button><code>\lstinputlisting[
+  language={[ANSI]C},
+  inputencoding=utf8/cp1250
+]{zrodlo.c}</code></pre>
+
+      <div class="callout warn">
+        Parametr kodowania powinien odpowiadać rzeczywistemu kodowaniu pliku. Współcześnie preferuje się UTF-8, jednak starsze środowiska mogą wymagać konwersji.
+      </div>
+    </section>
+
+    <section id="pdf">
+      <h2>9. Metadane PDF i osadzanie załączników</h2>
+      <p class="edu"><strong>PDF jako nośnik informacji.</strong> Dokument PDF może zawierać nie tylko widoczną treść, ale również metadane, hiperłącza i pliki źródłowe dołączone jako załączniki.</p>
+
+      <h3>9.1. Metadane i hiperłącza</h3>
+      <pre><button class="copy">Kopiuj</button><code>\usepackage{hyperref}
+
+\hypersetup{
+  pdftitle={Pakiety LaTeX i własne makra},
+  pdfsubject={Laboratorium z LaTeX},
+  pdfauthor={Imię i nazwisko},
+  pdfkeywords={LaTeX, pakiety, makra, BibTeX}
+}</code></pre>
+
+      <h3>9.2. Załącznik w pliku PDF</h3>
+      <pre><button class="copy">Kopiuj</button><code>\usepackage{embedfile}
+
+\embedfile{zrodlo.c}</code></pre>
+
+      <div class="callout">
+        Nie wszystkie przeglądarki PDF wyświetlają osadzone pliki. Funkcję załączników najlepiej testować w pełnym czytniku PDF, np. Adobe Acrobat Reader.
+      </div>
+    </section>
+
+    <section id="bibtex">
+      <h2>10. Bibliografia z BibTeX</h2>
+      <p class="edu"><strong>Rozdzielenie treści i danych bibliograficznych.</strong> Cytowanie odbywa się przez klucz, natomiast pełne dane publikacji są zapisane w osobnym pliku <code>.bib</code>. Pozwala to wielokrotnie wykorzystywać tę samą bazę.</p>
+
+      <h3>10.1. Cytowanie</h3>
+      <pre><button class="copy">Kopiuj</button><code>Opis zagadnienia można znaleźć
+w literaturze~\cite{Doroszewski}.</code></pre>
+
+      <h3>10.2. Dołączenie bibliografii</h3>
+      <pre><button class="copy">Kopiuj</button><code>\bibliographystyle{plain}
+\bibliography{zbior}</code></pre>
+
+      <h3>10.3. Przykładowy wpis w pliku <code>zbior.bib</code></h3>
+      <pre><button class="copy">Kopiuj</button><code>@book{Lamport1994,
+  author    = {Leslie Lamport},
+  title     = {LaTeX: A Document Preparation System},
+  year      = {1994},
+  publisher = {Addison-Wesley}
+}</code></pre>
+
+      <h3>10.4. Kolejność kompilacji</h3>
+      <pre><button class="copy">Kopiuj</button><code>pdflatex wprowadzenie
+bibtex wprowadzenie
+pdflatex wprowadzenie
+pdflatex wprowadzenie</code></pre>
+
+      <p class="edu"><strong>Dlaczego cztery kroki?</strong> Pierwsza kompilacja zbiera cytowania, BibTeX tworzy listę literatury, a kolejne kompilacje uzupełniają numery cytowań, odwołania i strony.</p>
+
+      <h3>10.5. Zmiana stylu</h3>
+      <pre><button class="copy">Kopiuj</button><code>\bibliographystyle{alpha}</code></pre>
+
+      <div class="callout warn">
+        Klucz bibliograficzny, np. <code>Lamport1994</code>, musi być unikatowy. Brak zgodności między kluczem w <code>\cite</code> i pliku <code>.bib</code> prowadzi do nieoznaczonego cytowania.
+      </div>
+    </section>
+
+    <section id="circuitikz">
+      <h2>11. Zadanie dodatkowe — circuitikz</h2>
+      <p class="edu"><strong>Diagram jako kod.</strong> Obwód zapisany tekstowo jest skalowalny, łatwy do modyfikacji i może być wersjonowany razem z dokumentem.</p>
+
+      <h3>11.1. Pakiet</h3>
+      <pre><button class="copy">Kopiuj</button><code>\usepackage[
+  smartlabels,
+  european
+]{circuitikz}</code></pre>
+
+      <h3>11.2. Obwód podstawowy</h3>
+      <pre><button class="copy">Kopiuj</button><code>\begin{figure}[!htp]
+\centering
+
+\ctikzset{bipoles/length=1cm}
+\ctikzset{inductors/scale=1,inductor=american}
+
+\begin{circuitikz}[scale=1]
+\draw
+  (0,1) to[cspst=$u$] (1.5,1)
+  (0,-1) -- (5,-1)
+  (0,-1) to[battery,l_=$V_s$,invert] (0,1)
+  (1.5,1) to[L,l=$L_1$,i<^=$I_1$] (1.5,-1)
+  (1.5,1) to[C,l=$C_1$,v>={{$5V$}}] (3.5,1)
+  (3.5,1) to[diode,l=$D_1$] (3.5,-1)
+  (5,-1) to[R,l_=$R_1$] (5,1)
+  (3.5,1) -- (5,1);
+\end{circuitikz}
+
+\caption{Obwód elektroniczny}
+\label{fig:obwod}
+\end{figure}</code></pre>
+
+      <h3>11.3. Rozszerzenie</h3>
+      <p>Dodaj za rezystorem <code>R1</code> diodę <code>D2</code> skierowaną przeciwnie do <code>D1</code> oraz kondensator <code>C2</code> połączony szeregowo.</p>
+
+      <div class="callout">
+        Współrzędne w nawiasach, np. <code>(3.5,1)</code>, opisują położenie elementów w układzie kartezjańskim. Zmiana współrzędnych wpływa na geometrię całego obwodu.
+      </div>
+    </section>
+
+    <section id="lista">
+      <h2>12. Lista kontrolna laboratorium</h2>
+      <p class="edu"><strong>Samokontrola.</strong> Zaznaczenie pozycji powinno oznaczać, że dokument kompiluje się poprawnie i potrafisz uzasadnić zastosowanie danego pakietu lub makra.</p>
+
+      <div class="progress" aria-label="Postęp"><span id="bar"></span></div>
+      <div class="progress-text" id="progressText">0 z 14 zadań wykonanych</div>
+
+      <div class="task"><input type="checkbox" id="t1"><label for="t1">Skompilowałem dokument bazowy.</label></div>
+      <div class="task"><input type="checkbox" id="t2"><label for="t2">Skonfigurowałem podpisy rysunków.</label></div>
+      <div class="task"><input type="checkbox" id="t3"><label for="t3">Skonfigurowałem podpisy tabel.</label></div>
+      <div class="task"><input type="checkbox" id="t4"><label for="t4">Zmodyfikowałem numerację sekcji i równań.</label></div>
+      <div class="task"><input type="checkbox" id="t5"><label for="t5">Utworzyłem makro <code>\kod</code>.</label></div>
+      <div class="task"><input type="checkbox" id="t6"><label for="t6">Skonfigurowałem listy przez <code>enumitem</code>.</label></div>
+      <div class="task"><input type="checkbox" id="t7"><label for="t7">Dodałem układ równań z <code>amsmath</code>.</label></div>
+      <div class="task"><input type="checkbox" id="t8"><label for="t8">Zdefiniowałem własny kolor.</label></div>
+      <div class="task"><input type="checkbox" id="t9"><label for="t9">Dodałem listing pliku C.</label></div>
+      <div class="task"><input type="checkbox" id="t10"><label for="t10">Skonfigurowałem styl listingów.</label></div>
+      <div class="task"><input type="checkbox" id="t11"><label for="t11">Dodałem metadane PDF.</label></div>
+      <div class="task"><input type="checkbox" id="t12"><label for="t12">Osadziłem plik źródłowy w PDF.</label></div>
+      <div class="task"><input type="checkbox" id="t13"><label for="t13">Dodałem i skompilowałem bibliografię BibTeX.</label></div>
+      <div class="task"><input type="checkbox" id="t14"><label for="t14">Porównałem style <code>plain</code> i <code>alpha</code>.</label></div>
+
+      <p class="note">Stan listy jest zapisywany lokalnie w przeglądarce.</p>
+    </section>
+
+    <section id="zakonczenie">
+      <h2>13. Zakończenie ćwiczenia</h2>
+      <p class="edu"><strong>Archiwizacja projektu.</strong> Dokument LaTeX składa się z wielu plików źródłowych. Należy zachować nie tylko PDF, ale również pliki <code>.tex</code>, <code>.bib</code>, kod źródłowy i grafiki.</p>
+
+      <ol>
+        <li>Sprawdź, czy dokument kompiluje się bez błędów.</li>
+        <li>Otwórz wynikowy PDF i zweryfikuj podpisy, listingi, bibliografię oraz załącznik.</li>
+        <li>Zarchiwizuj wszystkie pliki projektu.</li>
+        <li>Po akceptacji prowadzącego usuń pliki ze stanowiska.</li>
+      </ol>
+
+      <div class="callout danger">
+        Nie usuwaj projektu przed sprawdzeniem, czy kopia zapasowa zawiera również pliki bibliografii, kodu źródłowego i grafiki.
+      </div>
+    </section>
+  </main>
+</div>
+
+<footer>
+  <p><strong>Narzędzia dla programistów — Laboratorium 5.</strong> Opracowanie dydaktyczne: dr inż. Mateusz Pomianek.</p>
+  <p>Materiał przygotowano jako samodzielny plik HTML do publikacji w GitHub Pages.</p>
+</footer>
+
+<script>
+  document.querySelectorAll('.copy').forEach(btn => {
+    btn.addEventListener('click', async () => {
+      const code = btn.parentElement.querySelector('code').innerText;
+      await navigator.clipboard.writeText(code);
+      const old = btn.textContent;
+      btn.textContent = 'Skopiowano';
+      setTimeout(() => btn.textContent = old, 1200);
+    });
+  });
+
+  const tasks = [...document.querySelectorAll('.task input')];
+  const bar = document.getElementById('bar');
+  const text = document.getElementById('progressText');
+
+  function updateProgress(){
+    const done = tasks.filter(t => t.checked).length;
+    bar.style.width = (done / tasks.length * 100) + '%';
+    text.textContent = `${done} z ${tasks.length} zadań wykonanych`;
+    localStorage.setItem('ndp-lab5-progress', JSON.stringify(tasks.map(t => t.checked)));
+  }
+
+  try{
+    const saved = JSON.parse(localStorage.getItem('ndp-lab5-progress') || '[]');
+    tasks.forEach((t,i) => t.checked = Boolean(saved[i]));
+  }catch(e){}
+
+  tasks.forEach(t => t.addEventListener('change', updateProgress));
+  updateProgress();
+</script>
+</body>
+</html>

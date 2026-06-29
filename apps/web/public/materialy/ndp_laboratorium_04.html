@@ -1,0 +1,563 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Laboratorium 4 z przedmiotu Narzędzia dla programistów: tworzenie dokumentów LaTeX, struktura dokumentu, formatowanie tekstu, środowiska, wzory, odwołania, znaki specjalne, spisy i grafika TikZ.">
+  <title>Narzędzia dla programistów — Laboratorium 4</title>
+  <style>
+    :root{
+      --bg:#f4f7f9;
+      --paper:#ffffff;
+      --ink:#17212b;
+      --muted:#5d6975;
+      --line:#d9e1e7;
+      --accent:#155e75;
+      --accent-2:#0f766e;
+      --soft:#e8f3f6;
+      --warn:#fff7df;
+      --danger:#fff0f0;
+      --ok:#eaf7ef;
+      --code:#101820;
+      --shadow:0 8px 30px rgba(20,35,50,.08);
+      --radius:14px;
+      --max:1180px;
+    }
+    *{box-sizing:border-box}
+    html{scroll-behavior:smooth}
+    body{
+      margin:0;
+      font-family:Inter,ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
+      color:var(--ink);
+      background:var(--bg);
+      line-height:1.62;
+    }
+    a{color:var(--accent);text-decoration:none}
+    a:hover{text-decoration:underline}
+    header{
+      background:linear-gradient(135deg,#0b3444 0%,#155e75 58%,#0f766e 100%);
+      color:#fff;
+      padding:56px 24px 44px;
+    }
+    .hero{max-width:var(--max);margin:auto}
+    .eyebrow{
+      font-size:.82rem;
+      letter-spacing:.12em;
+      text-transform:uppercase;
+      opacity:.82;
+      font-weight:700;
+    }
+    h1{font-size:clamp(2rem,5vw,4.2rem);line-height:1.05;margin:.35rem 0 1rem}
+    .lead{max-width:900px;font-size:1.14rem;opacity:.94}
+    .meta{display:flex;flex-wrap:wrap;gap:10px;margin-top:24px}
+    .pill{
+      border:1px solid rgba(255,255,255,.35);
+      background:rgba(255,255,255,.09);
+      padding:7px 11px;border-radius:999px;font-size:.92rem
+    }
+    .layout{
+      max-width:var(--max);
+      margin:26px auto 70px;
+      padding:0 20px;
+      display:grid;
+      grid-template-columns:280px minmax(0,1fr);
+      gap:26px;
+    }
+    nav{
+      position:sticky;top:18px;align-self:start;
+      background:var(--paper);border:1px solid var(--line);
+      border-radius:var(--radius);padding:16px;box-shadow:var(--shadow)
+    }
+    nav strong{display:block;margin:2px 0 10px}
+    nav a{
+      display:block;padding:8px 10px;border-radius:9px;color:var(--ink);
+      font-size:.94rem
+    }
+    nav a:hover{background:var(--soft);text-decoration:none}
+    main{min-width:0}
+    section{
+      background:var(--paper);border:1px solid var(--line);
+      border-radius:var(--radius);padding:30px;margin-bottom:22px;box-shadow:var(--shadow)
+    }
+    h2{font-size:1.65rem;margin:0 0 18px;line-height:1.25}
+    h3{font-size:1.15rem;margin:28px 0 10px}
+    p{margin:.6rem 0}
+    ul,ol{padding-left:1.3rem}
+    li{margin:.38rem 0}
+    .grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px}
+    .card{
+      border:1px solid var(--line);border-radius:12px;padding:18px;background:#fbfcfd
+    }
+    .card h3{margin:0 0 8px}
+    .callout{
+      padding:16px 18px;border-left:5px solid var(--accent);
+      background:var(--soft);border-radius:10px;margin:16px 0
+    }
+    .callout.warn{background:var(--warn);border-left-color:#b7791f}
+    .callout.danger{background:var(--danger);border-left-color:#b42318}
+    .callout.ok{background:var(--ok);border-left-color:#15803d}
+    .edu{
+      margin:14px 0 18px;padding:15px 17px;border:1px solid #cfe0e7;
+      border-radius:11px;background:#f7fbfc;color:#283843
+    }
+    .edu strong{color:var(--accent)}
+    code{
+      font-family:"SFMono-Regular",Consolas,"Liberation Mono",monospace;
+      font-size:.94em
+    }
+    pre{
+      margin:12px 0;background:var(--code);color:#eaf2f8;
+      border-radius:12px;padding:17px 48px 17px 17px;overflow:auto;position:relative
+    }
+    .copy{
+      position:absolute;right:10px;top:10px;border:0;border-radius:7px;
+      padding:6px 9px;cursor:pointer;background:#253744;color:white;font-size:.78rem
+    }
+    table{width:100%;border-collapse:collapse;margin:14px 0;font-size:.95rem}
+    th,td{border-bottom:1px solid var(--line);padding:11px 10px;text-align:left;vertical-align:top}
+    th{background:#f2f6f8}
+    .task{
+      display:flex;gap:12px;align-items:flex-start;padding:12px 0;border-bottom:1px solid var(--line)
+    }
+    .task:last-child{border-bottom:0}
+    .task input{margin-top:5px;transform:scale(1.2)}
+    .task label{cursor:pointer}
+    .task small{display:block;color:var(--muted)}
+    .progress{
+      height:12px;background:#e7edf1;border-radius:999px;overflow:hidden;margin:10px 0 4px
+    }
+    .progress > span{
+      display:block;height:100%;width:0;background:linear-gradient(90deg,var(--accent),var(--accent-2));
+      transition:width .25s ease
+    }
+    .progress-text{font-size:.9rem;color:var(--muted)}
+    .note{font-size:.9rem;color:var(--muted)}
+    .result{
+      border:1px solid var(--line);background:#fbfcfd;border-radius:12px;padding:18px;
+      margin:12px 0
+    }
+    footer{
+      max-width:var(--max);margin:0 auto 40px;padding:0 20px;color:var(--muted);font-size:.9rem
+    }
+    @media (max-width:900px){
+      .layout{grid-template-columns:1fr}
+      nav{position:static}
+      .grid{grid-template-columns:1fr}
+    }
+    @media print{
+      body{background:#fff}
+      header{background:#fff;color:#000;padding:20px 0}
+      nav,.copy{display:none}
+      .layout{display:block;margin:0;max-width:none;padding:0}
+      section{box-shadow:none;break-inside:avoid;border-color:#bbb}
+      footer{margin-top:20px}
+    }
+  </style>
+</head>
+<body>
+<header>
+  <div class="hero">
+    <div class="eyebrow">Narzędzia dla programistów</div>
+    <h1>Laboratorium 4<br>Tworzenie dokumentów LaTeX</h1>
+    <p class="lead">
+      Budowa dokumentu technicznego w LaTeX: struktura logiczna, formatowanie tekstu,
+      listy, rysunki, tabele, wzory matematyczne, odwołania, przypisy, znaki specjalne,
+      spisy oraz grafika tworzona w PGF/TikZ.
+    </p>
+    <div class="meta">
+      <span class="pill">czas: 2 × 45 min</span>
+      <span class="pill">tryb: praca indywidualna</span>
+      <span class="pill">narzędzia: VS Code + LaTeX</span>
+      <span class="pill">poziom: podstawowy</span>
+    </div>
+  </div>
+</header>
+
+<div class="layout">
+  <nav aria-label="Spis treści">
+    <strong>Spis treści</strong>
+    <a href="#cele">1. Cele</a>
+    <a href="#start">2. Dokument bazowy</a>
+    <a href="#tekst">3. Formatowanie tekstu</a>
+    <a href="#srodowiska">4. Środowiska</a>
+    <a href="#wzory">5. Wzory matematyczne</a>
+    <a href="#odwolania">6. Odwołania i przypisy</a>
+    <a href="#znaki">7. Znaki specjalne</a>
+    <a href="#spisy">8. Spisy</a>
+    <a href="#tikz">9. PGF/TikZ</a>
+    <a href="#lista">10. Lista kontrolna</a>
+    <a href="#zakonczenie">11. Zakończenie</a>
+  </nav>
+
+  <main>
+    <section id="cele">
+      <h2>1. Cele i rezultaty uczenia się</h2>
+      <p class="edu"><strong>Znaczenie praktyczne.</strong> LaTeX oddziela treść i strukturę dokumentu od sposobu jego renderowania. Dzięki temu nadaje się do raportów technicznych, publikacji naukowych, dokumentacji projektowej i prac dyplomowych, w których ważna jest spójność składu.</p>
+      <div class="grid">
+        <div class="card">
+          <h3>Struktura dokumentu</h3>
+          <p>Klasa dokumentu, preambuła, części, rozdziały, sekcje i podsekcje.</p>
+        </div>
+        <div class="card">
+          <h3>Skład treści</h3>
+          <p>Formatowanie tekstu, listy, tabele, rysunki i podpisy.</p>
+        </div>
+        <div class="card">
+          <h3>Matematyka</h3>
+          <p>Wzory numerowane, ułamki, pierwiastki i etykiety.</p>
+        </div>
+        <div class="card">
+          <h3>Nawigacja</h3>
+          <p>Odwołania, przypisy, spis treści, spis rysunków i spis tabel.</p>
+        </div>
+      </div>
+    </section>
+
+    <section id="start">
+      <h2>2. Utworzenie dokumentu bazowego</h2>
+      <p class="edu"><strong>Budowa dokumentu.</strong> Plik LaTeX składa się z preambuły, w której definiuje się klasę i pakiety, oraz części właściwej zawartej między <code>\begin{document}</code> i <code>\end{document}</code>.</p>
+
+      <h3>2.1. Katalog roboczy</h3>
+      <pre><button class="copy">Kopiuj</button><code>mkdir -p "$HOME/cw4"
+cd "$HOME/cw4"</code></pre>
+
+      <h3>2.2. Minimalny dokument</h3>
+      <pre><button class="copy">Kopiuj</button><code>\documentclass[12pt,twoside]{book}
+
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage[polish]{babel}
+\usepackage{graphicx}
+\usepackage{float}
+
+\title{Skład tekstu w praktyce}
+\author{Imię i nazwisko}
+\date{\today}
+
+\begin{document}
+
+\maketitle
+\tableofcontents
+
+\part{Podstawy}
+\chapter{Wprowadzenie}
+\section{Pierwsza sekcja}
+\subsection{Pierwsza podsekcja}
+
+Przykładowa treść dokumentu.
+
+\end{document}</code></pre>
+
+      <div class="callout">
+        Klasa <code>book</code> umożliwia stosowanie części i rozdziałów. Opcja <code>twoside</code> przygotowuje układ do druku dwustronnego, a <code>12pt</code> ustala bazowy rozmiar pisma.
+      </div>
+
+      <h3>2.3. Kompilacja</h3>
+      <pre><button class="copy">Kopiuj</button><code>pdflatex wprowadzenie.tex</code></pre>
+      <p class="edu"><strong>Proces kompilacji.</strong> LaTeX analizuje kod źródłowy i generuje dokument PDF. Część informacji, np. numery stron i odwołania, jest zapisywana w plikach pomocniczych, dlatego dokument czasem trzeba skompilować więcej niż raz.</p>
+    </section>
+
+    <section id="tekst">
+      <h2>3. Krój i formatowanie tekstu</h2>
+      <p class="edu"><strong>Formatowanie semantyczne.</strong> Zamiast ręcznie dobierać parametry wyglądu, warto używać poleceń opisujących funkcję tekstu. Ułatwia to późniejszą globalną zmianę stylu dokumentu.</p>
+
+      <pre><button class="copy">Kopiuj</button><code>\textbf{Tekst pogrubiony}
+
+\textsl{Tekst pochylony}
+
+\textit{Tekst kursywą}
+
+\underline{Tekst podkreślony}
+
+\verb|fragment_kodu()|
+
+{\Large Tekst większy}
+
+{\small Tekst mniejszy}</code></pre>
+
+      <table>
+        <thead><tr><th>Polecenie</th><th>Znaczenie</th></tr></thead>
+        <tbody>
+          <tr><td><code>\textbf{...}</code></td><td>pogrubienie</td></tr>
+          <tr><td><code>\textsl{...}</code></td><td>pismo pochylone</td></tr>
+          <tr><td><code>\textit{...}</code></td><td>kursywa</td></tr>
+          <tr><td><code>\underline{...}</code></td><td>podkreślenie</td></tr>
+          <tr><td><code>\verb|...|</code></td><td>tekst dosłowny o stałej szerokości znaku</td></tr>
+          <tr><td><code>{\Large ...}</code></td><td>lokalna zmiana rozmiaru</td></tr>
+        </tbody>
+      </table>
+
+      <div class="callout warn">
+        Polecenie <code>\verb</code> nie może zawierać użytego separatora. Jeżeli treść zawiera znak <code>|</code>, należy wybrać inny separator, np. <code>\verb!...!</code>.
+      </div>
+    </section>
+
+    <section id="srodowiska">
+      <h2>4. Środowiska LaTeX</h2>
+      <p class="edu"><strong>Środowisko.</strong> Konstrukcja <code>\begin{...}</code>–<code>\end{...}</code> określa fragment dokumentu o szczególnych regułach składu. Środowiska mogą być zagnieżdżane.</p>
+
+      <h3>4.1. Wyliczenie</h3>
+      <pre><button class="copy">Kopiuj</button><code>\begin{enumerate}
+  \item Pierwszy punkt
+  \item Drugi punkt
+  \item Trzeci punkt
+\end{enumerate}</code></pre>
+
+      <h3>4.2. Wypunktowanie</h3>
+      <pre><button class="copy">Kopiuj</button><code>\begin{itemize}
+  \item Element pierwszy
+  \item Element drugi
+  \item Element trzeci
+\end{itemize}</code></pre>
+
+      <h3>4.3. Rysunek z podpisem i etykietą</h3>
+      <pre><button class="copy">Kopiuj</button><code>\begin{figure}[H]
+  \centering
+  \includegraphics[width=0.6\textwidth]{obraz.png}
+  \caption{Przykładowy rysunek}
+  \label{fig:przyklad}
+\end{figure}</code></pre>
+
+      <p class="edu"><strong>Obiekt pływający.</strong> Rysunki i tabele są zwykle obiektami pływającymi, więc LaTeX może zmienić ich położenie dla poprawy składu. Opcja <code>[H]</code> z pakietu <code>float</code> wymusza umieszczenie obiektu dokładnie w danym miejscu.</p>
+
+      <h3>4.4. Tabela</h3>
+      <pre><button class="copy">Kopiuj</button><code>\begin{table}[H]
+  \centering
+  \caption{Przykładowa tabela}
+  \label{tab:przyklad}
+  \begin{tabular}{|l|c|r|}
+    \hline
+    Kolumna A & Kolumna B & Kolumna C \\
+    \hline
+    A1 & B1 & C1 \\
+    A2 & B2 & C2 \\
+    A3 & B3 & C3 \\
+    A4 & B4 & C4 \\
+    \hline
+  \end{tabular}
+\end{table}</code></pre>
+
+      <div class="callout">
+        Specyfikacja <code>{|l|c|r|}</code> oznacza trzy kolumny: wyrównaną do lewej, wyśrodkowaną i wyrównaną do prawej. Znaki pionowej kreski dodają linie między kolumnami.
+      </div>
+    </section>
+
+    <section id="wzory">
+      <h2>5. Wzory matematyczne</h2>
+      <p class="edu"><strong>Tryb matematyczny.</strong> LaTeX stosuje osobny mechanizm składu symboli matematycznych. Wzory wyświetlane można numerować, opisywać etykietami i przywoływać w tekście.</p>
+
+      <h3>5.1. Pole koła</h3>
+      <pre><button class="copy">Kopiuj</button><code>\begin{equation}
+  P = \pi r^2
+  \label{eq:pole-kola}
+\end{equation}</code></pre>
+
+      <h3>5.2. Wyróżnik i miejsca zerowe</h3>
+      <pre><button class="copy">Kopiuj</button><code>\begin{equation}
+  \Delta = b^2 - 4 \cdot a \cdot c
+  \label{eq:delta}
+\end{equation}
+
+\begin{equation}
+  x_1 = \frac{-b - \sqrt{\Delta}}{2 \cdot a}
+  \label{eq:x1}
+\end{equation}
+
+\begin{equation}
+  x_2 = \frac{-b + \sqrt{\Delta}}{2 \cdot a}
+  \label{eq:x2}
+\end{equation}</code></pre>
+
+      <div class="result">
+        Najważniejsze konstrukcje: indeks górny <code>^</code>, ułamek <code>\frac{licznik}{mianownik}</code>, pierwiastek <code>\sqrt{...}</code> oraz litera grecka <code>\Delta</code>.
+      </div>
+    </section>
+
+    <section id="odwolania">
+      <h2>6. Odwołania i przypisy</h2>
+      <p class="edu"><strong>Automatyczna numeracja.</strong> Etykieta identyfikuje obiekt logiczny, a <code>\ref</code> pobiera jego aktualny numer. Dzięki temu po dodaniu nowych rysunków, tabel lub wzorów nie trzeba ręcznie poprawiać odwołań.</p>
+
+      <pre><button class="copy">Kopiuj</button><code>Na rysunku~\ref{fig:przyklad} przedstawiono przykładową ilustrację.
+
+Tabela~\ref{tab:przyklad} zawiera dane demonstracyjne.
+
+Wzór na pole koła zapisano w równaniu~\ref{eq:pole-kola}.
+
+To zdanie zawiera przypis dolny\footnote{Treść przypisu pojawia się u dołu strony.}.</code></pre>
+
+      <div class="callout warn">
+        Znak <code>~</code> tworzy spację nierozdzielającą. Zapobiega rozdzieleniu skrótu „rys.” lub „tab.” od numeru obiektu na końcu wiersza.
+      </div>
+    </section>
+
+    <section id="znaki">
+      <h2>7. Znaki specjalne</h2>
+      <p class="edu"><strong>Znaki sterujące.</strong> Część znaków ma w LaTeX specjalne znaczenie składniowe. Aby wydrukować je dosłownie, trzeba użyć odpowiedniego polecenia lub sekwencji ucieczki.</p>
+
+      <table>
+        <thead><tr><th>Znak</th><th>Zapis w LaTeX</th></tr></thead>
+        <tbody>
+          <tr><td><code>$</code></td><td><code>\$</code></td></tr>
+          <tr><td><code>#</code></td><td><code>\#</code></td></tr>
+          <tr><td><code>%</code></td><td><code>\%</code></td></tr>
+          <tr><td><code>^</code></td><td><code>\textasciicircum</code></td></tr>
+          <tr><td><code>&amp;</code></td><td><code>\&amp;</code></td></tr>
+          <tr><td><code>\</code></td><td><code>\textbackslash</code></td></tr>
+          <tr><td><code>~</code></td><td><code>\textasciitilde</code></td></tr>
+          <tr><td><code>{</code>, <code>}</code></td><td><code>\{</code>, <code>\}</code></td></tr>
+          <tr><td><code>_</code></td><td><code>\_</code></td></tr>
+          <tr><td><code>|</code></td><td><code>\textbar</code></td></tr>
+        </tbody>
+      </table>
+
+      <pre><button class="copy">Kopiuj</button><code>\$ \# \% \textasciicircum \&amp; "
+[ ] \textbackslash \textasciitilde
+\{ \} \textbar \_ @</code></pre>
+    </section>
+
+    <section id="spisy">
+      <h2>8. Spisy automatyczne</h2>
+      <p class="edu"><strong>Dokument samonawigujący się.</strong> LaTeX generuje spisy na podstawie struktury i podpisów obiektów. Zmiana numeracji lub kolejności rozdziałów jest automatycznie odzwierciedlana po ponownej kompilacji.</p>
+
+      <pre><button class="copy">Kopiuj</button><code>\tableofcontents
+\listoffigures
+\listoftables</code></pre>
+
+      <div class="callout">
+        Spisy należy zwykle umieścić na początku dokumentu, po stronie tytułowej. Dla poprawnych numerów stron dokument trzeba skompilować co najmniej dwukrotnie.
+      </div>
+    </section>
+
+    <section id="tikz">
+      <h2>9. Zadanie dodatkowe — PGF/TikZ</h2>
+      <p class="edu"><strong>Grafika wektorowa w kodzie.</strong> TikZ pozwala definiować rysunki za pomocą węzłów, współrzędnych i relacji. Taka grafika jest skalowalna, spójna typograficznie i łatwa do wersjonowania w Git.</p>
+
+      <h3>9.1. Pakiet</h3>
+      <pre><button class="copy">Kopiuj</button><code>\usepackage{tikz}
+\usetikzlibrary{positioning}</code></pre>
+
+      <h3>9.2. Graf początkowy</h3>
+      <pre><button class="copy">Kopiuj</button><code>\begin{figure}[H]
+  \centering
+  \begin{tikzpicture}[
+    node distance=1.25cm,
+    main/.style={draw,circle}
+  ]
+    \node[main] (a) {a};
+    \node[main,below right=of a] (b) {b};
+    \node[main,above right=of a] (c) {c};
+    \node[draw=none,right=of c] (p) {};
+
+    \draw[->] (a) -- (b);
+    \draw[->,green] (a) -- (c);
+    \draw[->,dashed,blue] (c) -- (p);
+  \end{tikzpicture}
+  \caption{Początkowy graf}
+  \label{fig:graf-poczatkowy}
+\end{figure}</code></pre>
+
+      <h3>9.3. Graf rozszerzony</h3>
+      <pre><button class="copy">Kopiuj</button><code>\begin{figure}[H]
+  \centering
+  \begin{tikzpicture}[
+    node distance=1.5cm,
+    main/.style={draw,circle}
+  ]
+    \node[main] (a) {a};
+    \node[main,below right=of a] (b) {b};
+    \node[main,above right=of a] (c) {c};
+    \node[main,right=of c] (d) {$\Delta$};
+    \node[main,right=of b] (z) {z};
+
+    \draw[->] (a) -- (b);
+    \draw[->] (a) -- (c);
+    \draw[->] (c) -- (d);
+    \draw[->] (b) -- (z);
+    \draw[->,dashed] (d) -- (z);
+  \end{tikzpicture}
+  \caption{Końcowy graf}
+  \label{fig:graf-koncowy}
+\end{figure}</code></pre>
+
+      <div class="callout warn">
+        Każda instrukcja <code>\node</code> i <code>\draw</code> kończy się średnikiem. Jego brak jest częstą przyczyną trudnych do zlokalizowania błędów kompilacji.
+      </div>
+    </section>
+
+    <section id="lista">
+      <h2>10. Lista kontrolna laboratorium</h2>
+      <p class="edu"><strong>Samokontrola.</strong> Zadanie jest wykonane poprawnie, gdy dokument się kompiluje, a student potrafi wyjaśnić funkcję użytych poleceń i środowisk.</p>
+      <div class="progress" aria-label="Postęp"><span id="bar"></span></div>
+      <div class="progress-text" id="progressText">0 z 12 zadań wykonanych</div>
+
+      <div class="task"><input type="checkbox" id="t1"><label for="t1">Utworzyłem dokument klasy <code>book</code>.</label></div>
+      <div class="task"><input type="checkbox" id="t2"><label for="t2">Dodałem autora, tytuł i strukturę rozdziałów.</label></div>
+      <div class="task"><input type="checkbox" id="t3"><label for="t3">Przetestowałem różne kroje i rozmiary pisma.</label></div>
+      <div class="task"><input type="checkbox" id="t4"><label for="t4">Utworzyłem wyliczenie i wypunktowanie.</label></div>
+      <div class="task"><input type="checkbox" id="t5"><label for="t5">Dodałem rysunek z podpisem i etykietą.</label></div>
+      <div class="task"><input type="checkbox" id="t6"><label for="t6">Utworzyłem tabelę 3 × 5.</label></div>
+      <div class="task"><input type="checkbox" id="t7"><label for="t7">Zapisałem wzór na pole koła.</label></div>
+      <div class="task"><input type="checkbox" id="t8"><label for="t8">Zapisałem wyróżnik i miejsca zerowe.</label></div>
+      <div class="task"><input type="checkbox" id="t9"><label for="t9">Zastosowałem etykiety i odwołania.</label></div>
+      <div class="task"><input type="checkbox" id="t10"><label for="t10">Dodałem przypis dolny.</label></div>
+      <div class="task"><input type="checkbox" id="t11"><label for="t11">Zakodowałem znaki specjalne.</label></div>
+      <div class="task"><input type="checkbox" id="t12"><label for="t12">Dodałem spis treści, rysunków i tabel.</label></div>
+      <p class="note">Stan listy jest zapisywany lokalnie w przeglądarce.</p>
+    </section>
+
+    <section id="zakonczenie">
+      <h2>11. Zakończenie ćwiczenia</h2>
+      <p class="edu"><strong>Archiwizacja pracy.</strong> Zachowaj plik źródłowy <code>.tex</code>, grafiki oraz wynikowy PDF. Sam plik PDF nie pozwala łatwo odtworzyć i edytować dokumentu.</p>
+
+      <ol>
+        <li>Sprawdź, czy dokument kompiluje się bez błędów.</li>
+        <li>Skopiuj pliki do bezpiecznej lokalizacji.</li>
+        <li>Po akceptacji prowadzącego usuń katalog ćwiczeniowy:</li>
+      </ol>
+
+      <pre><button class="copy">Kopiuj</button><code>rm -rf "$HOME/cw4"</code></pre>
+
+      <div class="callout danger">
+        Przed usunięciem upewnij się, że pliki zostały zarchiwizowane. Polecenie <code>rm -rf</code> nie przenosi danych do kosza.
+      </div>
+    </section>
+  </main>
+</div>
+
+<footer>
+  <p><strong>Narzędzia dla programistów — Laboratorium 4.</strong> Opracowanie dydaktyczne: dr inż. Mateusz Pomianek.</p>
+  <p>Materiał przygotowano jako samodzielny plik HTML do publikacji w GitHub Pages.</p>
+</footer>
+
+<script>
+  document.querySelectorAll('.copy').forEach(btn => {
+    btn.addEventListener('click', async () => {
+      const code = btn.parentElement.querySelector('code').innerText;
+      await navigator.clipboard.writeText(code);
+      const old = btn.textContent;
+      btn.textContent = 'Skopiowano';
+      setTimeout(() => btn.textContent = old, 1200);
+    });
+  });
+
+  const tasks = [...document.querySelectorAll('.task input')];
+  const bar = document.getElementById('bar');
+  const text = document.getElementById('progressText');
+
+  function updateProgress(){
+    const done = tasks.filter(t => t.checked).length;
+    bar.style.width = (done / tasks.length * 100) + '%';
+    text.textContent = `${done} z ${tasks.length} zadań wykonanych`;
+    localStorage.setItem('ndp-lab4-progress', JSON.stringify(tasks.map(t => t.checked)));
+  }
+
+  try{
+    const saved = JSON.parse(localStorage.getItem('ndp-lab4-progress') || '[]');
+    tasks.forEach((t,i) => t.checked = Boolean(saved[i]));
+  }catch(e){}
+
+  tasks.forEach(t => t.addEventListener('change', updateProgress));
+  updateProgress();
+</script>
+</body>
+</html>

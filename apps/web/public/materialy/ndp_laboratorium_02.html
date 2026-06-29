@@ -1,0 +1,531 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Laboratorium 2 z przedmiotu Narzędzia dla programistów: polecenia powłoki Bash, operacje na plikach, przekierowania, kody zakończenia i pętle.">
+  <title>Narzędzia dla programistów — Laboratorium 2</title>
+  <style>
+    :root{
+      --bg:#f4f7f9;
+      --paper:#ffffff;
+      --ink:#17212b;
+      --muted:#5d6975;
+      --line:#d9e1e7;
+      --accent:#155e75;
+      --accent-2:#0f766e;
+      --soft:#e8f3f6;
+      --warn:#fff7df;
+      --danger:#fff0f0;
+      --ok:#eaf7ef;
+      --code:#101820;
+      --shadow:0 8px 30px rgba(20,35,50,.08);
+      --radius:14px;
+      --max:1180px;
+    }
+    *{box-sizing:border-box}
+    html{scroll-behavior:smooth}
+    body{
+      margin:0;
+      font-family:Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      color:var(--ink);
+      background:var(--bg);
+      line-height:1.62;
+    }
+    a{color:var(--accent);text-decoration:none}
+    a:hover{text-decoration:underline}
+    header{
+      background:linear-gradient(135deg,#0b3444 0%,#155e75 58%,#0f766e 100%);
+      color:white;
+      padding:56px 24px 44px;
+    }
+    .hero{max-width:var(--max);margin:auto}
+    .eyebrow{
+      font-size:.82rem;
+      letter-spacing:.12em;
+      text-transform:uppercase;
+      opacity:.82;
+      font-weight:700;
+    }
+    h1{font-size:clamp(2rem,5vw,4.2rem);line-height:1.05;margin:.35rem 0 1rem}
+    .lead{max-width:860px;font-size:1.14rem;opacity:.94}
+    .meta{display:flex;flex-wrap:wrap;gap:10px;margin-top:24px}
+    .pill{
+      border:1px solid rgba(255,255,255,.35);
+      background:rgba(255,255,255,.09);
+      padding:7px 11px;border-radius:999px;font-size:.92rem
+    }
+    .layout{
+      max-width:var(--max);
+      margin:26px auto 70px;
+      padding:0 20px;
+      display:grid;
+      grid-template-columns:280px minmax(0,1fr);
+      gap:26px;
+    }
+    nav{
+      position:sticky;top:18px;align-self:start;
+      background:var(--paper);border:1px solid var(--line);
+      border-radius:var(--radius);padding:16px;
+      box-shadow:var(--shadow)
+    }
+    nav strong{display:block;margin:2px 0 10px}
+    nav a{
+      display:block;padding:8px 10px;border-radius:9px;color:var(--ink);
+      font-size:.94rem
+    }
+    nav a:hover{background:var(--soft);text-decoration:none}
+    main{min-width:0}
+    section{
+      background:var(--paper);border:1px solid var(--line);
+      border-radius:var(--radius);padding:30px;
+      margin-bottom:22px;box-shadow:var(--shadow)
+    }
+    h2{font-size:1.65rem;margin:0 0 18px;line-height:1.25}
+    h3{font-size:1.15rem;margin:28px 0 10px}
+    p{margin:.6rem 0}
+    ul,ol{padding-left:1.3rem}
+    li{margin:.38rem 0}
+    .grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px}
+    .card{
+      border:1px solid var(--line);border-radius:12px;padding:18px;background:#fbfcfd
+    }
+    .card h3{margin:0 0 8px}
+    .callout{
+      padding:16px 18px;border-left:5px solid var(--accent);
+      background:var(--soft);border-radius:10px;margin:16px 0
+    }
+    .callout.warn{background:var(--warn);border-left-color:#b7791f}
+    .callout.danger{background:var(--danger);border-left-color:#b42318}
+    .callout.ok{background:var(--ok);border-left-color:#15803d}
+    code{
+      font-family:"SFMono-Regular",Consolas,"Liberation Mono",monospace;
+      font-size:.94em
+    }
+    pre{
+      margin:12px 0;background:var(--code);color:#eaf2f8;
+      border-radius:12px;padding:17px 48px 17px 17px;overflow:auto;position:relative
+    }
+    .copy{
+      position:absolute;right:10px;top:10px;border:0;border-radius:7px;
+      padding:6px 9px;cursor:pointer;background:#253744;color:white;font-size:.78rem
+    }
+    table{width:100%;border-collapse:collapse;margin:14px 0;font-size:.95rem}
+    th,td{border-bottom:1px solid var(--line);padding:11px 10px;text-align:left;vertical-align:top}
+    th{background:#f2f6f8}
+    .task{
+      display:flex;gap:12px;align-items:flex-start;padding:12px 0;border-bottom:1px solid var(--line)
+    }
+    .task:last-child{border-bottom:0}
+    .task input{margin-top:5px;transform:scale(1.2)}
+    .task label{cursor:pointer}
+    .task small{display:block;color:var(--muted)}
+    .progress{
+      height:12px;background:#e7edf1;border-radius:999px;overflow:hidden;margin:10px 0 4px
+    }
+    .progress > span{
+      display:block;height:100%;width:0;background:linear-gradient(90deg,var(--accent),var(--accent-2));
+      transition:width .25s ease
+    }
+    .progress-text{font-size:.9rem;color:var(--muted)}
+    .tree{
+      background:#f7fafb;border:1px solid var(--line);border-radius:12px;
+      padding:16px 18px;font-family:"SFMono-Regular",Consolas,monospace;white-space:pre;overflow:auto
+    }
+    .note{font-size:.9rem;color:var(--muted)}
+    .edu{
+      margin:14px 0 18px;padding:15px 17px;border:1px solid #cfe0e7;
+      border-radius:11px;background:#f7fbfc;color:#283843
+    }
+    .edu strong{color:var(--accent)}
+    .concept{
+      display:grid;grid-template-columns:150px 1fr;gap:12px;
+      padding:10px 0;border-bottom:1px solid var(--line)
+    }
+    .concept:last-child{border-bottom:0}
+    .concept dt{font-weight:700}
+    .concept dd{margin:0}
+    @media (max-width:620px){.concept{grid-template-columns:1fr;gap:2px}}
+    footer{
+      max-width:var(--max);margin:0 auto 40px;padding:0 20px;color:var(--muted);font-size:.9rem
+    }
+    @media (max-width:900px){
+      .layout{grid-template-columns:1fr}
+      nav{position:static}
+      .grid{grid-template-columns:1fr}
+    }
+    @media print{
+      body{background:white}
+      header{background:white;color:black;padding:20px 0}
+      nav,.copy{display:none}
+      .layout{display:block;margin:0;max-width:none;padding:0}
+      section{box-shadow:none;break-inside:avoid;border-color:#bbb}
+      footer{margin-top:20px}
+    }
+  </style>
+</head>
+<body>
+<header>
+  <div class="hero">
+    <div class="eyebrow">Narzędzia dla programistów</div>
+    <h1>Laboratorium 2<br>Polecenia powłoki Bash</h1>
+    <p class="lead">
+      Operacje na plikach i katalogach, ścieżki względne i bezwzględne, przekierowania strumieni,
+      zmienne środowiskowe, kody zakończenia oraz pierwsze konstrukcje iteracyjne.
+    </p>
+    <div class="meta">
+      <span class="pill">czas: 2 × 45 min</span>
+      <span class="pill">tryb: praca indywidualna</span>
+      <span class="pill">środowisko: Bash</span>
+      <span class="pill">poziom: podstawowy</span>
+    </div>
+  </div>
+</header>
+
+<div class="layout">
+  <nav aria-label="Spis treści">
+    <strong>Spis treści</strong>
+    <a href="#cele">1. Cele i rezultaty</a>
+    <a href="#przygotowanie">2. Przygotowanie</a>
+    <a href="#system-plikow">3. System plików</a>
+    <a href="#nazwy">4. Nietypowe nazwy</a>
+    <a href="#operacje">5. Operacje na plikach</a>
+    <a href="#strumienie">6. Przekierowania</a>
+    <a href="#status">7. Kody zakończenia</a>
+    <a href="#petle">8. Pętle</a>
+    <a href="#ambitne">9. Zadania dodatkowe</a>
+    <a href="#lista">10. Lista kontrolna</a>
+    <a href="#zakonczenie">11. Zakończenie</a>
+  </nav>
+
+  <main>
+    <section id="cele">
+      <h2>1. Cele i rezultaty uczenia się</h2>
+      <p class="edu"><strong>Znaczenie praktyczne.</strong> Powłoka tekstowa pozwala wykonywać operacje szybciej, dokładniej i w sposób powtarzalny. Te same polecenia, które dziś są wpisywane ręcznie, w kolejnych laboratoriach staną się elementami skryptów automatyzujących pracę programisty.</p>
+      <div class="grid">
+        <div class="card">
+          <h3>System plików</h3>
+          <p>Tworzenie, kopiowanie, przenoszenie i usuwanie plików oraz katalogów.</p>
+          <p class="note">Student powinien rozumieć różnicę między plikiem, katalogiem, ścieżką i nazwą oraz przewidywać skutek wykonania polecenia.</p>
+        </div>
+        <div class="card">
+          <h3>Ścieżki</h3>
+          <p>Rozróżnianie ścieżek względnych i bezwzględnych oraz świadome używanie katalogu bieżącego.</p>
+          <p class="note">Ścieżka bezwzględna wskazuje obiekt niezależnie od bieżącego położenia, a względna jest interpretowana względem katalogu zwracanego przez <code>pwd</code>.</p>
+        </div>
+        <div class="card">
+          <h3>Strumienie</h3>
+          <p>Przekierowywanie standardowego wejścia i wyjścia oraz budowanie potoków.</p>
+          <p class="note">Strumienie umożliwiają łączenie prostych programów w większe procesy przetwarzania danych bez tworzenia plików pośrednich.</p>
+        </div>
+        <div class="card">
+          <h3>Automatyzacja</h3>
+          <p>Stosowanie kodów zakończenia oraz prostych pętli <code>for</code> i <code>while</code>.</p>
+          <p class="note">Kod zakończenia pozwala skryptowi ustalić, czy poprzednia operacja zakończyła się powodzeniem, natomiast pętla eliminuje wielokrotne ręczne wpisywanie tych samych instrukcji.</p>
+        </div>
+      </div>
+      <div class="callout">
+        Każde polecenie należy rozumieć przed wykonaniem. W szczególności dotyczy to poleceń <code>rm</code>, <code>mv</code> i przekierowania <code>&gt;</code>.
+      </div>
+    </section>
+
+    <section id="przygotowanie">
+      <h2>2. Przygotowanie środowiska</h2>
+      <p>Uruchom Terminal i sprawdź, czy aktywna jest powłoka Bash.</p>
+      <p class="edu"><strong>Dlaczego zaczynamy od identyfikacji środowiska?</strong> Polecenia i ich opcje mogą nieznacznie różnić się między systemami oraz wersjami narzędzi. Ustalenie używanej powłoki, jej wersji i bieżącego katalogu ogranicza liczbę błędów wynikających z odmiennych konfiguracji stanowisk.</p>
+      <pre><button class="copy">Kopiuj</button><code>echo "$SHELL"
+bash --version
+pwd</code></pre>
+      <p>Następnie zapoznaj się z dokumentacją podstawowych poleceń:</p>
+      <p class="edu"><strong>Nawyk pracy z dokumentacją.</strong> Programista nie powinien zapamiętywać wszystkich opcji poleceń. Istotniejsza jest umiejętność szybkiego odnalezienia składni, znaczenia argumentów i przykładów użycia w dokumentacji systemowej.</p>
+      <pre><button class="copy">Kopiuj</button><code>man ls
+man cd
+man mkdir
+man rmdir
+man cat
+man cp
+man mv
+man rm</code></pre>
+      <div class="callout warn">
+        Strony podręcznika zamyka się klawiszem <code>q</code>. W środowiskach bez pełnej dokumentacji można użyć opcji <code>--help</code>.
+      </div>
+    </section>
+
+    <section id="system-plikow">
+      <h2>3. Struktura katalogów i podstawowe operacje</h2>
+      <p>Utwórz w katalogu domowym poniższą strukturę:</p>
+      <p class="edu"><strong>Model hierarchiczny.</strong> System plików ma strukturę drzewa. Katalog domowy użytkownika jest jednym z jego węzłów, a kolejne katalogi tworzą gałęzie. Zrozumienie tej zależności jest konieczne do poprawnego budowania ścieżek i świadomego przemieszczania się poleceniem <code>cd</code>.</p>
+      <div class="tree">~
+├── kat1
+│   └── kat2
+│       ├── kat3
+│       └── kat4
+└── kat5
+    ├── kat6
+    │   └── kat7
+    └── kat8</div>
+
+      <h3>3.1. Przykładowa sekwencja</h3>
+      <p class="edu"><strong>Polecenie <code>mkdir -p</code>.</strong> Opcja <code>-p</code> tworzy również brakujące katalogi nadrzędne i nie zgłasza błędu, gdy katalog już istnieje. Dzięki temu sekwencja jest bardziej odporna na częściowe wcześniejsze wykonanie.</p>
+      <pre><button class="copy">Kopiuj</button><code>cd "$HOME"
+mkdir -p kat1/kat2/kat3
+mkdir -p kat1/kat2/kat4
+mkdir -p kat5/kat6/kat7
+mkdir -p kat5/kat8</code></pre>
+
+      <h3>3.2. Utworzenie pliku przez standardowe wejście</h3>
+      <p class="edu"><strong>Standardowe wejście.</strong> Program <code>cat</code> bez nazwy pliku czyta dane z klawiatury. Operator <code>&gt;</code> przekierowuje standardowe wyjście programu do pliku. W efekcie tekst wpisywany w terminalu jest zapisywany w <code>tresc.txt</code>.</p>
+      <pre><button class="copy">Kopiuj</button><code>cd "$HOME/kat1/kat2/kat4"
+cat &gt; tresc.txt
+To jest przykładowy tekst.
+Ctrl+D</code></pre>
+      <p>Po naciśnięciu <code>Ctrl+D</code> strumień wejściowy zostaje zakończony.</p>
+      <p class="edu"><strong>EOF.</strong> Skrót <code>Ctrl+D</code> nie zapisuje pliku bezpośrednio, lecz przekazuje znacznik końca danych, określany jako EOF. Program <code>cat</code> kończy wtedy pracę, a powłoka zamyka plik docelowy.</p>
+
+      <h3>3.3. Zapis daty i połączenie plików</h3>
+      <p class="edu"><strong>Kompozycja poleceń.</strong> Polecenie <code>date</code> generuje dane, <code>cat</code> scala kolejne strumienie, a przekierowanie zapisuje rezultat. Jest to przykład filozofii systemów uniksowych: małe narzędzia realizują pojedyncze zadania i mogą być dowolnie łączone.</p>
+      <pre><button class="copy">Kopiuj</button><code>date &gt; "$HOME/kat1/godzina.txt"
+cat "$HOME/kat1/godzina.txt"
+cat "$HOME/kat1/kat2/kat4/tresc.txt" "$HOME/kat1/godzina.txt" \
+  &gt; "$HOME/kat5/kat6/zlaczone.txt"</code></pre>
+    </section>
+
+    <section id="nazwy">
+      <h2>4. Pliki o nietypowych nazwach</h2>
+      <p>W katalogu <code>kat8</code> utwórz pliki zawierające znaki specjalne w nazwach.</p>
+      <p class="edu"><strong>Dwa etapy interpretacji.</strong> Najpierw Bash analizuje wpisany tekst, rozwija zmienne i wzorce, a dopiero później uruchamia program. Dlatego znak będący legalnym elementem nazwy pliku może jednocześnie mieć specjalne znaczenie dla powłoki. Cytowanie pozwala przekazać go programowi dosłownie.</p>
+      <pre><button class="copy">Kopiuj</button><code>cd "$HOME/kat5/kat8"
+touch "ze spacja"
+touch "z:dwukropkiem"
+touch "ze;średnikiem"
+touch 'wy!krzyk!nik'
+touch -- "-zminusem"
+touch ".niewidoczny"
+touch "za?py?ta?nie"
+touch "gwiaz*dka"
+touch $'z\nenterem'</code></pre>
+
+      <table>
+        <thead><tr><th>Problem</th><th>Bezpieczna technika</th></tr></thead>
+        <tbody>
+          <tr><td>Spacja w nazwie</td><td>Użyj cudzysłowów: <code>"ze spacja"</code></td></tr>
+          <tr><td>Średnik, wykrzyknik, gwiazdka</td><td>Użyj apostrofów lub cudzysłowów</td></tr>
+          <tr><td>Minus na początku</td><td>Użyj <code>--</code> przed nazwą pliku</td></tr>
+          <tr><td>Kropka na początku</td><td>Plik staje się ukryty dla zwykłego <code>ls</code></td></tr>
+          <tr><td>Znak nowej linii</td><td>Użyj składni ANSI-C: <code>$'...'</code></td></tr>
+        </tbody>
+      </table>
+
+      <div class="callout warn">
+        Powłoka interpretuje część znaków specjalnie. Cudzysłowy nie są ozdobą — chronią nazwę przed interpretacją przez Bash.
+      </div>
+    </section>
+
+    <section id="operacje">
+      <h2>5. Operacje na plikach</h2>
+      <p class="edu"><strong>Operacje nie są równoważne.</strong> Kopiowanie tworzy drugi obiekt, przenoszenie zmienia położenie lub nazwę istniejącego obiektu, a usuwanie likwiduje odwołanie do danych. W terminalu wiele z tych operacji nie wymaga dodatkowego potwierdzenia.</p>
+      <h3>5.1. Przenoszenie i zmiana nazw</h3>
+      <p class="edu"><strong>Jedno polecenie, dwa zastosowania.</strong> <code>mv</code> zmienia nazwę, gdy źródło i cel znajdują się w tym samym katalogu, albo przenosi obiekt, gdy cel wskazuje inny katalog. O znaczeniu polecenia decydują więc argumenty.</p>
+      <pre><button class="copy">Kopiuj</button><code>mv "ze spacja" "$HOME/kat1/kat2/kat3/"
+mv "z:dwukropkiem" "$HOME/kat1/kat2/kat3/"
+mv "ze;średnikiem" "ze_srednikiem"</code></pre>
+
+      <h3>5.2. Usuwanie plików</h3>
+      <p class="edu"><strong>Brak kosza.</strong> Polecenie <code>rm</code> usuwa wskazany wpis bez korzystania z mechanizmu kosza znanego z interfejsu graficznego. Przed zatwierdzeniem należy sprawdzić cytowanie nazw i rozwinięcie użytych wzorców.</p>
+      <pre><button class="copy">Kopiuj</button><code>rm 'wy!krzyk!nik'
+rm "za?py?ta?nie"</code></pre>
+
+      <h3>5.3. Kopiowanie z użyciem wzorców</h3>
+      <p class="edu"><strong>Globbing.</strong> Wzorzec <code>*</code> jest rozwijany przez powłokę do listy pasujących nazw jeszcze przed uruchomieniem <code>cp</code>. Program kopiujący otrzymuje już zestaw konkretnych argumentów.</p>
+      <pre><button class="copy">Kopiuj</button><code>cp ./* "$HOME/kat5/kat6/kat7/"</code></pre>
+      <div class="callout">
+        Wzorzec <code>*</code> domyślnie nie obejmuje plików ukrytych, czyli nazw rozpoczynających się od kropki.
+      </div>
+    </section>
+
+    <section id="strumienie">
+      <h2>6. Przekierowania i potoki</h2>
+      <p class="edu"><strong>Abstrakcja strumieni.</strong> Typowy proces ma standardowe wejście, standardowe wyjście i standardowy strumień błędów. Dzięki temu program nie musi wiedzieć, czy dane pochodzą z klawiatury, pliku czy innego procesu.</p>
+      <table>
+        <thead><tr><th>Operator</th><th>Znaczenie</th><th>Przykład</th></tr></thead>
+        <tbody>
+          <tr><td><code>&gt;</code></td><td>Zapis wyjścia do pliku, z nadpisaniem</td><td><code>date &gt; wynik.txt</code></td></tr>
+          <tr><td><code>&gt;&gt;</code></td><td>Dopisanie wyjścia na końcu pliku</td><td><code>date &gt;&gt; log.txt</code></td></tr>
+          <tr><td><code>&lt;</code></td><td>Przekierowanie wejścia z pliku</td><td><code>sort &lt; dane.txt</code></td></tr>
+          <tr><td><code>|</code></td><td>Potok między procesami</td><td><code>ls | less</code></td></tr>
+        </tbody>
+      </table>
+
+      <h3>6.1. Zmienna PATH</h3>
+      <p class="edu"><strong>Wyszukiwanie programów.</strong> Gdy wpisujesz nazwę bez ścieżki, Bash przeszukuje katalogi zapisane w zmiennej <code>PATH</code> od lewej do prawej. Pierwszy znaleziony plik wykonywalny zostaje uruchomiony.</p>
+      <pre><button class="copy">Kopiuj</button><code>echo "$PATH"
+echo "$PATH" | sed -e 's/:/\n/g'</code></pre>
+
+      <h3>6.2. Zapis bieżącej ścieżki</h3>
+      <p class="edu"><strong>Rejestrowanie stanu.</strong> Zapis wyniku <code>pwd</code> do pliku jest prostym przykładem utrwalania informacji o środowisku. Analogicznie skrypty zapisują logi, wyniki pomiarów i informacje diagnostyczne.</p>
+      <pre><button class="copy">Kopiuj</button><code>pwd &gt; "$HOME/kat1/kat2/polozenie"</code></pre>
+
+      <h3>6.3. Stos katalogów</h3>
+      <p class="edu"><strong><code>pushd</code> i <code>popd</code>.</strong> Polecenia te zarządzają stosem katalogów. Pozwalają tymczasowo zmienić położenie, a następnie wrócić do poprzedniego miejsca bez zapamiętywania pełnej ścieżki.</p>
+      <pre><button class="copy">Kopiuj</button><code>pushd "$HOME"
+ls -R &gt; "$HOME/kat5/kat6/kat7/lista.txt"
+ls -1R "$HOME"/kat? &gt;&gt; "$HOME/kat5/kat6/kat7/lista.txt"
+less "$HOME/kat5/kat6/kat7/lista.txt"
+popd</code></pre>
+
+      <h3>6.4. Zmienne środowiskowe z paginacją</h3>
+      <p class="edu"><strong>Potok.</strong> Operator <code>|</code> łączy standardowe wyjście pierwszego procesu ze standardowym wejściem drugiego. <code>less</code> nie otrzymuje nazwy pliku, lecz dane produkowane na bieżąco przez <code>set</code>.</p>
+      <pre><button class="copy">Kopiuj</button><code>set | less</code></pre>
+
+      <h3>6.5. Wczytanie dwóch liczb i obliczenie sumy</h3>
+      <p class="edu"><strong>Zmienne i ekspansja arytmetyczna.</strong> <code>read</code> zapisuje tekst wejściowy w zmiennych, a konstrukcja <code>$((...))</code> wymusza interpretację arytmetyczną. Bez niej powłoka traktowałaby wartości głównie jako tekst.</p>
+      <pre><button class="copy">Kopiuj</button><code>read -r a
+read -r b
+echo $((a + b))</code></pre>
+    </section>
+
+    <section id="status">
+      <h2>7. Kody zakończenia</h2>
+      <p>Każde polecenie zwraca kod zakończenia. Wartość <code>0</code> oznacza sukces, a wartość różna od zera — błąd lub stan wyjątkowy.</p>
+      <p class="edu"><strong>Znaczenie dla automatyzacji.</strong> Człowiek może przeczytać komunikat o błędzie, lecz skrypt potrzebuje jednoznacznej wartości liczbowej. Kod zakończenia jest podstawowym mechanizmem podejmowania decyzji w skryptach i systemach CI/CD.</p>
+      <pre><button class="copy">Kopiuj</button><code>rm nieistniejacy_plik
+echo $?
+
+touch test.txt
+rm test.txt
+echo $?
+
+cp "$HOME/kat1/godzina.txt" "$HOME/kat5/"
+echo $?</code></pre>
+      <div class="callout">
+        Zmienna <code>$?</code> odnosi się wyłącznie do wyniku ostatnio wykonanego polecenia. Należy ją sprawdzać od razu.
+      </div>
+    </section>
+
+    <section id="petle">
+      <h2>8. Pierwsze konstrukcje iteracyjne</h2>
+      <p class="edu"><strong>Cel iteracji.</strong> Pętla opisuje czynność wykonywaną wielokrotnie. Zmiana liczby elementów lub warunku nie wymaga kopiowania kolejnych poleceń, co ogranicza błędy i ułatwia późniejsze modyfikacje.</p>
+      <h3>8.1. Pętla <code>for</code></h3>
+      <p class="edu"><strong>Iteracja po zbiorze wartości.</strong> W każdej iteracji zmienna <code>imie</code> przyjmuje kolejny element listy. Taki model jest szczególnie użyteczny przy przetwarzaniu wielu plików.</p>
+      <pre><button class="copy">Kopiuj</button><code>for imie in Ania Tomek Kasia Mateusz
+do
+  echo "Witaj $imie na zajęciach!"
+done</code></pre>
+
+      <h3>8.2. Pętla <code>while</code></h3>
+      <p class="edu"><strong>Iteracja zależna od warunku.</strong> Pętla działa tak długo, jak test zwraca sukces. Programista musi zadbać o zmianę zmiennej sterującej; w przeciwnym razie powstanie pętla nieskończona.</p>
+      <pre><button class="copy">Kopiuj</button><code>i=1
+&gt; "$HOME/kat5/wiersze.txt"
+
+while [ "$i" -le 10 ]
+do
+  echo "Nie lubię poniedziałków" &gt;&gt; "$HOME/kat5/wiersze.txt"
+  i=$((i + 1))
+done</code></pre>
+
+      <h3>8.3. Kontrola wyniku</h3>
+      <p class="edu"><strong>Weryfikacja zamiast założenia.</strong> Poprawne wykonanie polecenia nie powinno być przyjmowane bez sprawdzenia. <code>wc -l</code> dostarcza mierzalnego kryterium: plik powinien zawierać dokładnie dziesięć wierszy.</p>
+      <pre><button class="copy">Kopiuj</button><code>wc -l "$HOME/kat5/wiersze.txt"
+cat "$HOME/kat5/wiersze.txt"</code></pre>
+    </section>
+
+    <section id="ambitne">
+      <h2>9. Zadania dodatkowe</h2>
+      <p class="edu"><strong>Rozszerzenie kompetencji.</strong> Zadania dodatkowe łączą wcześniej poznane elementy: zmienne, pętle, generowanie nazw, opóźnienia czasowe i przetwarzanie wielu plików. Ich celem jest przejście od pojedynczych poleceń do krótkich procedur automatyzujących.</p>
+      <h3>9.1. Pliki tworzone co trzy sekundy</h3>
+      <p>Utwórz pięć plików zawierających aktualną datę i numer indeksu.</p>
+      <p class="edu"><strong>Znacznik czasu.</strong> Polecenie <code>sleep</code> rozdziela kolejne iteracje w czasie. Dzięki temu zawartość plików dokumentuje różne momenty wykonania, podobnie jak w systemach rejestrujących pomiary lub zdarzenia.</p>
+      <pre><button class="copy">Kopiuj</button><code>indeks=12345
+
+for i in 1 2 3 4 5
+do
+  date &gt; "plik_${indeks}_${i}.txt"
+  sleep 3
+done</code></pre>
+
+      <h3>9.2. Wyświetlanie nazw i zawartości plików tekstowych</h3>
+      <p class="edu"><strong>Przetwarzanie wsadowe.</strong> Pętla wykonuje ten sam zestaw operacji dla każdego pasującego pliku. Nagłówek z nazwą pliku zachowuje kontekst i ułatwia interpretację połączonego wyjścia.</p>
+      <pre><button class="copy">Kopiuj</button><code>for plik in ./*.txt
+do
+  echo "===== $plik ====="
+  cat "$plik"
+done</code></pre>
+
+      <div class="callout warn">
+        Sprawdź zachowanie pętli, gdy w katalogu nie ma żadnego pliku pasującego do wzorca <code>*.txt</code>.
+      </div>
+    </section>
+
+    <section id="lista">
+      <h2>10. Lista kontrolna laboratorium</h2>
+      <p class="edu"><strong>Samokontrola.</strong> Zaznaczenie zadania powinno oznaczać nie tylko jego mechaniczne wykonanie, ale również zdolność wyjaśnienia użytego polecenia, jego argumentów i przewidywanego skutku.</p>
+      <div class="progress" aria-label="Postęp"><span id="bar"></span></div>
+      <div class="progress-text" id="progressText">0 z 12 zadań wykonanych</div>
+
+      <div class="task"><input type="checkbox" id="t1"><label for="t1">Zapoznałem się z dokumentacją podstawowych poleceń.</label></div>
+      <div class="task"><input type="checkbox" id="t2"><label for="t2">Utworzyłem wymaganą strukturę katalogów.</label></div>
+      <div class="task"><input type="checkbox" id="t3"><label for="t3">Utworzyłem plik za pomocą <code>cat</code> i standardowego wejścia.</label></div>
+      <div class="task"><input type="checkbox" id="t4"><label for="t4">Zapisałem datę do pliku i połączyłem zawartość dwóch plików.</label></div>
+      <div class="task"><input type="checkbox" id="t5"><label for="t5">Utworzyłem pliki o nietypowych nazwach.</label></div>
+      <div class="task"><input type="checkbox" id="t6"><label for="t6">Przeniosłem, zmieniłem nazwy i usunąłem wskazane pliki.</label></div>
+      <div class="task"><input type="checkbox" id="t7"><label for="t7">Użyłem wzorców powłoki do kopiowania plików.</label></div>
+      <div class="task"><input type="checkbox" id="t8"><label for="t8">Przećwiczyłem operatory <code>&gt;</code>, <code>&gt;&gt;</code> i <code>|</code>.</label></div>
+      <div class="task"><input type="checkbox" id="t9"><label for="t9">Wyświetliłem zawartość zmiennej <code>PATH</code> po jednej ścieżce w wierszu.</label></div>
+      <div class="task"><input type="checkbox" id="t10"><label for="t10">Sprawdziłem kody zakończenia poprawnych i błędnych poleceń.</label></div>
+      <div class="task"><input type="checkbox" id="t11"><label for="t11">Napisałem pętlę <code>for</code>.</label></div>
+      <div class="task"><input type="checkbox" id="t12"><label for="t12">Napisałem pętlę <code>while</code>.</label></div>
+      <p class="note">Stan listy jest zapisywany lokalnie w przeglądarce.</p>
+    </section>
+
+    <section id="zakonczenie">
+      <h2>11. Zakończenie ćwiczenia</h2>
+      <p>Po sprawdzeniu wyników przez prowadzącego usuń utworzone katalogi:</p>
+      <p class="edu"><strong>Higiena środowiska.</strong> Czyszczenie stanowiska jest częścią poprawnego procesu pracy. Zapobiega pozostawieniu danych prywatnych, konfliktom z pracą kolejnej osoby i błędnym wynikom podczas ponownego wykonywania instrukcji.</p>
+      <pre><button class="copy">Kopiuj</button><code>rm -rf "$HOME/kat1" "$HOME/kat5"</code></pre>
+      <div class="callout danger">
+        Przed wykonaniem polecenia sprawdź dokładnie ścieżki. Nie używaj wariantu bez nazw katalogów.
+      </div>
+      <p>Na końcu zakończ sesję:</p>
+      <p class="edu"><strong>Zamykanie powłoki.</strong> Polecenie <code>exit</code> kończy bieżącą sesję powłoki i zwraca sterowanie do procesu nadrzędnego, którym zwykle jest aplikacja Terminal.</p>
+      <pre><button class="copy">Kopiuj</button><code>exit</code></pre>
+    </section>
+  </main>
+</div>
+
+<footer>
+  <p><strong>Narzędzia dla programistów — Laboratorium 2.</strong> Opracowanie dydaktyczne: dr inż. Mateusz Pomianek.</p>
+  <p>Materiał przygotowano jako samodzielny plik HTML przeznaczony do publikacji w GitHub Pages.</p>
+</footer>
+
+<script>
+  document.querySelectorAll('.copy').forEach(btn => {
+    btn.addEventListener('click', async () => {
+      const code = btn.parentElement.querySelector('code').innerText;
+      await navigator.clipboard.writeText(code);
+      const old = btn.textContent;
+      btn.textContent = 'Skopiowano';
+      setTimeout(() => btn.textContent = old, 1200);
+    });
+  });
+
+  const tasks = [...document.querySelectorAll('.task input')];
+  const bar = document.getElementById('bar');
+  const text = document.getElementById('progressText');
+
+  function updateProgress(){
+    const done = tasks.filter(t => t.checked).length;
+    bar.style.width = (done / tasks.length * 100) + '%';
+    text.textContent = `${done} z ${tasks.length} zadań wykonanych`;
+    localStorage.setItem('ndp-lab2-progress', JSON.stringify(tasks.map(t => t.checked)));
+  }
+
+  try{
+    const saved = JSON.parse(localStorage.getItem('ndp-lab2-progress') || '[]');
+    tasks.forEach((t,i) => t.checked = Boolean(saved[i]));
+  }catch(e){}
+
+  tasks.forEach(t => t.addEventListener('change', updateProgress));
+  updateProgress();
+</script>
+</body>
+</html>

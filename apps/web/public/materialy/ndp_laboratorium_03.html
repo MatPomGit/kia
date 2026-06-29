@@ -1,0 +1,589 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Laboratorium 3 z przedmiotu Narzędzia dla programistów: skrypty powłoki Bash, instrukcje warunkowe, zmienne, pętle, case, sygnały i podstawy edytora VIM.">
+  <title>Narzędzia dla programistów — Laboratorium 3</title>
+  <style>
+    :root{
+      --bg:#f4f7f9;
+      --paper:#ffffff;
+      --ink:#17212b;
+      --muted:#5d6975;
+      --line:#d9e1e7;
+      --accent:#155e75;
+      --accent-2:#0f766e;
+      --soft:#e8f3f6;
+      --warn:#fff7df;
+      --danger:#fff0f0;
+      --ok:#eaf7ef;
+      --code:#101820;
+      --shadow:0 8px 30px rgba(20,35,50,.08);
+      --radius:14px;
+      --max:1180px;
+    }
+    *{box-sizing:border-box}
+    html{scroll-behavior:smooth}
+    body{
+      margin:0;
+      font-family:Inter,ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
+      color:var(--ink);
+      background:var(--bg);
+      line-height:1.62;
+    }
+    a{color:var(--accent);text-decoration:none}
+    a:hover{text-decoration:underline}
+    header{
+      background:linear-gradient(135deg,#0b3444 0%,#155e75 58%,#0f766e 100%);
+      color:#fff;
+      padding:56px 24px 44px;
+    }
+    .hero{max-width:var(--max);margin:auto}
+    .eyebrow{
+      font-size:.82rem;
+      letter-spacing:.12em;
+      text-transform:uppercase;
+      opacity:.82;
+      font-weight:700;
+    }
+    h1{font-size:clamp(2rem,5vw,4.2rem);line-height:1.05;margin:.35rem 0 1rem}
+    .lead{max-width:880px;font-size:1.14rem;opacity:.94}
+    .meta{display:flex;flex-wrap:wrap;gap:10px;margin-top:24px}
+    .pill{
+      border:1px solid rgba(255,255,255,.35);
+      background:rgba(255,255,255,.09);
+      padding:7px 11px;border-radius:999px;font-size:.92rem
+    }
+    .layout{
+      max-width:var(--max);
+      margin:26px auto 70px;
+      padding:0 20px;
+      display:grid;
+      grid-template-columns:280px minmax(0,1fr);
+      gap:26px;
+    }
+    nav{
+      position:sticky;top:18px;align-self:start;
+      background:var(--paper);border:1px solid var(--line);
+      border-radius:var(--radius);padding:16px;box-shadow:var(--shadow)
+    }
+    nav strong{display:block;margin:2px 0 10px}
+    nav a{
+      display:block;padding:8px 10px;border-radius:9px;color:var(--ink);
+      font-size:.94rem
+    }
+    nav a:hover{background:var(--soft);text-decoration:none}
+    main{min-width:0}
+    section{
+      background:var(--paper);border:1px solid var(--line);
+      border-radius:var(--radius);padding:30px;margin-bottom:22px;box-shadow:var(--shadow)
+    }
+    h2{font-size:1.65rem;margin:0 0 18px;line-height:1.25}
+    h3{font-size:1.15rem;margin:28px 0 10px}
+    p{margin:.6rem 0}
+    ul,ol{padding-left:1.3rem}
+    li{margin:.38rem 0}
+    .grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px}
+    .card{
+      border:1px solid var(--line);border-radius:12px;padding:18px;background:#fbfcfd
+    }
+    .card h3{margin:0 0 8px}
+    .callout{
+      padding:16px 18px;border-left:5px solid var(--accent);
+      background:var(--soft);border-radius:10px;margin:16px 0
+    }
+    .callout.warn{background:var(--warn);border-left-color:#b7791f}
+    .callout.danger{background:var(--danger);border-left-color:#b42318}
+    .callout.ok{background:var(--ok);border-left-color:#15803d}
+    .edu{
+      margin:14px 0 18px;padding:15px 17px;border:1px solid #cfe0e7;
+      border-radius:11px;background:#f7fbfc;color:#283843
+    }
+    .edu strong{color:var(--accent)}
+    code{
+      font-family:"SFMono-Regular",Consolas,"Liberation Mono",monospace;
+      font-size:.94em
+    }
+    pre{
+      margin:12px 0;background:var(--code);color:#eaf2f8;
+      border-radius:12px;padding:17px 48px 17px 17px;overflow:auto;position:relative
+    }
+    .copy{
+      position:absolute;right:10px;top:10px;border:0;border-radius:7px;
+      padding:6px 9px;cursor:pointer;background:#253744;color:white;font-size:.78rem
+    }
+    table{width:100%;border-collapse:collapse;margin:14px 0;font-size:.95rem}
+    th,td{border-bottom:1px solid var(--line);padding:11px 10px;text-align:left;vertical-align:top}
+    th{background:#f2f6f8}
+    .task{
+      display:flex;gap:12px;align-items:flex-start;padding:12px 0;border-bottom:1px solid var(--line)
+    }
+    .task:last-child{border-bottom:0}
+    .task input{margin-top:5px;transform:scale(1.2)}
+    .task label{cursor:pointer}
+    .task small{display:block;color:var(--muted)}
+    .progress{
+      height:12px;background:#e7edf1;border-radius:999px;overflow:hidden;margin:10px 0 4px
+    }
+    .progress > span{
+      display:block;height:100%;width:0;background:linear-gradient(90deg,var(--accent),var(--accent-2));
+      transition:width .25s ease
+    }
+    .progress-text{font-size:.9rem;color:var(--muted)}
+    .note{font-size:.9rem;color:var(--muted)}
+    footer{
+      max-width:var(--max);margin:0 auto 40px;padding:0 20px;color:var(--muted);font-size:.9rem
+    }
+    @media (max-width:900px){
+      .layout{grid-template-columns:1fr}
+      nav{position:static}
+      .grid{grid-template-columns:1fr}
+    }
+    @media print{
+      body{background:#fff}
+      header{background:#fff;color:#000;padding:20px 0}
+      nav,.copy{display:none}
+      .layout{display:block;margin:0;max-width:none;padding:0}
+      section{box-shadow:none;break-inside:avoid;border-color:#bbb}
+      footer{margin-top:20px}
+    }
+  </style>
+</head>
+<body>
+<header>
+  <div class="hero">
+    <div class="eyebrow">Narzędzia dla programistów</div>
+    <h1>Laboratorium 3<br>Skrypty powłoki Bash</h1>
+    <p class="lead">
+      Tworzenie skryptów, nadawanie uprawnień, instrukcje warunkowe, zmienne, pętle,
+      instrukcja <code>case</code>, obsługa sygnałów oraz podstawy pracy w edytorze VIM.
+    </p>
+    <div class="meta">
+      <span class="pill">czas: 2 × 45 min</span>
+      <span class="pill">tryb: praca indywidualna</span>
+      <span class="pill">środowisko: Bash + VIM</span>
+      <span class="pill">poziom: podstawowy / średni</span>
+    </div>
+  </div>
+</header>
+
+<div class="layout">
+  <nav aria-label="Spis treści">
+    <strong>Spis treści</strong>
+    <a href="#cele">1. Cele</a>
+    <a href="#skrypt">2. Pierwszy skrypt</a>
+    <a href="#warunki">3. Instrukcje warunkowe</a>
+    <a href="#zmienne">4. Zmienne i dane wejściowe</a>
+    <a href="#petle">5. Pętle</a>
+    <a href="#case">6. Instrukcja case</a>
+    <a href="#vim">7. Edytor VIM</a>
+    <a href="#ambitne">8. Zadania dodatkowe</a>
+    <a href="#lista">9. Lista kontrolna</a>
+    <a href="#zakonczenie">10. Zakończenie</a>
+  </nav>
+
+  <main>
+    <section id="cele">
+      <h2>1. Cele i rezultaty uczenia się</h2>
+      <p class="edu"><strong>Znaczenie praktyczne.</strong> Skrypt powłoki jest zapisanym programem automatyzującym sekwencję poleceń. Pozwala odtworzyć proces w identyczny sposób, ogranicza liczbę błędów ręcznych i stanowi podstawę wielu zadań administracyjnych, testowych oraz wdrożeniowych.</p>
+      <div class="grid">
+        <div class="card">
+          <h3>Tworzenie skryptów</h3>
+          <p>Budowa pliku wykonywalnego, shebang, uprawnienia i uruchamianie.</p>
+        </div>
+        <div class="card">
+          <h3>Sterowanie przepływem</h3>
+          <p>Instrukcje <code>if</code>, <code>case</code>, <code>for</code> i <code>while</code>.</p>
+        </div>
+        <div class="card">
+          <h3>Walidacja danych</h3>
+          <p>Sprawdzanie liczby argumentów, istnienia plików i poprawności wejścia.</p>
+        </div>
+        <div class="card">
+          <h3>Edycja tekstowa</h3>
+          <p>Podstawowa praca w VIM: poruszanie, wyszukiwanie, edycja i zapis.</p>
+        </div>
+      </div>
+    </section>
+
+    <section id="skrypt">
+      <h2>2. Tworzenie pierwszego skryptu</h2>
+      <p class="edu"><strong>Skrypt jako plik programu.</strong> Bash czyta plik linia po linii i wykonuje zawarte w nim polecenia. Pierwsza linia wskazuje interpreter, który ma przetworzyć plik.</p>
+
+      <h3>2.1. Utworzenie katalogu i pliku</h3>
+      <pre><button class="copy">Kopiuj</button><code>mkdir -p "$HOME/cw3"
+cd "$HOME/cw3"
+cat &gt; pkt1 &lt;&lt;'EOF'
+#!/bin/bash
+echo "Test polecenia skryptu"
+EOF</code></pre>
+
+      <h3>2.2. Dlaczego samo <code>pkt1</code> nie działa?</h3>
+      <p>Powłoka szuka programów w katalogach zapisanych w zmiennej <code>PATH</code>. Bieżący katalog zwykle nie jest tam uwzględniony.</p>
+      <pre><button class="copy">Kopiuj</button><code>pkt1
+./pkt1</code></pre>
+
+      <div class="callout warn">
+        Zapis <code>./pkt1</code> oznacza: uruchom plik <code>pkt1</code> znajdujący się w bieżącym katalogu.
+      </div>
+
+      <h3>2.3. Nadanie uprawnień</h3>
+      <pre><button class="copy">Kopiuj</button><code>chmod 744 pkt1
+./pkt1</code></pre>
+      <p class="edu"><strong>Model uprawnień.</strong> Wartość <code>744</code> oznacza: właściciel może czytać, zapisywać i wykonywać plik, natomiast pozostali użytkownicy mogą go tylko czytać. W praktyce skrypt prywatny często otrzymuje uprawnienia <code>700</code> lub <code>744</code>.</p>
+    </section>
+
+    <section id="warunki">
+      <h2>3. Instrukcje warunkowe</h2>
+      <p class="edu"><strong>Decyzje w skrypcie.</strong> Instrukcja <code>if</code> pozwala wykonać różne operacje zależnie od wyniku testu. W Bash sukces testu jest reprezentowany kodem zakończenia <code>0</code>.</p>
+
+      <h3>3.1. Sprawdzanie istnienia pliku</h3>
+      <pre><button class="copy">Kopiuj</button><code>cat &gt; pkt2 &lt;&lt;'EOF'
+#!/bin/bash
+
+if [ -f pkt1 ]; then
+  echo "Plik pkt1 istnieje."
+fi
+
+if [ ! -f dane1 ]; then
+  echo "Linia tekstu w danych1" &gt; dane1
+fi
+EOF
+
+chmod 744 pkt2
+./pkt2</code></pre>
+
+      <table>
+        <thead><tr><th>Test</th><th>Znaczenie</th></tr></thead>
+        <tbody>
+          <tr><td><code>-f plik</code></td><td>Istnieje zwykły plik</td></tr>
+          <tr><td><code>-d katalog</code></td><td>Istnieje katalog</td></tr>
+          <tr><td><code>-e obiekt</code></td><td>Istnieje dowolny obiekt systemu plików</td></tr>
+          <tr><td><code>! warunek</code></td><td>Negacja warunku</td></tr>
+        </tbody>
+      </table>
+    </section>
+
+    <section id="zmienne">
+      <h2>4. Zmienne i dane wejściowe</h2>
+      <p class="edu"><strong>Zmienne w Bash.</strong> Zmienne nie wymagają deklaracji typu. Domyślnie przechowują tekst, dlatego porównania liczbowe i tekstowe korzystają z różnych operatorów.</p>
+
+      <h3>4.1. Porównanie dwóch liczb</h3>
+      <pre><button class="copy">Kopiuj</button><code>cat &gt; pkt3 &lt;&lt;'EOF'
+#!/bin/bash
+
+read -r -p "Podaj pierwszą liczbę: " a
+read -r -p "Podaj drugą liczbę: " b
+
+if [ -z "$a" ] || [ -z "$b" ]; then
+  echo "Błąd: należy podać dwie wartości." >&2
+  exit 1
+fi
+
+if [ "$a" -gt "$b" ]; then
+  echo "$a jest większe od $b"
+elif [ "$a" -lt "$b" ]; then
+  echo "$b jest większe od $a"
+else
+  echo "Wartości są równe."
+fi
+EOF
+
+chmod 744 pkt3
+./pkt3</code></pre>
+
+      <table>
+        <thead><tr><th>Operator</th><th>Znaczenie</th></tr></thead>
+        <tbody>
+          <tr><td><code>-gt</code></td><td>większe niż</td></tr>
+          <tr><td><code>-lt</code></td><td>mniejsze niż</td></tr>
+          <tr><td><code>-eq</code></td><td>równe</td></tr>
+          <tr><td><code>-ne</code></td><td>różne</td></tr>
+          <tr><td><code>-z</code></td><td>łańcuch pusty</td></tr>
+        </tbody>
+      </table>
+
+      <div class="callout">
+        Przekierowanie <code>&gt;&amp;2</code> wysyła komunikat do standardowego strumienia błędów. Dzięki temu komunikaty diagnostyczne można oddzielić od zwykłego wyniku programu.
+      </div>
+    </section>
+
+    <section id="petle">
+      <h2>5. Polecenia iteracyjne</h2>
+      <p class="edu"><strong>Automatyzacja powtarzalnych operacji.</strong> Pętla wykonuje blok poleceń wielokrotnie. <code>for</code> iteruje po zbiorze elementów, a <code>while</code> działa dopóki warunek pozostaje prawdziwy.</p>
+
+      <h3>5.1. Rozpoznawanie typów obiektów</h3>
+      <pre><button class="copy">Kopiuj</button><code>cat &gt; pkt4 &lt;&lt;'EOF'
+#!/bin/bash
+
+for obiekt in *
+do
+  if [ -d "$obiekt" ]; then
+    echo "$obiekt — katalog"
+  elif [ -f "$obiekt" ]; then
+    echo "$obiekt — plik"
+  elif [ -e "$obiekt" ]; then
+    echo "$obiekt — inny obiekt"
+  fi
+done
+EOF
+
+chmod 744 pkt4
+./pkt4</code></pre>
+
+      <h3>5.2. Wielokrotne wyświetlenie tekstu</h3>
+      <pre><button class="copy">Kopiuj</button><code>cat &gt; pkt5 &lt;&lt;'EOF'
+#!/bin/bash
+
+read -r -p "Podaj tekst: " tekst
+read -r -p "Podaj liczbę powtórzeń: " n
+
+i=1
+while [ "$i" -le "$n" ]
+do
+  echo "$tekst"
+  i=$((i + 1))
+done
+EOF
+
+chmod 744 pkt5
+./pkt5</code></pre>
+
+      <div class="callout warn">
+        Każda pętla <code>while</code> musi zawierać mechanizm zmiany warunku. Brak aktualizacji zmiennej sterującej prowadzi do pętli nieskończonej.
+      </div>
+    </section>
+
+    <section id="case">
+      <h2>6. Instrukcja <code>case</code> i pętla sterująca</h2>
+      <p class="edu"><strong>Wielowariantowy wybór.</strong> <code>case</code> jest czytelniejsza od wielu zagnieżdżonych instrukcji <code>if</code>, gdy program reaguje na skończony zestaw poleceń użytkownika.</p>
+
+      <pre><button class="copy">Kopiuj</button><code>cat &gt; pkt6 &lt;&lt;'EOF'
+#!/bin/bash
+
+while true
+do
+  read -r -p "Polecenie [a/b/c/x/liczba]: " wybor
+
+  case "$wybor" in
+    a)
+      : &gt; daty.log
+      echo "Utworzono pusty plik daty.log"
+      ;;
+    b)
+      date &gt;&gt; daty.log
+      echo "Dodano datę."
+      ;;
+    c)
+      if [ -f daty.log ]; then
+        cat daty.log
+      else
+        echo "Plik daty.log nie istnieje."
+      fi
+      ;;
+    x)
+      echo "Koniec programu."
+      break
+      ;;
+    ''|*[!0-9]*)
+      echo "Nieprawidłowe polecenie."
+      ;;
+    *)
+      i=1
+      while [ "$i" -le "$wybor" ]
+      do
+        date
+        i=$((i + 1))
+      done
+      ;;
+  esac
+done
+EOF
+
+chmod 744 pkt6
+./pkt6</code></pre>
+
+      <p class="edu"><strong>Wzorce w <code>case</code>.</strong> Wariant <code>''|*[!0-9]*</code> przechwytuje pusty tekst lub wartość zawierającą znaki inne niż cyfry. Pozostały wariant może być traktowany jako liczba dodatnia.</p>
+    </section>
+
+    <section id="vim">
+      <h2>7. Podstawy edytora VIM</h2>
+      <p class="edu"><strong>Edytor modalny.</strong> VIM rozdziela tryb wydawania poleceń od trybu wpisywania tekstu. Ta koncepcja wymaga przyzwyczajenia, ale umożliwia bardzo szybką edycję bez odrywania rąk od klawiatury.</p>
+
+      <table>
+        <thead><tr><th>Polecenie</th><th>Działanie</th></tr></thead>
+        <tbody>
+          <tr><td><code>h j k l</code></td><td>ruch w lewo, dół, górę i prawo</td></tr>
+          <tr><td><code>gg</code></td><td>początek pliku</td></tr>
+          <tr><td><code>G</code></td><td>koniec pliku</td></tr>
+          <tr><td><code>/tekst</code></td><td>wyszukiwanie tekstu</td></tr>
+          <tr><td><code>n</code> / <code>N</code></td><td>następne / poprzednie wystąpienie</td></tr>
+          <tr><td><code>dd</code></td><td>usuń bieżący wiersz</td></tr>
+          <tr><td><code>p</code></td><td>wklej po bieżącej pozycji</td></tr>
+          <tr><td><code>i</code></td><td>tryb wstawiania przed kursorem</td></tr>
+          <tr><td><code>o</code></td><td>nowy wiersz poniżej i tryb wstawiania</td></tr>
+          <tr><td><code>Esc</code></td><td>powrót do trybu poleceń</td></tr>
+          <tr><td><code>:w</code></td><td>zapis</td></tr>
+          <tr><td><code>:q</code></td><td>wyjście</td></tr>
+          <tr><td><code>:wq</code></td><td>zapis i wyjście</td></tr>
+          <tr><td><code>:!polecenie</code></td><td>uruchomienie polecenia powłoki</td></tr>
+        </tbody>
+      </table>
+
+      <h3>7.1. Ćwiczenie</h3>
+      <ol>
+        <li>Otwórz skrypt: <code>vi pkt3</code>.</li>
+        <li>Przejdź do początku pliku poleceniem <code>gg</code>.</li>
+        <li>Wyszukaj <code>read</code> przez <code>/read</code>.</li>
+        <li>Dodaj przed pierwszym <code>read</code> ustawienie <code>IFS=,</code>.</li>
+        <li>Zapisz plik i uruchom go wewnątrz VIM: <code>:!./pkt3</code>.</li>
+        <li>Podaj wartości oddzielone przecinkiem i przeanalizuj wynik.</li>
+      </ol>
+    </section>
+
+    <section id="ambitne">
+      <h2>8. Zadania dodatkowe</h2>
+
+      <h3>8.1. Monitorowanie CPU i pamięci podręcznej w macOS</h3>
+      <p class="edu"><strong>Cel zadania.</strong> Skrypt ma cyklicznie pobierać dane z narzędzi systemowych, przetwarzać je i reagować na sygnał przerwania. Jest to model typowy dla prostych agentów monitorujących.</p>
+      <pre><button class="copy">Kopiuj</button><code>#!/bin/bash
+
+trap 'echo; echo "Monitorowanie zakończono: $(date)"; exit 0' INT
+
+while true
+do
+  cpu=$(top -l 1 | awk '/CPU usage/ {print 100 - $7}')
+
+  file_backed=$(vm_stat | awk '/File-backed pages/ {gsub("\\.","",$3); print $3}')
+  purgeable=$(vm_stat | awk '/Pages purgeable/ {gsub("\\.","",$3); print $3}')
+
+  cached_gb=$(awk -v a="$file_backed" -v b="$purgeable" \
+    'BEGIN {printf "%.2f", ((a+b)*4096)/(1024^3)}')
+
+  printf "%s | CPU: %s%% | Cache: %s GB\n" \
+    "$(date '+%Y-%m-%d %H:%M:%S')" "$cpu" "$cached_gb"
+
+  sleep 1
+done</code></pre>
+
+      <h3>8.2. Symulacja zajmowania przestrzeni dyskowej</h3>
+      <p class="edu"><strong>Uwaga terminologiczna.</strong> Tworzenie plików nie jest równoważne bezpośredniej alokacji pamięci RAM. Zadanie symuluje zajmowanie zasobu przez pliki tymczasowe, a wpływ na pamięć zależy od mechanizmu buforowania systemu operacyjnego.</p>
+      <pre><button class="copy">Kopiuj</button><code>#!/bin/bash
+
+block_size=100
+target_mb="${1:-0}"
+tmp_dir=$(mktemp -d)
+
+cleanup() {
+  echo
+  echo "Usuwanie plików tymczasowych..."
+  rm -rf "$tmp_dir"
+  echo "Zwolniono zasoby."
+  exit 0
+}
+
+trap cleanup INT TERM
+
+if ! [[ "$target_mb" =~ ^[0-9]+$ ]] || [ "$target_mb" -le 0 ]; then
+  echo "Użycie: $0 LICZBA_MB" >&2
+  exit 1
+fi
+
+allocated=0
+index=1
+
+while [ "$allocated" -lt "$target_mb" ]
+do
+  remaining=$((target_mb - allocated))
+
+  if [ "$remaining" -lt "$block_size" ]; then
+    current="$remaining"
+  else
+    current="$block_size"
+  fi
+
+  mkfile -n "${current}m" "$tmp_dir/blok_${index}.bin"
+  allocated=$((allocated + current))
+
+  echo "Przydzielono: ${allocated}/${target_mb} MB"
+  index=$((index + 1))
+done
+
+echo "Zakończ program przez Ctrl+C, aby usunąć pliki."
+while true
+do
+  sleep 1
+done</code></pre>
+    </section>
+
+    <section id="lista">
+      <h2>9. Lista kontrolna laboratorium</h2>
+      <p class="edu"><strong>Kryterium wykonania.</strong> Zaznaczenie zadania powinno oznaczać, że potrafisz nie tylko uruchomić skrypt, lecz także wyjaśnić jego strukturę, warunki, zmienne i możliwe sytuacje błędne.</p>
+      <div class="progress" aria-label="Postęp"><span id="bar"></span></div>
+      <div class="progress-text" id="progressText">0 z 11 zadań wykonanych</div>
+
+      <div class="task"><input type="checkbox" id="t1"><label for="t1">Utworzyłem skrypt z linią shebang.</label></div>
+      <div class="task"><input type="checkbox" id="t2"><label for="t2">Wyjaśniłem różnicę między <code>pkt1</code> i <code>./pkt1</code>.</label></div>
+      <div class="task"><input type="checkbox" id="t3"><label for="t3">Nadałem skryptowi uprawnienia wykonania.</label></div>
+      <div class="task"><input type="checkbox" id="t4"><label for="t4">Zastosowałem instrukcję <code>if</code> do sprawdzenia pliku.</label></div>
+      <div class="task"><input type="checkbox" id="t5"><label for="t5">Napisałem skrypt porównujący dwie liczby.</label></div>
+      <div class="task"><input type="checkbox" id="t6"><label for="t6">Dodałem walidację brakujących danych.</label></div>
+      <div class="task"><input type="checkbox" id="t7"><label for="t7">Napisałem pętlę <code>for</code>.</label></div>
+      <div class="task"><input type="checkbox" id="t8"><label for="t8">Napisałem pętlę <code>while</code>.</label></div>
+      <div class="task"><input type="checkbox" id="t9"><label for="t9">Zastosowałem instrukcję <code>case</code>.</label></div>
+      <div class="task"><input type="checkbox" id="t10"><label for="t10">Przećwiczyłem podstawowe polecenia VIM.</label></div>
+      <div class="task"><input type="checkbox" id="t11"><label for="t11">Potrafię wyjaśnić działanie <code>trap</code> i obsługę sygnału <code>Ctrl+C</code>.</label></div>
+      <p class="note">Stan listy jest zapisywany lokalnie w przeglądarce.</p>
+    </section>
+
+    <section id="zakonczenie">
+      <h2>10. Zakończenie ćwiczenia</h2>
+      <p class="edu"><strong>Higiena środowiska.</strong> Usunięcie katalogu ćwiczeniowego zapobiega pozostawieniu danych i zapewnia powtarzalny stan stanowiska dla kolejnej grupy.</p>
+      <pre><button class="copy">Kopiuj</button><code>rm -rf "$HOME/cw3"</code></pre>
+      <div class="callout danger">
+        Przed wykonaniem polecenia sprawdź ścieżkę. Nie używaj <code>rm -rf</code> bez jednoznacznie wskazanego katalogu.
+      </div>
+      <p>Na końcu zakończ sesję poleceniem:</p>
+      <pre><button class="copy">Kopiuj</button><code>exit</code></pre>
+    </section>
+  </main>
+</div>
+
+<footer>
+  <p><strong>Narzędzia dla programistów — Laboratorium 3.</strong> Opracowanie dydaktyczne: dr inż. Mateusz Pomianek.</p>
+  <p>Materiał przygotowano jako samodzielny plik HTML do publikacji w GitHub Pages.</p>
+</footer>
+
+<script>
+  document.querySelectorAll('.copy').forEach(btn => {
+    btn.addEventListener('click', async () => {
+      const code = btn.parentElement.querySelector('code').innerText;
+      await navigator.clipboard.writeText(code);
+      const old = btn.textContent;
+      btn.textContent = 'Skopiowano';
+      setTimeout(() => btn.textContent = old, 1200);
+    });
+  });
+
+  const tasks = [...document.querySelectorAll('.task input')];
+  const bar = document.getElementById('bar');
+  const text = document.getElementById('progressText');
+
+  function updateProgress(){
+    const done = tasks.filter(t => t.checked).length;
+    bar.style.width = (done / tasks.length * 100) + '%';
+    text.textContent = `${done} z ${tasks.length} zadań wykonanych`;
+    localStorage.setItem('ndp-lab3-progress', JSON.stringify(tasks.map(t => t.checked)));
+  }
+
+  try{
+    const saved = JSON.parse(localStorage.getItem('ndp-lab3-progress') || '[]');
+    tasks.forEach((t,i) => t.checked = Boolean(saved[i]));
+  }catch(e){}
+
+  tasks.forEach(t => t.addEventListener('change', updateProgress));
+  updateProgress();
+</script>
+</body>
+</html>
