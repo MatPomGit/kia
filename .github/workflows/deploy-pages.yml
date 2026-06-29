@@ -57,8 +57,11 @@ jobs:
         env:
           AUTH_API_URL: ${{ secrets.AUTH_API_URL }}
         run: |
-          test -n "$AUTH_API_URL" || { echo "Brak sekretu AUTH_API_URL"; exit 1; }
-          echo "NEXT_PUBLIC_AUTH_API_URL=$AUTH_API_URL" >> "$GITHUB_ENV"
+          if [ -n "$AUTH_API_URL" ]; then
+            echo "NEXT_PUBLIC_AUTH_API_URL=$AUTH_API_URL" >> "$GITHUB_ENV"
+          else
+            echo "AUTH_API_URL is not set; the static frontend will use demo instructor login."
+          fi
 
       - name: Security audit
         run: npm audit --audit-level=moderate
