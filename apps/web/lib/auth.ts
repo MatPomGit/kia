@@ -1,13 +1,27 @@
 const SESSION_KEY = "ndp_tests_instructor_token";
+const DEMO_SESSION_TOKEN = "demo-instructor-session";
 
-function apiUrl(path: string): string {
-  const base = process.env.NEXT_PUBLIC_AUTH_API_URL?.replace(/\/$/, "");
-  if (!base) throw new Error("Brak konfiguracji NEXT_PUBLIC_AUTH_API_URL.");
+function authApiBase(): string | null {
+  return process.env.NEXT_PUBLIC_AUTH_API_URL?.replace(/\/$/, "") || null;
+}
+
+function apiUrl(base: string, path: string): string {
   return `${base}${path}`;
 }
 
 export async function loginInstructor(login: string, password: string): Promise<void> {
-  const response = await fetch(apiUrl("/auth/login"), {
+  const base = authApiBase();
+
+  if (!base) {
+    if (login === "demo" && password === "demo12345") {
+      sessionStorage.setItem(SESSION_KEY, DEMO_SESSION_TOKEN);
+      return;
+    }
+
+    throw new Error("Tryb demo: użyj loginu demo i hasła demo12345.");
+  }
+
+  const response = await fetch(apiUrl(base, "/auth/login"), {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ login, password }),
@@ -30,7 +44,10 @@ export async function verifyInstructorSession(): Promise<boolean> {
   if (!token) return false;
 
   try {
-    const response = await fetch(apiUrl("/auth/verify"), {
+    const base = authApiBase();
+    if (!base) return token === DEMO_SESSION_TOKEN;
+
+    const response = await fetch(apiUrl(base, "/auth/verify"), {
       headers: { Authorization: `Bearer ${token}` },
     });
     if (!response.ok) sessionStorage.removeItem(SESSION_KEY);
