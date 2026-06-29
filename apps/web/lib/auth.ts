@@ -13,12 +13,12 @@ export async function loginInstructor(login: string, password: string): Promise<
   const base = authApiBase();
 
   if (!base) {
-    if (login === "demo" && password === "demo12345") {
+    if (login === DEMO_USERNAME && password === DEMO_PASSWORD) {
       sessionStorage.setItem(SESSION_KEY, DEMO_SESSION_TOKEN);
       return;
     }
 
-    throw new Error("Tryb demo: użyj loginu demo i hasła demo12345.");
+    throw new Error(`Tryb demo: użyj loginu ${DEMO_USERNAME} i hasła ${DEMO_PASSWORD}.`);
   }
 
   const response = await fetch(apiUrl(base, "/auth/login"), {
