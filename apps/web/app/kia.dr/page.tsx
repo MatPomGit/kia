@@ -1,16 +1,40 @@
+"use client";
+
 import Link from "next/link";
+import { useEffect, useState } from "react";
 import { Header } from "@/components/Header";
 import { Footer } from "@/components/Footer";
+import { logoutInstructor, verifyInstructorSession } from "@/lib/auth";
 import { ExportPanel } from "../prowadzacy/ExportPanel";
 
 export default function InstructorPage() {
+  const [authorized, setAuthorized] = useState<boolean | null>(null);
+
+  useEffect(() => {
+    verifyInstructorSession().then((valid) => {
+      if (!valid) {
+        window.location.replace(`${process.env.NEXT_PUBLIC_BASE_PATH ?? ""}/`);
+        return;
+      }
+      setAuthorized(true);
+    });
+  }, []);
+
+  function logout() {
+    logoutInstructor();
+  }
+
+  if (authorized !== true) {
+    return <main className="auth-check" aria-live="polite">Weryfikowanie sesji prowadzącego...</main>;
+  }
+
   return (
     <div className="shell">
       <Header active="instructor" title="kia.dr" />
       <main id="main" className="container">
         <div className="section-head">
           <div><span className="eyebrow">Panel prowadzącego</span><h1>kia.dr</h1><p>Zestawienie prób, wyników i podstawowej telemetrii.</p></div>
-          <Link className="btn secondary" href="/">Wyloguj</Link>
+          <Link className="btn secondary" href="/" onClick={logout}>Wyloguj</Link>
         </div>
         <ExportPanel />
         <section className="metric-grid">

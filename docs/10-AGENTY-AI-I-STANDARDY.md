@@ -2,11 +2,11 @@
 
 ## Cel
 
-Dokument opisuje sposób używania agentów AI w repozytorium `ndp_tests`. Nadrzędne i obowiązujące reguły znajdują się w pliku [`../agents.md`](../agents.md).
+Dokument opisuje sposób używania agentów AI w repozytorium `ndp_tests`. Nadrzędne i obowiązujące reguły znajdują się w pliku [`AGENTS.md`](AGENTS.md).
 
 ## Procedura przed rozpoczęciem zadania
 
-1. Przeczytaj `agents.md`.
+1. Przeczytaj `docs/AGENTS.md`.
 2. Zidentyfikuj najmniejszy zestaw plików wymagających zmiany.
 3. Sprawdź istniejące komponenty, funkcje i tokeny wizualne.
 4. Nie dodawaj zależności, dopóki nie wykażesz, że rozwiązanie bez zależności jest niewystarczające.

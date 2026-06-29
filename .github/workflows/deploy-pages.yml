@@ -19,17 +19,17 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
         with:
           fetch-depth: 0
 
       - name: Configure Pages
-        uses: actions/configure-pages@v5
+        uses: actions/configure-pages@v6
 
       - name: Setup Node.js
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v6
         with:
-          node-version: 22
+          node-version: 24
           cache: npm
 
       - name: Install dependencies
@@ -46,6 +46,13 @@ jobs:
             echo "NEXT_PUBLIC_BASE_PATH=/$REPOSITORY_NAME" >> "$GITHUB_ENV"
           fi
 
+      - name: Configure authentication API
+        env:
+          AUTH_API_URL: ${{ secrets.AUTH_API_URL }}
+        run: |
+          test -n "$AUTH_API_URL" || { echo "Brak sekretu AUTH_API_URL"; exit 1; }
+          echo "NEXT_PUBLIC_AUTH_API_URL=$AUTH_API_URL" >> "$GITHUB_ENV"
+
       - name: Security audit
         run: npm audit --audit-level=moderate
 
@@ -53,7 +60,7 @@ jobs:
         run: npm run build:pages
 
       - name: Upload Pages artifact
-        uses: actions/upload-pages-artifact@v3
+        uses: actions/upload-pages-artifact@v5
         with:
           path: apps/web/out
 

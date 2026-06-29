@@ -1,141 +1,89 @@
-# Wytyczne dla agentów AI
+# Wytyczne dla agentów AI pracujących nad systemem `ndp_tests`
 
-## 1. Cel dokumentu
+## 1. Zakres
 
-Ten plik określa obowiązkowe zasady pracy agentów AI generujących, analizujących lub modyfikujących kod, dokumentację, testy, dane demonstracyjne i konfigurację systemu.
-
-Agent ma wykonywać wyłącznie zmiany potrzebne do realizacji zadania. Nie wolno rozbudowywać architektury bez uzasadnionej potrzeby biznesowej, technicznej lub bezpieczeństwa.
+Dokument określa obowiązkowe zasady dla agentów AI modyfikujących kod, dokumentację, testy, konfigurację i dane demonstracyjne systemu `ndp_tests`.
 
 ## 2. Zasady nadrzędne
 
-- Stosuj KISS: wybieraj najprostsze rozwiązanie, które spełnia wymagania i jest możliwe do utrzymania.
-- Nie stosuj nadmiernego inżynierowania. Nie dodawaj nowych warstw, abstrakcji, bibliotek, usług, wzorców projektowych ani narzędzi, jeżeli istniejący kod pozwala rozwiązać problem prościej.
-- Nie twórz funkcjonalności „na przyszłość”, jeżeli nie wynika ona z aktualnego wymagania.
-- Zachowuj spójność z istniejącą strukturą repozytorium.
-- Najpierw wykorzystuj istniejące komponenty i funkcje. Nowy komponent twórz dopiero wtedy, gdy realnie ogranicza duplikację lub poprawia czytelność.
-- Każda zmiana musi być możliwa do wyjaśnienia jednym zdaniem: jaki problem rozwiązuje i dlaczego jest potrzebna.
-- Nie używaj emotikon w interfejsie, kodzie, komunikatach, komentarzach, logach ani dokumentacji.
+- Stosuj KISS. Wybieraj najprostsze rozwiązanie spełniające wymaganie.
+- Nie stosuj nadmiernego inżynierowania. Nie dodawaj warstw, bibliotek, usług lub abstrakcji bez rzeczywistej potrzeby.
+- Nie twórz funkcji „na przyszłość”, jeżeli nie wynikają z bieżącego zadania.
+- Najpierw modyfikuj istniejący komponent lub funkcję; nowy moduł twórz dopiero, gdy wyraźnie poprawia czytelność albo usuwa duplikację.
+- Nie używaj emotikon w interfejsie, kodzie, logach, komentarzach ani dokumentacji.
 
 ## 3. Poprawne pisanie kodu
 
 Agent ma obowiązek:
 
-- pisać kod czytelny, jednoznaczny i zgodny z konwencjami TypeScript, React, Next.js i NestJS,
-- używać trybu ścisłego TypeScript i unikać `any`, chyba że jego użycie jest wyraźnie uzasadnione,
-- nadawać funkcjom, zmiennym, typom i komponentom nazwy opisujące ich odpowiedzialność,
-- utrzymywać funkcje małe i skupione na jednej odpowiedzialności,
+- stosować ścisłe typowanie TypeScript i unikać `any`,
+- używać jednoznacznych nazw i małych funkcji o pojedynczej odpowiedzialności,
 - usuwać kod martwy, nieużywane importy i nieaktualne komentarze,
-- obsługiwać błędy w miejscu, w którym mogą zostać sensownie zakomunikowane użytkownikowi albo zalogowane,
-- nie umieszczać sekretów, tokenów, haseł ani kluczy API w kodzie źródłowym,
-- walidować dane pochodzące od użytkownika i z API,
-- nie logować danych osobowych, odpowiedzi studentów ani pełnych identyfikatorów bez uzasadnienia,
-- zachować kompatybilność statycznego eksportu frontendu z GitHub Pages,
-- uruchomić kontrolę typów i kompilację po zmianach.
+- walidować dane wejściowe i obsługiwać błędy,
+- nigdy nie umieszczać sekretów, haseł, tokenów ani kluczy API w repozytorium lub statycznym bundlu,
+- nie logować danych osobowych ani odpowiedzi studentów bez uzasadnienia,
+- zachować zgodność frontendu z eksportem statycznym GitHub Pages,
+- uruchomić kompilację i audyt zależności po zmianach.
 
-## 4. Architektura i zakres zmian
+## 4. Architektura
 
-Przed zmianą agent powinien sprawdzić, czy problem można rozwiązać przez:
+Kolejność preferowanych rozwiązań:
 
-1. modyfikację istniejącego komponentu,
-2. dodanie małej funkcji pomocniczej,
-3. dodanie danych konfiguracyjnych,
-4. dopiero na końcu - utworzenie nowego modułu lub zależności.
+1. modyfikacja istniejącego kodu,
+2. mała funkcja pomocnicza,
+3. dane konfiguracyjne,
+4. nowy moduł lub zależność tylko przy uzasadnionej potrzebie.
 
-Zabronione bez wyraźnego wymagania:
-
-- wprowadzanie mikroserwisów,
-- dodawanie globalnego menedżera stanu,
-- tworzenie własnego systemu komponentów,
-- dodawanie złożonych wzorców fabryk, repozytoriów, mediatorów lub kontenerów DI po stronie frontendu,
-- dodawanie bibliotek tylko dla pojedynczej prostej operacji,
-- przebudowa całego projektu podczas realizacji lokalnej poprawki.
+Bez wyraźnego wymagania zabronione są mikroserwisy, globalny menedżer stanu, własny framework komponentów i złożone wzorce projektowe.
 
 ## 5. Dostępność
 
-Każdy nowy lub zmodyfikowany element interfejsu musi spełniać co najmniej WCAG 2.2 na poziomie AA w zakresie możliwym dla danej funkcji.
+Każdy element interfejsu ma spełniać WCAG 2.2 AA w zakresie właściwym dla funkcji:
 
-Agent ma obowiązek:
+- semantyczny HTML,
+- pełna obsługa klawiaturą,
+- widoczny fokus,
+- poprawne etykiety formularzy,
+- znaczenie niezależne od samego koloru,
+- odpowiedni kontrast,
+- czytelność przy powiększeniu 200%,
+- komunikaty błędów dostępne dla technologii asystujących.
 
-- używać semantycznego HTML,
-- zapewnić pełną obsługę klawiaturą,
-- zachować widoczny styl fokusu,
-- zapewnić poprawne etykiety pól i przycisków,
-- nie opierać znaczenia wyłącznie na kolorze,
-- zachować odpowiedni kontrast tekstu i elementów interaktywnych,
-- stosować komunikaty zrozumiałe bez kontekstu wizualnego,
-- używać `aria-*` tylko wtedy, gdy semantyczny HTML nie wystarcza,
-- sprawdzić interfejs przy powiększeniu do 200%,
-- nie wprowadzać automatycznych animacji utrudniających odbiór treści.
+## 6. System wizualny
 
-## 6. System wizualny i wartości konfiguracyjne
-
-Kolory, typografia, promienie zaokrągleń, cienie i inne stałe wizualne nie mogą być wpisywane bezpośrednio w komponentach ani w głównym arkuszu stylów.
-
-Obowiązujące źródło wartości:
+Kolory, typografia, rozmiary, odstępy, promienie i cienie muszą pochodzić z:
 
 `apps/web/config/design-tokens.css`
 
-Agent ma obowiązek:
+Nie wolno wpisywać stałych wizualnych bezpośrednio w komponentach. Nowy token dodawaj tylko wtedy, gdy nie istnieje odpowiednik.
 
-- używać istniejących zmiennych CSS,
-- dodawać nowy token wyłącznie wtedy, gdy nie istnieje odpowiednik,
-- nie duplikować wartości kolorów i rozmiarów,
-- nie stosować stylów inline dla stałych wizualnych,
-- dopuszczać style inline tylko dla wartości dynamicznych, np. procentowego postępu,
-- opisać nowy token komentarzem, jeżeli jego przeznaczenie nie jest oczywiste.
+## 7. Uwierzytelnianie i sekrety
 
-## 7. Dane, eksporty i prywatność
+- GitHub Pages jest hostingiem statycznym i nie udostępnia sekretów w czasie działania strony.
+- Nie wolno porównywać loginu lub hasła w kodzie przeglądarki ani osadzać skrótu hasła w bundlu.
+- Formularz logowania ma wywoływać zabezpieczone API.
+- Login, skrót hasła, sól i klucz podpisujący token muszą znajdować się wyłącznie w zmiennych środowiskowych backendu.
+- GitHub Actions może przekazać do frontendu jedynie publiczny adres API. Zmienna `NEXT_PUBLIC_AUTH_API_URL` nie jest sekretem po kompilacji.
+- Panel `kia.dr` musi weryfikować token sesji przez API przed wyświetleniem danych.
 
-- Dane demonstracyjne muszą być jednoznacznie oznaczone jako demonstracyjne.
-- Eksport CSV powinien używać UTF-8 i separatora zgodnego z dokumentacją projektu.
-- Eksport PDF musi zawierać datę wygenerowania, zakres danych i informację, czy dane są demonstracyjne.
-- Pliki z wynikami nie mogą być publikowane w repozytorium produkcyjnym z rzeczywistymi danymi studentów.
-- Identyfikatory studentów w interfejsie demonstracyjnym powinny być maskowane.
-- Telemetria nie może być prezentowana jako automatyczny dowód niesamodzielności.
+## 8. Dane, eksporty i prywatność
 
-## 8. Dokumentacja
+- Dane demonstracyjne oznaczaj jednoznacznie.
+- Nie publikuj rzeczywistych wyników studentów w repozytorium ani katalogu `public`.
+- Identyfikatory demonstracyjne maskuj.
+- Telemetrii nie przedstawiaj jako automatycznego dowodu niesamodzielności.
 
-Każda zmiana wpływająca na uruchomienie, strukturę danych, publikację, bezpieczeństwo lub sposób użycia musi aktualizować odpowiedni plik w `docs/`.
+## 9. Dokumentacja
 
-Dokumentacja powinna:
+Zmiana dotycząca uruchomienia, bezpieczeństwa, danych, publikacji lub architektury musi aktualizować odpowiedni plik w `docs/`. Dokumentacja ma opisywać stan faktyczny i zawierać konkretne komendy.
 
-- opisywać stan faktyczny,
-- zawierać konkretne komendy i ścieżki,
-- rozróżniać prototyp statyczny od wersji produkcyjnej,
-- nie obiecywać funkcji, których kod nie implementuje,
-- nie używać emotikon.
-
-## 9. Testy i kryteria zakończenia
-
-Zmiana jest zakończona dopiero wtedy, gdy:
-
-- projekt przechodzi kontrolę TypeScript,
-- frontend buduje się w trybie statycznego eksportu,
-- nie ma nowych błędów konsoli,
-- podstawowa nawigacja działa z klawiatury,
-- nowe przyciski i odnośniki mają jednoznaczne nazwy,
-- dokumentacja odpowiada implementacji,
-- w kodzie nie pozostawiono tymczasowych danych lub komentarzy bez oznaczenia.
-
-Minimalne komendy kontrolne:
+## 10. Kryteria zakończenia
 
 ```bash
-npm install
+npm ci
+npm audit --audit-level=moderate
 npm run build:pages
-```
-
-Dla zmian backendowych dodatkowo:
-
-```bash
 npm run build -w apps/api
 ```
 
-## 10. Format odpowiedzi agenta
-
-Po zakończeniu pracy agent powinien podać:
-
-- listę zmienionych plików,
-- krótkie uzasadnienie zmian,
-- wynik kompilacji lub testów,
-- znane ograniczenia,
-- informacje o wymaganych dalszych krokach tylko wtedy, gdy są rzeczywiście konieczne.
+Zmiana jest zakończona, gdy komendy przechodzą, dokumentacja odpowiada implementacji, a w kodzie nie ma sekretów ani nieoznaczonych rozwiązań tymczasowych.

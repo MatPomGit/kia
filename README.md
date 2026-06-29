@@ -4,7 +4,7 @@ Statyczny demonstrator platformy dydaktycznej przygotowany w Next.js, React i Ty
 
 ## Standardy projektu
 
-- obowiązkowe wytyczne dla agentów AI: [`agents.md`](agents.md),
+- obowiązkowe wytyczne dla agentów AI: [`docs/AGENTS.md`](docs/AGENTS.md),
 - system wizualny: [`apps/web/config/design-tokens.css`](apps/web/config/design-tokens.css),
 - eksporty panelu prowadzącego: [`docs/11-EKSPORTY-PANELU-PROWADZACEGO.md`](docs/11-EKSPORTY-PANELU-PROWADZACEGO.md),
 - zasady dostępności i jakości: [`docs/07-TESTY-I-JAKOSC.md`](docs/07-TESTY-I-JAKOSC.md).
@@ -15,14 +15,14 @@ Statyczny demonstrator platformy dydaktycznej przygotowany w Next.js, React i Ty
 - pulpit studenta z listą wejściówek i materiałów,
 - demonstracyjny quiz z licznikiem czasu i nawigacją,
 - widok wyników,
-- demonstracyjny panel prowadzącego,
+- panel prowadzącego z uwierzytelnianiem przez zewnętrzne API,
 - instrukcję dla studenta i prowadzącego,
 - opcjonalny szkielet backendu NestJS,
 - dokumentację wdrożeniową w folderze `docs/`.
 
-## Ważne ograniczenie
+## Uwierzytelnianie
 
-GitHub Pages hostuje wyłącznie pliki statyczne. Aktualna wersja nie zapewnia bezpiecznego logowania, centralnego zapisu wyników, serwerowego timera ani ochrony klucza odpowiedzi. Nadaje się do demonstracji interfejsu, materiałów kursowych i prototypowania. Do rzeczywistych wejściówek należy podłączyć zewnętrzne API i bazę danych.
+GitHub Pages hostuje statyczny frontend, natomiast dane logowania są weryfikowane przez zewnętrzne API NestJS. Sekret `AUTH_API_URL` konfiguruje adres usługi podczas wdrożenia. Login, skrót hasła, sól oraz klucz podpisujący token pozostają wyłącznie w zmiennych środowiskowych backendu. Szczegóły: `docs/14-UWIERZYTELNIANIE.md`.
 
 ## Szybki start lokalny
 
@@ -57,6 +57,7 @@ Workflow automatycznie wykrywa nazwę repozytorium, ustawia `basePath`, buduje s
 - `docs/07-TESTY-I-JAKOSC.md` — testy funkcjonalne, dostępność i kryteria odbioru.
 - `docs/08-BEZPIECZENSTWO-I-RODO.md` — wymagania bezpieczeństwa i ochrony danych.
 - `docs/09-PLAN-WDROZENIA.md` — kolejne etapy prac i definicje zakończenia.
+- `docs/14-UWIERZYTELNIANIE.md` — konfiguracja bezpiecznego logowania i sekretów.
 - `docs/CHECKLIST.md` — skrócona lista kontrolna przed publikacją.
 
 ## Najważniejsze komendy
@@ -76,3 +77,15 @@ Wynik eksportu statycznego znajduje się w `apps/web/out`.
 - `/kia.dr/` — panel prowadzącego.
 
 Wersja aplikacji jest generowana automatycznie jako `1.0.<liczba-commitów>+<hash>`. Workflow wdrożeniowy wykonuje również `npm audit --audit-level=moderate` i przerywa publikację po wykryciu podatności co najmniej umiarkowanej.
+
+## Pierwsze uruchomienie GitHub Pages
+
+Przed pierwszym wdrożeniem ustaw w repozytorium:
+
+```text
+Settings -> Pages -> Build and deployment -> Source: GitHub Actions
+```
+
+Bez tego krok `actions/configure-pages` zwróci błąd `Get Pages site failed: Not Found`.
+
+Szczegółowa diagnostyka znajduje się w `docs/15-NAPRAWA-GITHUB-PAGES.md`.
