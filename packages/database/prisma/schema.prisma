@@ -1,0 +1,178 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum UserRole {
+  STUDENT
+  INSTRUCTOR
+  ADMIN
+}
+
+enum AttemptStatus {
+  CREATED
+  IN_PROGRESS
+  FINISHED
+  EXPIRED
+  CANCELLED
+}
+
+model User {
+  id          String       @id @default(cuid())
+  externalSub String?      @unique
+  email       String       @unique
+  role        UserRole
+  createdAt   DateTime     @default(now())
+  student     Student?
+  enrollments Enrollment[]
+  attempts    Attempt[]
+  courses     Course[]     @relation("CourseOwner")
+}
+
+model Student {
+  userId           String @id
+  user             User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  studentIndexHmac String @unique
+  studentIndexEnc  String?
+}
+
+model Course {
+  id          String       @id @default(cuid())
+  code        String
+  name        String
+  term        String
+  ownerId     String
+  owner       User         @relation("CourseOwner", fields: [ownerId], references: [id])
+  enrollments Enrollment[]
+  materials   Material[]
+  quizzes     Quiz[]
+
+  @@unique([code, term])
+}
+
+model Enrollment {
+  courseId  String
+  studentId String
+  groupCode String?
+  active    Boolean @default(true)
+  course    Course  @relation(fields: [courseId], references: [id], onDelete: Cascade)
+  student   User    @relation(fields: [studentId], references: [id], onDelete: Cascade)
+
+  @@id([courseId, studentId])
+}
+
+model Material {
+  id          String    @id @default(cuid())
+  courseId    String
+  title       String
+  kind        String
+  objectKey   String
+  publishedAt DateTime?
+  course      Course    @relation(fields: [courseId], references: [id], onDelete: Cascade)
+}
+
+model Quiz {
+  id            String     @id @default(cuid())
+  courseId      String
+  title         String
+  durationSec   Int
+  availableFrom DateTime
+  availableTo   DateTime
+  maxAttempts   Int        @default(1)
+  course        Course     @relation(fields: [courseId], references: [id], onDelete: Cascade)
+  questions     Question[]
+  attempts      Attempt[]
+}
+
+model Question {
+  id          String   @id @default(cuid())
+  quizId      String
+  ordinal     Int
+  type        String
+  promptMd    String
+  optionsJson Json
+  points      Decimal  @db.Decimal(7, 2)
+  quiz        Quiz     @relation(fields: [quizId], references: [id], onDelete: Cascade)
+  answers     Answer[]
+
+  @@unique([quizId, ordinal])
+}
+
+model Attempt {
+  id           String        @id @default(cuid())
+  quizId       String
+  studentId    String
+  attemptNo    Int
+  startedAt    DateTime?
+  finishedAt   DateTime?
+  status       AttemptStatus @default(CREATED)
+  scoreTotal   Decimal?      @db.Decimal(8, 2)
+  resultJson   Json?
+  quiz         Quiz          @relation(fields: [quizId], references: [id], onDelete: Cascade)
+  student      User          @relation(fields: [studentId], references: [id], onDelete: Cascade)
+  answers      Answer[]
+  metrics      QuestionMetric[]
+  telemetry    TelemetryEvent[]
+
+  @@unique([quizId, studentId, attemptNo])
+  @@index([studentId, startedAt])
+}
+
+model Answer {
+  attemptId  String
+  questionId String
+  answerJson Json
+  savedAt    DateTime @updatedAt
+  finalizedAt DateTime?
+  score      Decimal? @db.Decimal(7, 2)
+  attempt    Attempt  @relation(fields: [attemptId], references: [id], onDelete: Cascade)
+  question   Question @relation(fields: [questionId], references: [id], onDelete: Cascade)
+
+  @@id([attemptId, questionId])
+}
+
+model QuestionMetric {
+  attemptId      String
+  questionId     String
+  firstSeenAt    DateTime?
+  lastSeenAt     DateTime?
+  dwellMs        Int       @default(0)
+  changeCount    Int       @default(0)
+  tabHiddenCount Int       @default(0)
+  attempt        Attempt   @relation(fields: [attemptId], references: [id], onDelete: Cascade)
+
+  @@id([attemptId, questionId])
+}
+
+model TelemetryEvent {
+  id         BigInt   @id @default(autoincrement())
+  attemptId  String
+  seqNo      Int
+  timestamp  DateTime
+  eventType  String
+  questionId String?
+  payload    Json
+  attempt    Attempt  @relation(fields: [attemptId], references: [id], onDelete: Cascade)
+
+  @@unique([attemptId, seqNo])
+  @@index([attemptId, timestamp])
+}
+
+model AuditLog {
+  id          BigInt   @id @default(autoincrement())
+  actorUserId String?
+  action      String
+  objectType  String
+  objectId    String?
+  timestamp   DateTime @default(now())
+  result      String
+  ipPrefix    String?
+  userAgentHash String?
+
+  @@index([actorUserId, timestamp])
+  @@index([objectType, objectId])
+}

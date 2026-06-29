@@ -1,0 +1,25 @@
+{
+  "name": "ndp_tests",
+  "private": true,
+  "workspaces": [
+    "apps/web",
+    "apps/api"
+  ],
+  "scripts": {
+    "dev": "concurrently \"npm run dev -w apps/web\" \"npm run start:dev -w apps/api\"",
+    "build": "npm run build -w apps/web && npm run build -w apps/api",
+    "lint": "npm run lint -w apps/web && npm run lint -w apps/api",
+    "prisma:generate": "prisma generate --schema packages/database/prisma/schema.prisma",
+    "prisma:migrate": "prisma migrate dev --schema packages/database/prisma/schema.prisma",
+    "build:pages": "npm run version:generate && npm run build -w apps/web",
+    "version:generate": "node scripts/generate-version.mjs"
+  },
+  "devDependencies": {
+    "concurrently": "^9.0.0",
+    "prisma": "^6.0.0"
+  },
+  "overrides": {
+    "multer": "2.2.0",
+    "postcss": "8.5.10"
+  }
+}

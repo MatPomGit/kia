@@ -1,0 +1,19 @@
+import Link from "next/link";
+
+export function Header({ active = "dashboard", title = "kia.ndp" }: { active?: string; title?: string }) {
+  return (
+    <header className="topbar">
+      <Link href="/" className="brand">
+        <span className="logo" aria-hidden="true">K</span>
+        <span>{title}</span>
+      </Link>
+      <nav className="topnav" aria-label="Główna nawigacja">
+        <Link className={active === "dashboard" ? "active" : ""} href="/kia.ndp">Przedmiot</Link>
+        <Link className={active === "materials" ? "active" : ""} href="/materialy">Materiały</Link>
+        <Link className={active === "results" ? "active" : ""} href="/wyniki">Wyniki</Link>
+        <Link className={active === "guide" ? "active" : ""} href="/instrukcja">Instrukcja</Link>
+      </nav>
+      <span className="mode-label">Tryb demonstracyjny</span>
+    </header>
+  );
+}

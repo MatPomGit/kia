@@ -1,0 +1,4 @@
+﻿student_id_masked;course;quiz;started_at;finished_at;score;max_score;duration_seconds;tab_hidden_count;status
+*****123;Analiza i obróbka obrazów;Podstawy obrazu;2026-10-12 09:02;2026-10-12 09:10;9;10;511;0;zaliczona
+*****914;Analiza i obróbka obrazów;Podstawy obrazu;2026-10-12 09:04;2026-10-12 09:13;7;10;548;2;zaliczona
+*****287;Analiza i obróbka obrazów;Podstawy obrazu;2026-10-12 09:06;2026-10-12 09:15;8;10;529;1;zaliczona
