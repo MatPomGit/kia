@@ -27,7 +27,7 @@
       --editor-text: #e5e7eb;
       --shadow: 0 10px 30px rgba(20, 35, 60, 0.08);
       --radius: 12px;
-      --workspace-height: 780px;
+      --workspace-height: 900px;
       --a4-ratio: 210 / 297;
     }
 
@@ -668,55 +668,64 @@
       background: #f8fafc;
     }
 
-    .panel-resize-handle {
+    .workspace-resize-handle {
       position: relative;
-      z-index: 20;
-      flex: 0 0 22px;
-      height: 22px;
-      cursor: ns-resize;
-      background: #f7f9fc;
-      border-top: 1px solid var(--border);
+      z-index: 100;
+      height: 26px;
+      margin: -0.35rem 0.9rem 0.55rem;
+      cursor: row-resize;
+      background: #eef2f7;
+      border: 1px solid var(--border);
+      border-radius: 7px;
       touch-action: none;
       user-select: none;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #5b6878;
+      font-size: 0.72rem;
+      font-weight: 700;
+      letter-spacing: 0.01em;
     }
 
-    .panel-resize-handle::after {
-      content: "";
-      position: absolute;
-      left: 0;
-      right: 0;
-      top: -8px;
-      bottom: -8px;
-      cursor: ns-resize;
-    }
-
-    .panel-resize-handle::before {
+    .workspace-resize-handle::before {
       content: "";
       position: absolute;
       left: 50%;
-      top: 8px;
-      width: 72px;
+      top: 5px;
+      width: 86px;
       height: 3px;
       transform: translateX(-50%);
       border-radius: 999px;
-      background: #9aa8ba;
+      background: #8f9daf;
     }
 
-    .panel-resize-handle:hover,
-    .panel-resize-handle:focus-visible {
-      background: #eaf0f8;
+    .workspace-resize-handle span {
+      padding-top: 8px;
+      pointer-events: none;
+    }
+
+    .workspace-resize-handle:hover,
+    .workspace-resize-handle:focus-visible,
+    .workspace-resize-handle.active,
+    body.is-resizing .workspace-resize-handle {
+      background: #e3ebf6;
+      border-color: #91a8c8;
       outline: none;
+      color: var(--accent);
     }
 
-    .panel-resize-handle:hover::before,
-    .panel-resize-handle:focus-visible::before,
-    body.is-resizing .panel-resize-handle::before {
+    .workspace-resize-handle:hover::before,
+    .workspace-resize-handle:focus-visible::before,
+    .workspace-resize-handle.active::before,
+    body.is-resizing .workspace-resize-handle::before {
       background: var(--accent);
     }
 
-    body.is-resizing {
-      cursor: ns-resize;
-      user-select: none;
+    body.is-resizing,
+    body.is-resizing * {
+      cursor: row-resize !important;
+      user-select: none !important;
     }
 
     .kbd {
@@ -895,9 +904,12 @@
         </div>
       </div>
       <pre id="console" class="console" hidden></pre>
-      <div id="previewResizeHandle" class="panel-resize-handle" role="separator" aria-orientation="horizontal" aria-label="Zmień wysokość paneli" tabindex="0" title="Chwyć i przeciągnij w górę lub w dół, aby zmienić wysokość paneli"></div>
     </section>
   </main>
+
+  <div id="workspaceResizeHandle" class="workspace-resize-handle resizer" role="separator" aria-orientation="horizontal" aria-label="Zmień wysokość całego obszaru roboczego" tabindex="0" title="Chwyć belkę i przeciągnij w górę lub w dół, aby zmienić wysokość wszystkich trzech paneli">
+    <span>Przeciągnij, aby zmienić wysokość paneli</span>
+  </div>
 
   <article class="lesson-context" aria-live="polite">
     <h3 id="lessonContextTitle">Aktualna kategoria: podstawowy dokument</h3>
@@ -2114,11 +2126,12 @@ Nowy dokument.
 
     lessonSelect.addEventListener('change', () => loadExample(lessonSelect.value));
     const MIN_WORKSPACE_HEIGHT = 780;
+    const INITIAL_WORKSPACE_HEIGHT = 900;
     const MAX_WORKSPACE_HEIGHT = 1100;
-    const resizeHandle = document.getElementById('previewResizeHandle');
+    const resizeHandle = document.getElementById('workspaceResizeHandle');
 
     function setWorkspaceHeight(value, persist = true) {
-      const height = Math.min(MAX_WORKSPACE_HEIGHT, Math.max(MIN_WORKSPACE_HEIGHT, Number(value) || 760));
+      const height = Math.min(MAX_WORKSPACE_HEIGHT, Math.max(MIN_WORKSPACE_HEIGHT, Number(value) || INITIAL_WORKSPACE_HEIGHT));
       document.documentElement.style.setProperty('--workspace-height', `${height}px`);
       resizeHandle.setAttribute('aria-valuemin', String(MIN_WORKSPACE_HEIGHT));
       resizeHandle.setAttribute('aria-valuemax', String(MAX_WORKSPACE_HEIGHT));
@@ -2129,74 +2142,80 @@ Nowy dokument.
 
     let resizeStartY = 0;
     let resizeStartHeight = 0;
-    let isMouseResizing = false;
+    let isResizing = false;
 
-    function beginMouseResize(event) {
-      if (event.button !== 0) return;
+    function currentWorkspaceHeight() {
+      return Math.round(document.querySelector('main').getBoundingClientRect().height);
+    }
+
+    function beginResize(event) {
+      if (event.button !== undefined && event.button !== 0) return;
       event.preventDefault();
-      isMouseResizing = true;
+      isResizing = true;
       resizeStartY = event.clientY;
-      resizeStartHeight = Math.round(document.querySelector('main').getBoundingClientRect().height);
+      resizeStartHeight = currentWorkspaceHeight();
+      resizeHandle.classList.add('active');
       document.body.classList.add('is-resizing');
-      document.addEventListener('mousemove', moveMouseResize, true);
-      document.addEventListener('mouseup', finishMouseResize, true);
-      window.addEventListener('blur', finishMouseResize, { once: true });
+
+      document.addEventListener('mousemove', resizeWorkspace, { passive: false });
+      document.addEventListener('mouseup', stopWorkspaceResize);
+      document.addEventListener('mouseleave', stopWorkspaceResize);
     }
 
-    function moveMouseResize(event) {
-      if (!isMouseResizing) return;
+    function resizeWorkspace(event) {
+      if (!isResizing) return;
       event.preventDefault();
-      const delta = event.clientY - resizeStartY;
-      setWorkspaceHeight(resizeStartHeight + delta, false);
+      const nextHeight = resizeStartHeight + (event.clientY - resizeStartY);
+      setWorkspaceHeight(nextHeight, false);
     }
 
-    function finishMouseResize() {
-      if (!isMouseResizing) return;
-      isMouseResizing = false;
-      document.removeEventListener('mousemove', moveMouseResize, true);
-      document.removeEventListener('mouseup', finishMouseResize, true);
+    function stopWorkspaceResize() {
+      if (!isResizing) return;
+      isResizing = false;
+      resizeHandle.classList.remove('active');
       document.body.classList.remove('is-resizing');
-      const height = Math.round(document.querySelector('main').getBoundingClientRect().height);
-      setWorkspaceHeight(height, true);
+      document.removeEventListener('mousemove', resizeWorkspace);
+      document.removeEventListener('mouseup', stopWorkspaceResize);
+      document.removeEventListener('mouseleave', stopWorkspaceResize);
+      setWorkspaceHeight(currentWorkspaceHeight(), true);
     }
 
-    let touchStartY = 0;
-    let touchStartHeight = 0;
+    // Klasyczna obsługa myszy. Działa niezależnie od implementacji Pointer Events.
+    resizeHandle.addEventListener('mousedown', beginResize);
+    window.addEventListener('blur', stopWorkspaceResize);
 
-    resizeHandle.addEventListener('mousedown', beginMouseResize);
+    // Obsługa dotyku.
     resizeHandle.addEventListener('touchstart', event => {
       if (event.touches.length !== 1) return;
       event.preventDefault();
-      touchStartY = event.touches[0].clientY;
-      touchStartHeight = Math.round(document.querySelector('main').getBoundingClientRect().height);
+      isResizing = true;
+      resizeStartY = event.touches[0].clientY;
+      resizeStartHeight = currentWorkspaceHeight();
+      resizeHandle.classList.add('active');
       document.body.classList.add('is-resizing');
     }, { passive: false });
 
-    resizeHandle.addEventListener('touchmove', event => {
-      if (event.touches.length !== 1) return;
+    document.addEventListener('touchmove', event => {
+      if (!isResizing || event.touches.length !== 1) return;
       event.preventDefault();
-      setWorkspaceHeight(touchStartHeight + event.touches[0].clientY - touchStartY, false);
+      setWorkspaceHeight(resizeStartHeight + event.touches[0].clientY - resizeStartY, false);
     }, { passive: false });
 
-    resizeHandle.addEventListener('touchend', () => {
-      document.body.classList.remove('is-resizing');
-      const height = Math.round(document.querySelector('main').getBoundingClientRect().height);
-      setWorkspaceHeight(height, true);
-    });
+    document.addEventListener('touchend', stopWorkspaceResize);
+    document.addEventListener('touchcancel', stopWorkspaceResize);
+
     resizeHandle.addEventListener('keydown', event => {
       if (!['ArrowUp', 'ArrowDown', 'Home', 'End'].includes(event.key)) return;
       event.preventDefault();
-      const current = Math.round(document.querySelector('main').getBoundingClientRect().height);
+      const current = currentWorkspaceHeight();
       const next = event.key === 'Home' ? MIN_WORKSPACE_HEIGHT
         : event.key === 'End' ? MAX_WORKSPACE_HEIGHT
         : current + (event.key === 'ArrowUp' ? -20 : 20);
       setWorkspaceHeight(next, true);
     });
 
-    // Wysokość początkowa pozostaje stała. Zmiana następuje wyłącznie ręcznie.
-    resizeHandle.setAttribute('aria-valuemin', String(MIN_WORKSPACE_HEIGHT));
-    resizeHandle.setAttribute('aria-valuemax', String(MAX_WORKSPACE_HEIGHT));
-    resizeHandle.setAttribute('aria-valuenow', String(MIN_WORKSPACE_HEIGHT));
+    // Stała wysokość początkowa. Nie zależy od rozmiaru okna ani zapisanych ustawień.
+    setWorkspaceHeight(INITIAL_WORKSPACE_HEIGHT, false);
 
     compileBtn.addEventListener('click', compileLatex);
     downloadBtn.addEventListener('click', downloadTex);

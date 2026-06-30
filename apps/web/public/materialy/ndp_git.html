@@ -1,0 +1,1208 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Git Visual Lab — wizualny kurs Git</title>
+<style>
+:root{
+  --bg:#f4f7fb;--panel:#fff;--text:#162033;--muted:#687386;--line:#dce3ee;
+  --blue:#2f63ff;--violet:#7c4dff;--green:#1f9d63;--orange:#e18a1b;--red:#d94a3a;--teal:#0ea5a4;
+  --dark:#0d1425;--shadow:0 14px 38px rgba(30,44,78,.09);--r:18px;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{margin:0;background:var(--bg);color:var(--text);font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;line-height:1.55}
+button,input{font:inherit}
+code{background:#eef2ff;color:#294596;padding:2px 6px;border-radius:7px}
+.top{position:sticky;top:0;z-index:30;background:rgba(244,247,251,.92);backdrop-filter:blur(12px);border-bottom:1px solid var(--line)}
+.topin{max-width:1500px;margin:auto;padding:11px 20px;display:flex;gap:16px;align-items:center}
+.brand{font-weight:850;display:flex;align-items:center;gap:9px}
+.logo{width:36px;height:36px;border-radius:11px;background:linear-gradient(135deg,var(--blue),var(--violet));display:grid;place-items:center;color:white}
+.progresswrap{flex:1}
+.plabel{display:flex;justify-content:space-between;font-size:12px;color:var(--muted)}
+.progress{height:8px;background:#e7ebf2;border-radius:99px;overflow:hidden}
+.progress div{height:100%;width:0;background:linear-gradient(90deg,var(--blue),var(--violet));transition:.25s}
+.reset{border:1px solid var(--line);background:white;border-radius:10px;padding:8px 11px;cursor:pointer}
+.layout{max-width:1500px;margin:auto;padding:24px 20px 50px;display:grid;grid-template-columns:270px 1fr;gap:24px}
+aside{position:sticky;top:78px;align-self:start;background:white;border:1px solid var(--line);border-radius:var(--r);padding:15px;box-shadow:var(--shadow);max-height:calc(100vh - 96px);overflow:auto}
+aside h3{font-size:14px;margin:0 0 8px}
+.nav{display:grid;gap:5px}
+.nav a{text-decoration:none;color:var(--muted);padding:9px 10px;border-radius:9px;font-size:14px}
+.nav a:hover,.nav a.active{background:#eef3ff;color:#24439d}
+main{min-width:0}
+.hero,.section{background:var(--panel);border:1px solid var(--line);border-radius:var(--r);box-shadow:var(--shadow)}
+.hero{padding:38px;background:linear-gradient(135deg,#142049,#294cae 58%,#6948c8);color:white;overflow:hidden}
+.heroGrid{display:grid;grid-template-columns:1fr 1fr;gap:28px;align-items:center}
+.hero h1{font-size:clamp(36px,5vw,68px);line-height:1.02;margin:12px 0}
+.hero p{color:#e9edff;font-size:18px}
+.pill{display:inline-block;padding:5px 10px;border-radius:999px;background:rgba(255,255,255,.12);font-size:12px;font-weight:700}
+.heroCanvas{height:330px;position:relative;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.15);border-radius:20px;overflow:hidden}
+.section{margin-top:24px;padding:28px}
+.section h2{margin:0 0 6px;font-size:29px}
+.lead{color:var(--muted);max-width:960px}
+.btns{display:flex;gap:10px;flex-wrap:wrap}
+.btn{border:0;border-radius:10px;padding:10px 14px;font-weight:750;cursor:pointer;background:var(--blue);color:white}
+.btn.alt{background:#eef2ff;color:#28439b}
+.panel{border:1px solid var(--line);border-radius:15px;background:#fbfcff;padding:18px}
+.panel h3{margin-top:0}
+.lab{display:grid;grid-template-columns:1fr 1fr;gap:18px;margin-top:18px}
+.notice{border-left:5px solid var(--blue);background:#eef3ff;padding:14px 15px;border-radius:10px;margin-top:15px}
+.notice.warn{border-left-color:var(--orange);background:#fff7e9}
+.commandBar{display:flex;gap:8px;flex-wrap:wrap;margin-top:14px}
+.cmdBtn{border:1px solid var(--line);background:white;border-radius:9px;padding:9px 11px;cursor:pointer;font-family:ui-monospace,monospace}
+.cmdBtn:hover{background:#f2f5fb}
+.pipeline{display:grid;grid-template-columns:1fr 70px 1fr 70px 1fr;gap:10px;align-items:center}
+.zone{min-height:270px;border:2px dashed var(--line);border-radius:18px;padding:14px;background:white;position:relative}
+.zone h4{margin:0 0 4px}
+.zone small{color:var(--muted)}
+.arrowBox{display:grid;place-items:center}
+.arrowSvg{width:56px;height:56px;filter:drop-shadow(0 4px 10px rgba(47,99,255,.12))}
+.fileStack{display:grid;gap:12px;margin-top:14px}
+.fileCard{
+  position:relative;background:white;border:1px solid var(--line);border-radius:16px;
+  padding:12px 12px 12px 74px;min-height:86px;box-shadow:0 6px 16px rgba(27,42,71,.05)
+}
+.fileCard::before{
+  content:"";position:absolute;left:12px;top:12px;width:48px;height:60px;border-radius:12px;
+  background:linear-gradient(180deg,#ffffff,#eef3ff);border:1px solid #cbd7f7;
+  clip-path:polygon(0 0,72% 0,100% 28%,100% 100%,0 100%);
+}
+.fileCard::after{
+  content:"";position:absolute;left:46px;top:12px;width:14px;height:14px;background:#dbe7ff;
+  clip-path:polygon(0 0,100% 100%,0 100%);
+}
+.fileName{font-weight:800;font-size:14px}
+.fileMeta{display:flex;gap:8px;flex-wrap:wrap;margin-top:6px}
+.chip{display:inline-flex;align-items:center;gap:5px;padding:4px 8px;border-radius:999px;font-size:11px;font-weight:800}
+.chip.mod{background:#fff4e5;color:#9a5800}
+.chip.stage{background:#eaf3ff;color:#2855b6}
+.chip.commit{background:#ecfbf3;color:#117347}
+.chip.stash{background:#f3ecff;color:#6f49d7}
+.chip.remote{background:#ebfbfb;color:#117a7a}
+.miniLines{display:grid;gap:5px;margin-top:9px}
+.miniLines span{display:block;height:6px;border-radius:999px;background:#d6deee}
+.miniLines span:nth-child(2){width:78%}
+.miniLines span:nth-child(3){width:58%}
+.miniLines.diffAdd span:first-child{background:#91e1b6}
+.miniLines.diffDel span:nth-child(2){background:#f7a6a0}
+.fileGhost{opacity:.45}
+.fileTag{
+  position:absolute;right:10px;top:10px;background:#f3f6fd;border:1px solid var(--line);
+  border-radius:8px;padding:3px 7px;font-size:11px;color:var(--muted);font-weight:700
+}
+.commitBox{
+  border:1px solid var(--line);border-radius:16px;background:white;padding:14px;box-shadow:0 6px 16px rgba(27,42,71,.05);margin-top:12px
+}
+.commitHead{display:flex;justify-content:space-between;gap:8px;align-items:center}
+.commitId{font-weight:900;color:#28439b}
+.commitMsg{font-weight:700}
+.commitFiles{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:10px;margin-top:12px}
+.miniFile{
+  border:1px solid var(--line);border-radius:12px;padding:10px;background:#fafcff;position:relative;padding-left:50px
+}
+.miniFile::before{
+  content:"";position:absolute;left:10px;top:10px;width:28px;height:34px;border-radius:8px;
+  background:linear-gradient(180deg,#ffffff,#eef3ff);border:1px solid #cbd7f7;clip-path:polygon(0 0,72% 0,100% 28%,100% 100%,0 100%);
+}
+.miniFile::after{
+  content:"";position:absolute;left:26px;top:10px;width:8px;height:8px;background:#dbe7ff;clip-path:polygon(0 0,100% 100%,0 100%);
+}
+.graph{
+  height:360px;position:relative;overflow:auto;border:1px solid var(--line);
+  border-radius:15px;background:
+    linear-gradient(#fff,#fbfcff),
+    linear-gradient(90deg,rgba(220,227,238,.35) 1px,transparent 1px),
+    linear-gradient(rgba(220,227,238,.35) 1px,transparent 1px);
+  background-size:auto,28px 28px,28px 28px;
+}
+.lane{position:absolute;left:20px;font-size:12px;font-weight:800}
+.line{position:absolute;height:4px;border-radius:99px;background:#8391b3;transform-origin:left center}
+.node{position:absolute;width:24px;height:24px;border-radius:50%;background:white;border:6px solid var(--blue);z-index:2}
+.node.v{border-color:var(--violet)}
+.node.g{border-color:var(--green)}
+.tag{position:absolute;font-size:12px;color:var(--muted);font-weight:700}
+.headtag{
+  position:absolute;background:#eef3ff;border:1px solid #cfe0ff;color:#24439d;padding:4px 8px;border-radius:999px;font-size:12px;font-weight:900
+}
+.operationGrid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-top:18px}
+.op{border:1px solid var(--line);border-radius:15px;padding:16px;background:#fbfcff;cursor:pointer;transition:.2s}
+.op:hover{transform:translateY(-2px);box-shadow:0 10px 25px rgba(36,51,86,.08)}
+.remoteVisual{display:grid;grid-template-columns:1fr 140px 1fr;align-items:center;gap:14px}
+.repo{border:2px solid var(--line);border-radius:18px;padding:18px;min-height:270px;background:white}
+.syncArrows{display:grid;gap:10px;text-align:center}
+.syncArrows button{border:0;border-radius:10px;padding:10px;background:#eef3ff;color:#27449b;font-weight:800;cursor:pointer}
+.diff{font-family:ui-monospace,monospace;background:var(--dark);color:#dce3f0;border-radius:14px;padding:16px;overflow:auto}
+.add{color:#78e3a5}.del{color:#ff8f85}.neutral{color:#aab3c5}
+.timeline{display:flex;gap:8px;flex-wrap:wrap}
+.snapshot{border:1px solid var(--line);border-radius:12px;padding:11px 13px;background:white;cursor:pointer}
+.snapshot.active{border-color:var(--blue);box-shadow:0 0 0 3px #eaf0ff}
+.terminal{background:var(--dark);border-radius:16px;overflow:hidden;border:1px solid #25304d}
+.thead{background:#1a2238;color:#cbd5e1;padding:10px 14px;font-size:13px}
+.tbody{padding:16px;min-height:220px;color:#d1d5db;font-family:ui-monospace,monospace;white-space:pre-wrap}
+.tinput{display:flex;gap:8px;padding:12px;border-top:1px solid #25304d}
+.tinput span{color:#75e39a}
+.tinput input{flex:1;background:transparent;border:0;outline:0;color:white;font-family:ui-monospace,monospace}
+.quiz{border:1px solid var(--line);border-radius:14px;padding:16px;margin-top:12px}
+.answers{display:grid;gap:8px;margin-top:10px}
+.answers button{padding:10px;border:1px solid var(--line);background:white;border-radius:9px;text-align:left;cursor:pointer}
+.ok{background:#eefaf3!important;border-color:#7ac69a!important}.bad{background:#fff0ee!important;border-color:#e49a92!important}
+
+.freeGrid{display:grid;grid-template-columns:minmax(330px,.85fr) minmax(420px,1.15fr);gap:18px;margin-top:18px}
+.freeToolbar{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:14px}
+.freeToolbar select,.freeToolbar input{border:1px solid var(--line);border-radius:9px;padding:9px;background:white}
+.freeStatus{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:14px}
+.statusTile{border:1px solid var(--line);border-radius:13px;padding:11px;background:white}
+.statusTile small{display:block;color:var(--muted)}
+.statusTile strong{display:block;margin-top:4px;overflow-wrap:anywhere}
+.freeRepoGrid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.freeGraph{min-height:390px}
+.freeCommitRow{display:grid;grid-template-columns:100px 30px 1fr;gap:8px;align-items:center;margin:9px 0;min-width:560px}
+.freeBranchName{font-size:12px;font-weight:850;text-align:right;color:var(--muted)}
+.freeRail{position:relative;height:52px}
+.freeRail::before{content:"";position:absolute;left:13px;top:0;bottom:-18px;width:4px;border-radius:999px;background:#c4cee1}
+.freeRail.last::before{bottom:25px}
+.freeNode{position:absolute;left:3px;top:14px;width:24px;height:24px;border-radius:50%;background:white;border:6px solid var(--blue);z-index:2}
+.freeCommitCard{border:1px solid var(--line);border-radius:13px;padding:10px 12px;background:white}
+.freeCommitCard.active{box-shadow:0 0 0 3px #eaf0ff;border-color:#80a6ff}
+.freeCommitCard.remoteMark{border-style:dashed}
+.freeHint{font-size:12px;color:var(--muted);margin-top:8px}
+.freeTerminal .tbody{min-height:300px;max-height:430px;overflow:auto}
+.freeEmpty{border:2px dashed var(--line);border-radius:14px;padding:20px;text-align:center;color:var(--muted);background:#fafcff}
+@media(max-width:1050px){.freeGrid{grid-template-columns:1fr}.freeStatus{grid-template-columns:1fr 1fr}}
+@media(max-width:650px){.freeRepoGrid{grid-template-columns:1fr}.freeStatus{grid-template-columns:1fr}.freeCommitRow{min-width:500px}}
+
+footer{text-align:center;color:var(--muted);padding:26px}
+@media(max-width:1100px){
+  .layout{grid-template-columns:1fr}
+  aside{position:relative;top:0;max-height:none}
+  .heroGrid,.lab,.remoteVisual{grid-template-columns:1fr}
+  .operationGrid{grid-template-columns:1fr 1fr}
+  .pipeline{grid-template-columns:1fr}
+}
+@media(max-width:680px){
+  .layout{padding:12px}
+  .hero,.section{padding:20px}
+  .operationGrid{grid-template-columns:1fr}
+  .topin{flex-wrap:wrap}
+  .progresswrap{order:3;flex-basis:100%}
+}
+</style>
+</head>
+<body>
+<header class="top"><div class="topin">
+  <div class="brand"><div class="logo">G</div>Git Visual Lab</div>
+  <div class="progresswrap"><div class="plabel"><span>Postęp</span><span id="progressText">0%</span></div><div class="progress"><div id="progressBar"></div></div></div>
+  <button class="reset" id="reset">Reset</button>
+</div></header>
+
+<div class="layout">
+<aside>
+  <h3>Mapa funkcji Git</h3>
+  <nav class="nav">
+    <a href="#overview">1. Mapa Git</a>
+    <a href="#three">2. Trzy obszary</a>
+    <a href="#history">3. Commity i historia</a>
+    <a href="#branches">4. Branch, switch, merge</a>
+    <a href="#rebase">5. Rebase i cherry-pick</a>
+    <a href="#undo">6. Reset, restore, revert</a>
+    <a href="#stash">7. Stash</a>
+    <a href="#remote">8. Clone, fetch, pull, push</a>
+    <a href="#conflict">9. Konflikty</a>
+    <a href="#terminal">10. Terminal</a>
+    <a href="#sandbox">10. Tryb swobodny</a>
+  </nav>
+</aside>
+
+<main>
+<section class="hero" id="overview">
+  <div class="heroGrid">
+    <div>
+      <span class="pill">Kurs oparty na wizualizacji przepływu danych</span>
+      <h1>Zobacz, co naprawdę robi Git</h1>
+      <p>Każde polecenie zostało pokazane jako ruch plików, wskaźników i commitów. W tej wersji także same pliki są rysowane w formie czytelnych kart i mini‑grafów.</p>
+      <div class="btns">
+        <a class="btn" href="#three" style="text-decoration:none">Uruchom laboratorium</a>
+        <a class="btn alt" href="#branches" style="text-decoration:none">Zobacz graf gałęzi</a>
+      </div>
+    </div>
+    <div class="heroCanvas">
+      <svg width="100%" height="100%" viewBox="0 0 600 330" aria-label="Graf historii Git">
+        <line x1="55" y1="165" x2="220" y2="165" stroke="#b9c4ff" stroke-width="6"/>
+        <line x1="220" y1="165" x2="390" y2="90" stroke="#d0baff" stroke-width="6"/>
+        <line x1="220" y1="165" x2="390" y2="240" stroke="#a7e5c4" stroke-width="6"/>
+        <line x1="390" y1="90" x2="530" y2="165" stroke="#d0baff" stroke-width="6"/>
+        <line x1="390" y1="240" x2="530" y2="165" stroke="#a7e5c4" stroke-width="6"/>
+        <g fill="white" stroke-width="10">
+          <circle cx="55" cy="165" r="16" stroke="#92a5ff"/>
+          <circle cx="135" cy="165" r="16" stroke="#92a5ff"/>
+          <circle cx="220" cy="165" r="16" stroke="#92a5ff"/>
+          <circle cx="390" cy="90" r="16" stroke="#b98aff"/>
+          <circle cx="390" cy="240" r="16" stroke="#65ce95"/>
+          <circle cx="530" cy="165" r="16" stroke="#fff" />
+        </g>
+        <text x="38" y="205" fill="#fff">commit</text>
+        <text x="365" y="60" fill="#fff">feature</text>
+        <text x="365" y="285" fill="#fff">hotfix</text>
+        <text x="492" y="205" fill="#fff">merge</text>
+      </svg>
+    </div>
+  </div>
+</section>
+
+<section class="section" id="three">
+  <h2>1. Trzy obszary Git</h2>
+  <p class="lead">Kliknij polecenia. Poniżej zobaczysz nie tylko zmianę położenia pliku, ale też jego stan, typ i mini‑podgląd zawartości.</p>
+  <div class="pipeline">
+    <div class="zone">
+      <h4>📁 Working directory</h4>
+      <small>Edytowane pliki</small>
+      <div id="workFiles" class="fileStack"></div>
+    </div>
+    <div class="arrowBox">
+      <svg class="arrowSvg" viewBox="0 0 64 64" aria-hidden="true">
+        <defs><linearGradient id="g1" x1="0" y1="0" x2="1" y2="0"><stop stop-color="#8cb0ff"/><stop offset="1" stop-color="#3565ff"/></linearGradient></defs>
+        <path d="M8 32h34" stroke="url(#g1)" stroke-width="8" stroke-linecap="round"/>
+        <path d="M34 18l14 14-14 14" fill="none" stroke="url(#g1)" stroke-width="8" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+    </div>
+    <div class="zone">
+      <h4>🧺 Staging area</h4>
+      <small>Zmiany wybrane do commita</small>
+      <div id="stageFiles" class="fileStack"></div>
+    </div>
+    <div class="arrowBox">
+      <svg class="arrowSvg" viewBox="0 0 64 64" aria-hidden="true">
+        <defs><linearGradient id="g2" x1="0" y1="0" x2="1" y2="0"><stop stop-color="#7fc9ff"/><stop offset="1" stop-color="#1f9d63"/></linearGradient></defs>
+        <path d="M8 32h34" stroke="url(#g2)" stroke-width="8" stroke-linecap="round"/>
+        <path d="M34 18l14 14-14 14" fill="none" stroke="url(#g2)" stroke-width="8" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+    </div>
+    <div class="zone">
+      <h4>📚 Repository</h4>
+      <small>Zapisana historia</small>
+      <div id="repoFiles" class="fileStack"></div>
+    </div>
+  </div>
+  <div class="commandBar">
+    <button class="cmdBtn" data-action="edit">edytuj app.py</button>
+    <button class="cmdBtn" data-action="add">git add app.py</button>
+    <button class="cmdBtn" data-action="commit">git commit -m "Dodaj logowanie"</button>
+    <button class="cmdBtn" data-action="restore">git restore app.py</button>
+    <button class="cmdBtn" data-action="unstage">git restore --staged app.py</button>
+  </div>
+  <div class="notice" id="threeInfo">Najpierw zmodyfikuj plik.</div>
+</section>
+
+<section class="section" id="history">
+  <h2>2. Commit jako migawka projektu</h2>
+  <p class="lead">Kliknij commit, aby zobaczyć mini‑graf plików zapisanych w danej migawce.</p>
+  <div class="timeline" id="timeline">
+    <button class="snapshot active" data-snap="0">A · init</button>
+    <button class="snapshot" data-snap="1">B · README</button>
+    <button class="snapshot" data-snap="2">C · logowanie</button>
+    <button class="snapshot" data-snap="3">D · testy</button>
+  </div>
+  <div class="lab">
+    <div class="panel">
+      <h3>Graf historii</h3>
+      <div class="graph" style="height:230px">
+        <div class="line" style="left:55px;top:110px;width:390px"></div>
+        <div class="node" style="left:45px;top:100px"></div>
+        <div class="node" style="left:165px;top:100px"></div>
+        <div class="node" style="left:285px;top:100px"></div>
+        <div class="node" style="left:405px;top:100px"></div>
+        <div class="tag" style="left:42px;top:140px">A</div>
+        <div class="tag" style="left:162px;top:140px">B</div>
+        <div class="tag" style="left:282px;top:140px">C</div>
+        <div class="headtag" style="left:390px;top:145px">HEAD → main</div>
+      </div>
+    </div>
+    <div class="panel"><h3>Podgląd migawki</h3><div id="snapshotView"></div></div>
+  </div>
+</section>
+
+<section class="section" id="branches">
+  <h2>3. Gałęzie, przełączanie i scalanie</h2>
+  <p class="lead">Gałąź jest wskaźnikiem na commit. Obok grafu historii pokazano także, które pliki pojawiły się na gałęzi feature.</p>
+  <div class="lab">
+    <div class="graph" id="branchGraph"></div>
+    <div class="panel">
+      <h3>Pliki na aktywnej gałęzi</h3>
+      <div id="branchFiles" class="fileStack"></div>
+    </div>
+  </div>
+  <div class="commandBar">
+    <button class="cmdBtn" data-branch="create">git switch -c feature</button>
+    <button class="cmdBtn" data-branch="commit">git commit</button>
+    <button class="cmdBtn" data-branch="switch">git switch main</button>
+    <button class="cmdBtn" data-branch="merge">git merge feature</button>
+    <button class="cmdBtn" data-branch="reset">reset wizualizacji</button>
+  </div>
+  <div class="notice" id="branchInfo">Utwórz gałąź feature.</div>
+</section>
+
+<section class="section" id="rebase">
+  <h2>4. Merge, rebase i cherry-pick</h2>
+  <div class="operationGrid">
+    <div class="op" data-op="merge"><h3>Merge</h3><code>git merge feature</code><p>Tworzy połączenie dwóch historii. Zachowuje strukturę rozgałęzienia.</p></div>
+    <div class="op" data-op="rebase"><h3>Rebase</h3><code>git rebase main</code><p>Przenosi commity na nową podstawę i tworzy liniową historię.</p></div>
+    <div class="op" data-op="cherry"><h3>Cherry-pick</h3><code>git cherry-pick C3</code><p>Kopiuje pojedynczy commit do aktualnej gałęzi.</p></div>
+  </div>
+  <div class="lab">
+    <div class="graph" id="operationGraph" style="margin-top:16px;height:290px"></div>
+    <div class="panel">
+      <h3>Wpływ na pliki</h3>
+      <div id="operationFiles"></div>
+    </div>
+  </div>
+</section>
+
+<section class="section" id="undo">
+  <h2>5. Cofanie zmian</h2>
+  <div class="operationGrid">
+    <div class="op" data-undo="restore"><h3>restore</h3><code>git restore plik</code><p>Odrzuca niezacommitowane zmiany w pliku.</p></div>
+    <div class="op" data-undo="reset"><h3>reset</h3><code>git reset --soft HEAD~1</code><p>Przesuwa wskaźnik gałęzi. Wariant określa, co stanie się ze staging i plikami.</p></div>
+    <div class="op" data-undo="revert"><h3>revert</h3><code>git revert C</code><p>Tworzy nowy commit odwracający wcześniejszą zmianę.</p></div>
+  </div>
+  <div class="lab">
+    <div class="graph" id="undoGraph" style="margin-top:16px;height:250px"></div>
+    <div class="panel">
+      <h3>Stan plików</h3>
+      <div id="undoFiles"></div>
+    </div>
+  </div>
+</section>
+
+<section class="section" id="stash">
+  <h2>6. Tymczasowe odkładanie zmian</h2>
+  <div class="pipeline">
+    <div class="zone">
+      <h4>📁 Katalog roboczy</h4>
+      <small>Niezatwierdzone zmiany</small>
+      <div id="stashWork" class="fileStack"></div>
+    </div>
+    <div class="arrowBox">
+      <svg class="arrowSvg" viewBox="0 0 64 64" aria-hidden="true">
+        <path d="M8 32h34" stroke="#8f6cff" stroke-width="8" stroke-linecap="round"/>
+        <path d="M34 18l14 14-14 14" fill="none" stroke="#8f6cff" stroke-width="8" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+    </div>
+    <div class="zone">
+      <h4>📦 Stash</h4>
+      <small>Odłożone zmiany robocze</small>
+      <div id="stashBox" class="fileStack"></div>
+    </div>
+    <div></div><div></div>
+  </div>
+  <div class="commandBar">
+    <button class="cmdBtn" id="stashPush">git stash push</button>
+    <button class="cmdBtn" id="stashPop">git stash pop</button>
+  </div>
+</section>
+
+<section class="section" id="remote">
+  <h2>7. Repozytorium lokalne i zdalne</h2>
+  <p class="lead">Poniżej commity są rysowane jako pojemniki zawierające pliki. Dzięki temu widać, że <code>push</code> i <code>pull</code> przenoszą historię, a nie pojedyncze pliki bez kontekstu.</p>
+  <div class="remoteVisual">
+    <div class="repo"><h3>💻 Lokalnie</h3><div id="localCommits"></div></div>
+    <div class="syncArrows">
+      <button data-sync="push">push →</button>
+      <button data-sync="fetch">← fetch</button>
+      <button data-sync="pull">← pull</button>
+      <button data-sync="clone">clone ⇐</button>
+    </div>
+    <div class="repo"><h3>☁️ GitHub / GitLab</h3><div id="remoteCommits"></div></div>
+  </div>
+  <div class="notice" id="remoteInfo">Lokalne i zdalne repozytorium mogą wskazywać różne commity.</div>
+</section>
+
+<section class="section" id="conflict">
+  <h2>8. Konflikt scalania</h2>
+  <p class="lead">Konflikt dotyczy treści pliku. Obok poniżej pokazano też kartę pliku z dwoma konkurencyjnymi wariantami.</p>
+  <div class="lab">
+    <div>
+      <div class="diff"><span class="neutral">&lt;&lt;&lt;&lt;&lt;&lt;&lt; HEAD</span>
+<span class="del">- Cena: 100 zł</span>
+<span class="neutral">=======</span>
+<span class="add">+ Cena: 120 zł</span>
+<span class="neutral">&gt;&gt;&gt;&gt;&gt;&gt;&gt; feature/cennik</span></div>
+      <div class="commandBar">
+        <button class="cmdBtn conflictChoice" data-value="100">Zachowaj 100 zł</button>
+        <button class="cmdBtn conflictChoice" data-value="120">Zachowaj 120 zł</button>
+        <button class="cmdBtn conflictChoice" data-value="110">Połącz: 110 zł</button>
+        <button class="cmdBtn" id="resolveConflict">git add + git commit</button>
+      </div>
+    </div>
+    <div class="panel">
+      <h3>Plik objęty konfliktem</h3>
+      <div id="conflictFile"></div>
+    </div>
+  </div>
+  <div class="notice warn" id="conflictInfo">Konflikt wymaga decyzji semantycznej człowieka.</div>
+</section>
+
+<section class="section" id="terminal">
+  <h2>9. Terminal z wizualnym sprzężeniem</h2>
+  <div class="lab">
+    <div class="terminal">
+      <div class="thead">student@lab:~/projekt</div>
+      <div class="tbody" id="terminalOut">Obsługiwane: git status, git add app.py, git commit -m "opis", git log --oneline, git branch, git switch -c feature, git switch main, git merge feature, clear</div>
+      <div class="tinput"><span>$</span><input id="terminalIn" placeholder="Wpisz polecenie"></div>
+    </div>
+    <div class="panel">
+      <h3>Stan repozytorium</h3>
+      <div id="terminalVisual"></div>
+    </div>
+  </div>
+</section>
+
+
+<section class="section" id="sandbox">
+  <h2>10. Tryb swobodny</h2>
+  <p class="lead">Samodzielnie eksperymentuj z repozytorium. Możesz korzystać z przycisków albo terminala. Symulator obejmuje operacje na plikach, stagingu, commitach, gałęziach, historii, stashu i repozytorium zdalnym.</p>
+
+  <div class="freeStatus">
+    <div class="statusTile"><small>Aktywna gałąź</small><strong id="freeCurrentBranch">main</strong></div>
+    <div class="statusTile"><small>HEAD</small><strong id="freeHead">brak</strong></div>
+    <div class="statusTile"><small>Pliki robocze</small><strong id="freeWorkingCount">0</strong></div>
+    <div class="statusTile"><small>Staging area</small><strong id="freeStagedCount">0</strong></div>
+  </div>
+
+  <div class="freeToolbar">
+    <button class="cmdBtn" data-free-action="init">git init</button>
+    <button class="cmdBtn" data-free-action="edit">edytuj plik</button>
+    <button class="cmdBtn" data-free-action="add">git add .</button>
+    <button class="cmdBtn" data-free-action="commit">git commit</button>
+    <button class="cmdBtn" data-free-action="restore">git restore</button>
+    <button class="cmdBtn" data-free-action="unstage">git restore --staged</button>
+    <button class="cmdBtn" data-free-action="stash">git stash</button>
+    <button class="cmdBtn" data-free-action="stash-pop">git stash pop</button>
+  </div>
+
+  <div class="freeToolbar">
+    <input id="freeBranchNameInput" value="feature" aria-label="Nazwa gałęzi">
+    <button class="cmdBtn" data-free-action="branch">git switch -c</button>
+    <select id="freeBranchSelect" aria-label="Wybór gałęzi"></select>
+    <button class="cmdBtn" data-free-action="switch">git switch</button>
+    <button class="cmdBtn" data-free-action="merge">git merge</button>
+    <button class="cmdBtn" data-free-action="rebase">git rebase</button>
+    <button class="cmdBtn" data-free-action="cherry">git cherry-pick</button>
+  </div>
+
+  <div class="freeToolbar">
+    <button class="cmdBtn" data-free-action="revert">git revert HEAD</button>
+    <button class="cmdBtn" data-free-action="reset-soft">git reset --soft HEAD~1</button>
+    <button class="cmdBtn" data-free-action="reset-hard">git reset --hard HEAD~1</button>
+    <button class="cmdBtn" data-free-action="clone">git clone</button>
+    <button class="cmdBtn" data-free-action="fetch">git fetch</button>
+    <button class="cmdBtn" data-free-action="pull">git pull</button>
+    <button class="cmdBtn" data-free-action="push">git push</button>
+    <button class="cmdBtn" data-free-action="restart">wyczyść laboratorium</button>
+  </div>
+
+  <div class="freeGrid">
+    <div>
+      <div class="terminal freeTerminal">
+        <div class="thead">student@free-lab:~/projekt</div>
+        <div class="tbody" id="freeTerminalOut">Tryb swobodny. Rozpocznij od polecenia git init lub git clone.
+
+Dodatkowe polecenia:
+touch NAZWA, edit NAZWA, git status, git diff, git add .,
+git commit -m "opis", git log --oneline --graph,
+git switch -c NAZWA, git switch NAZWA, git merge NAZWA,
+git rebase NAZWA, git cherry-pick ID, git revert HEAD,
+git reset --soft HEAD~1, git reset --hard HEAD~1,
+git stash, git stash pop, git fetch, git pull, git push.</div>
+        <div class="tinput"><span>$</span><input id="freeTerminalIn" placeholder="Wpisz dowolne obsługiwane polecenie"></div>
+      </div>
+      <div class="freeHint">Polecenia działają na tym samym stanie co przyciski. Błędne sekwencje generują komunikaty diagnostyczne.</div>
+    </div>
+
+    <div>
+      <div class="panel">
+        <h3>Graf historii i gałęzi</h3>
+        <div class="graph freeGraph" id="freeGraph"></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="freeRepoGrid" style="margin-top:18px">
+    <div class="panel">
+      <h3>Pliki robocze i staging</h3>
+      <div id="freeFiles"></div>
+    </div>
+    <div class="panel">
+      <h3>Repozytorium zdalne i stash</h3>
+      <div id="freeRemote"></div>
+    </div>
+  </div>
+  <div class="notice" id="freeInfo">Laboratorium jest puste. Zainicjalizuj lub sklonuj repozytorium.</div>
+</section>
+<footer>Interaktywny materiał dydaktyczny: wizualny model funkcji Git.</footer>
+</main>
+</div>
+
+<script>
+const PKEY='gitVisualLabProgress';
+let progress=JSON.parse(localStorage.getItem(PKEY)||'{}');
+
+const progressBar=document.getElementById('progressBar');
+const progressText=document.getElementById('progressText');
+document.getElementById('reset').onclick=()=>{localStorage.removeItem(PKEY);location.reload()};
+
+function save(){localStorage.setItem(PKEY,JSON.stringify(progress));updateProgress()}
+function updateProgress(){
+  const keys=['three','history','branch','op','undo','stash','remote','conflict','terminal','sandbox'];
+  const n=keys.filter(k=>progress[k]).length;
+  const p=Math.round(n/keys.length*100);
+  progressBar.style.width=p+'%';
+  progressText.textContent=p+'%';
+}
+
+function miniLines(type='normal'){
+  return `<div class="miniLines ${type}">
+    <span></span><span></span><span></span>
+  </div>`;
+}
+function fileCard(name,opt={}){
+  const statusClass=opt.statusClass||'';
+  const statusLabel=opt.statusLabel||'';
+  const kind=opt.kind||'kod';
+  const tag=opt.tag||kind;
+  const ghost=opt.ghost?' fileGhost':'';
+  const lines=opt.lines||'normal';
+  return `<div class="fileCard${ghost}">
+      <div class="fileTag">${tag}</div>
+      <div class="fileName">${name}</div>
+      <div class="fileMeta">
+        ${statusLabel ? `<span class="chip ${statusClass}">${statusLabel}</span>`:''}
+        ${opt.extra ? `<span class="chip remote">${opt.extra}</span>`:''}
+      </div>
+      ${miniLines(lines)}
+  </div>`;
+}
+function miniFile(name,meta=''){
+  return `<div class="miniFile"><strong>${name}</strong><div style="font-size:12px;color:var(--muted);margin-top:4px">${meta}</div></div>`;
+}
+function commitCard(id,msg,files){
+  return `<div class="commitBox">
+    <div class="commitHead">
+      <div><span class="commitId">${id}</span> <span class="commitMsg">${msg}</span></div>
+      <span class="chip commit">commit</span>
+    </div>
+    <div class="commitFiles">${files.map(f=>miniFile(f.name,f.meta||'')).join('')}</div>
+  </div>`;
+}
+
+/* Section 1: three areas */
+let threeState=0;
+function renderThree(){
+  workFiles.innerHTML=''; stageFiles.innerHTML=''; repoFiles.innerHTML='';
+  if(threeState===1){
+    workFiles.innerHTML=fileCard('app.py',{statusClass:'mod',statusLabel:'modified',kind:'Python',lines:'diffAdd'});
+  }else if(threeState===2){
+    workFiles.innerHTML=fileCard('app.py',{statusClass:'mod',statusLabel:'modified',kind:'Python',lines:'diffAdd',ghost:true});
+    stageFiles.innerHTML=fileCard('app.py',{statusClass:'stage',statusLabel:'staged',kind:'Python',lines:'diffAdd'});
+  }else if(threeState===3){
+    repoFiles.innerHTML=commitCard('C1','Dodaj logowanie',[
+      {name:'app.py',meta:'dodane funkcje logowania'},
+      {name:'README.md',meta:'opis użycia'}
+    ]);
+  }
+}
+document.querySelectorAll('[data-action]').forEach(b=>b.onclick=()=>{
+  const a=b.dataset.action;
+  if(a==='edit'){threeState=1;threeInfo.textContent='Plik został zmodyfikowany w katalogu roboczym.'}
+  if(a==='add'&&threeState===1){threeState=2;threeInfo.textContent='git add skopiował bieżący stan pliku do staging area.'}
+  if(a==='commit'&&threeState===2){threeState=3;threeInfo.textContent='git commit zapisał migawkę projektu w repozytorium.';progress.three=true;save()}
+  if(a==='restore'&&threeState===1){threeState=0;threeInfo.textContent='git restore odrzucił niezapisane zmiany.'}
+  if(a==='unstage'&&threeState===2){threeState=1;threeInfo.textContent='git restore --staged usunął plik ze staging area.'}
+  renderThree();
+});
+renderThree();
+
+/* Section 2: snapshots */
+const snaps=[
+  {title:'A · init', msg:'Pierwszy stan repozytorium', files:[{name:'README.md',meta:'opis projektu'}]},
+  {title:'B · README', msg:'Dodano dokumentację', files:[{name:'README.md',meta:'rozszerzona dokumentacja'},{name:'LICENSE',meta:'licencja MIT'}]},
+  {title:'C · logowanie', msg:'Dodano moduł logowania', files:[{name:'app.py',meta:'obsługa aplikacji'},{name:'auth.py',meta:'logika autoryzacji'},{name:'README.md',meta:'aktualizacja instrukcji'}]},
+  {title:'D · testy', msg:'Dodano testy', files:[{name:'app.py',meta:'refaktoryzacja'},{name:'auth.py',meta:'poprawki'},{name:'test_auth.py',meta:'testy jednostkowe'}]}
+];
+function showSnap(i){
+  const s=snaps[i];
+  snapshotView.innerHTML=commitCard(s.title,s.msg,s.files);
+  document.querySelectorAll('.snapshot').forEach((b,j)=>b.classList.toggle('active',i===j));
+  progress.history=true; save();
+}
+document.querySelectorAll('.snapshot').forEach(b=>b.onclick=()=>showSnap(+b.dataset.snap));
+showSnap(0);
+
+/* Section 3: branches */
+let bs=0;
+function branchFileView(){
+  if(bs===0) return fileCard('app.py',{statusClass:'commit',statusLabel:'main',kind:'Python'})+
+                   fileCard('README.md',{statusClass:'commit',statusLabel:'main',kind:'Markdown'});
+  if(bs===1) return fileCard('app.py',{statusClass:'commit',statusLabel:'main',kind:'Python'})+
+                   fileCard('feature_login.py',{statusClass:'stage',statusLabel:'feature',kind:'Python'});
+  if(bs===2) return fileCard('app.py',{statusClass:'commit',statusLabel:'main',kind:'Python'})+
+                   fileCard('feature_login.py',{statusClass:'stage',statusLabel:'commit na feature',kind:'Python',lines:'diffAdd'});
+  if(bs===3) return fileCard('app.py',{statusClass:'commit',statusLabel:'main',kind:'Python'})+
+                   fileCard('feature_login.py',{statusClass:'stage',statusLabel:'istnieje na feature',kind:'Python',ghost:true});
+  return fileCard('app.py',{statusClass:'commit',statusLabel:'main',kind:'Python'})+
+         fileCard('feature_login.py',{statusClass:'commit',statusLabel:'po merge',kind:'Python'})+
+         fileCard('README.md',{statusClass:'commit',statusLabel:'main',kind:'Markdown'});
+}
+function renderBranch(){
+  let h='<div class="lane" style="top:148px">main</div><div class="line" style="left:80px;top:160px;width:520px"></div>';
+  h+='<div class="node" style="left:90px;top:150px"></div><div class="node" style="left:200px;top:150px"></div><div class="node" style="left:310px;top:150px"></div>';
+  if(bs>=1){
+    h+='<div class="lane" style="top:55px">feature</div><div class="line" style="left:322px;top:160px;width:130px;transform:rotate(-35deg);background:#9f7aea"></div><div class="node v" style="left:430px;top:80px"></div><div class="headtag" style="left:420px;top:45px">HEAD → feature</div>';
+  }
+  if(bs>=2){
+    h+='<div class="line" style="left:450px;top:92px;width:110px;background:#9f7aea"></div><div class="node v" style="left:545px;top:80px"></div>';
+  }
+  if(bs===3){
+    h+='<div class="headtag" style="left:292px;top:185px">HEAD → main</div>';
+  }
+  if(bs===4){
+    h+='<div class="line" style="left:560px;top:92px;width:100px;transform:rotate(40deg);background:#65bd8d"></div><div class="node g" style="left:640px;top:150px"></div><div class="headtag" style="left:625px;top:185px">HEAD → main</div>';
+  }
+  branchGraph.innerHTML=h;
+  branchFiles.innerHTML=branchFileView();
+}
+document.querySelectorAll('[data-branch]').forEach(b=>b.onclick=()=>{
+  let a=b.dataset.branch;
+  if(a==='create'){bs=1;branchInfo.textContent='Utworzono wskaźnik feature i przełączono HEAD.'}
+  if(a==='commit'&&bs>=1){bs=2;branchInfo.textContent='Na gałęzi feature utworzono commit z nowym plikiem/funkcją.'}
+  if(a==='switch'&&bs>=2){bs=3;branchInfo.textContent='HEAD znowu wskazuje main.'}
+  if(a==='merge'&&bs===3){bs=4;branchInfo.textContent='Merge połączył historię i pliki z feature trafiły do main.';progress.branch=true;save()}
+  if(a==='reset'){bs=0;branchInfo.textContent='Utwórz gałąź feature.'}
+  renderBranch();
+});
+renderBranch();
+
+/* Section 4: merge/rebase/cherry-pick */
+function graphVariant(type){
+  if(type==='merge') return '<div class="line" style="left:60px;top:140px;width:470px"></div><div class="line" style="left:260px;top:140px;width:150px;transform:rotate(-28deg);background:#9f7aea"></div><div class="line" style="left:400px;top:75px;width:145px;transform:rotate(27deg);background:#9f7aea"></div><div class="node" style="left:50px;top:130px"></div><div class="node" style="left:170px;top:130px"></div><div class="node" style="left:290px;top:130px"></div><div class="node v" style="left:390px;top:65px"></div><div class="node g" style="left:520px;top:130px"></div><div class="tag" style="left:505px;top:165px">merge</div>';
+  if(type==='rebase') return '<div class="line" style="left:60px;top:140px;width:520px"></div><div class="node" style="left:50px;top:130px"></div><div class="node" style="left:165px;top:130px"></div><div class="node" style="left:280px;top:130px"></div><div class="node v" style="left:395px;top:130px"></div><div class="node v" style="left:510px;top:130px"></div><div class="tag" style="left:380px;top:175px">przepisane commity</div>';
+  return '<div class="line" style="left:60px;top:140px;width:390px"></div><div class="node" style="left:50px;top:130px"></div><div class="node" style="left:170px;top:130px"></div><div class="node" style="left:290px;top:130px"></div><div class="node g" style="left:410px;top:130px"></div><div class="tag" style="left:390px;top:175px">kopiowany commit</div>';
+}
+function operationFilesView(type){
+  if(type==='merge') return commitCard('M','Scalanie historii',[
+    {name:'feature_login.py',meta:'przeniesiony z feature'},
+    {name:'app.py',meta:'zaktualizowany po scaleniu'}
+  ]);
+  if(type==='rebase') return commitCard('C3′','Commit przepisany',[
+    {name:'feature_login.py',meta:'ta sama treść, nowy rodzic'},
+    {name:'README.md',meta:'historia liniowa'}
+  ]);
+  return commitCard('C3','Wybrany commit',[
+    {name:'hotfix.py',meta:'kopiowany pojedynczo'},
+    {name:'config.yml',meta:'bez innych commitów'}
+  ]);
+}
+document.querySelectorAll('[data-op]').forEach(o=>o.onclick=()=>{
+  operationGraph.innerHTML=graphVariant(o.dataset.op);
+  operationFiles.innerHTML=operationFilesView(o.dataset.op);
+  progress.op=true; save();
+});
+operationGraph.innerHTML=graphVariant('merge');
+operationFiles.innerHTML=operationFilesView('merge');
+
+/* Section 5: undo */
+function undoVariant(type){
+  if(type==='restore') return '<div class="fileCard" style="margin:38px 28px 0 28px"><div class="fileTag">Python</div><div class="fileName">app.py</div><div class="fileMeta"><span class="chip mod">modified</span><span class="chip commit">restore</span></div><div class="miniLines diffDel"><span></span><span></span><span></span></div></div>';
+  if(type==='reset') return '<div class="line" style="left:70px;top:120px;width:400px"></div><div class="node" style="left:60px;top:110px"></div><div class="node" style="left:180px;top:110px"></div><div class="node" style="left:300px;top:110px"></div><div class="node" style="left:420px;top:110px;opacity:.25"></div><div class="headtag" style="left:275px;top:155px">HEAD przesunięty</div>';
+  return '<div class="line" style="left:70px;top:120px;width:470px"></div><div class="node" style="left:60px;top:110px"></div><div class="node" style="left:180px;top:110px"></div><div class="node" style="left:300px;top:110px"></div><div class="node g" style="left:420px;top:110px"></div><div class="tag" style="left:400px;top:155px">commit odwracający</div>';
+}
+function undoFilesView(type){
+  if(type==='restore') return fileCard('app.py',{statusClass:'commit',statusLabel:'przywrócony do HEAD',kind:'Python'});
+  if(type==='reset') return commitCard('HEAD~1','Wskaźnik cofnięty',[
+    {name:'app.py',meta:'zmiany nadal lokalnie w trybie --soft'},
+    {name:'README.md',meta:'bez zmian'}
+  ]);
+  return commitCard('R1','Commit odwracający',[
+    {name:'app.py',meta:'usunęto wcześniejszą zmianę'},
+    {name:'changelog.md',meta:'dodano opis cofnięcia'}
+  ]);
+}
+document.querySelectorAll('[data-undo]').forEach(o=>o.onclick=()=>{
+  undoGraph.innerHTML=undoVariant(o.dataset.undo);
+  undoFiles.innerHTML=undoFilesView(o.dataset.undo);
+  progress.undo=true; save();
+});
+undoGraph.innerHTML=undoVariant('revert');
+undoFiles.innerHTML=undoFilesView('revert');
+
+/* Section 6: stash */
+let stashed=false;
+function renderStash(){
+  if(!stashed){
+    stashWork.innerHTML=fileCard('app.py',{statusClass:'mod',statusLabel:'modified',kind:'Python',lines:'diffAdd'})+
+                        fileCard('notes.md',{statusClass:'mod',statusLabel:'modified',kind:'Markdown'});
+    stashBox.innerHTML='<div class="fileCard fileGhost"><div class="fileTag">stash</div><div class="fileName">Brak odłożonych zmian</div><div class="miniLines"><span></span><span></span><span></span></div></div>';
+  }else{
+    stashWork.innerHTML='<div class="fileCard fileGhost"><div class="fileTag">clean</div><div class="fileName">Katalog roboczy czysty</div><div class="miniLines"><span></span><span></span><span></span></div></div>';
+    stashBox.innerHTML=fileCard('stash@{0}',{statusClass:'stash',statusLabel:'WIP on main',kind:'pakiet'})+
+                       fileCard('app.py',{statusClass:'stash',statusLabel:'odłożony',kind:'Python'})+
+                       fileCard('notes.md',{statusClass:'stash',statusLabel:'odłożony',kind:'Markdown'});
+  }
+}
+stashPush.onclick=()=>{stashed=true;renderStash();progress.stash=true;save()};
+stashPop.onclick=()=>{stashed=false;renderStash()};
+renderStash();
+
+/* Section 7: remote */
+let localCommitsState=[
+  {id:'C1',msg:'Init',files:[{name:'README.md',meta:'opis projektu'}]},
+  {id:'C2',msg:'Dodaj logowanie',files:[{name:'app.py',meta:'formularz'},{name:'auth.py',meta:'walidacja'}]},
+  {id:'C3',msg:'Popraw styl',files:[{name:'styles.css',meta:'kolory i spacing'}]}
+];
+let remoteCommitsState=[
+  {id:'C1',msg:'Init',files:[{name:'README.md',meta:'opis projektu'}]},
+  {id:'C2',msg:'Dodaj logowanie',files:[{name:'app.py',meta:'formularz'},{name:'auth.py',meta:'walidacja'}]}
+];
+function renderCommitList(arr,id){
+  document.getElementById(id).innerHTML=arr.map(c=>commitCard(c.id,c.msg,c.files)).join('');
+}
+function renderRemote(){renderCommitList(localCommitsState,'localCommits');renderCommitList(remoteCommitsState,'remoteCommits')}
+document.querySelectorAll('[data-sync]').forEach(b=>b.onclick=()=>{
+  const a=b.dataset.sync;
+  if(a==='push'){remoteCommitsState=JSON.parse(JSON.stringify(localCommitsState));remoteInfo.textContent='push wysłał brakujące commity wraz z ich plikami na serwer.'}
+  if(a==='fetch'){remoteInfo.textContent='fetch pobrał metadane o zdalnej historii, ale nie zmienił jeszcze plików roboczych.'}
+  if(a==='pull'){localCommitsState=JSON.parse(JSON.stringify(remoteCommitsState));remoteInfo.textContent='pull pobrał historię z serwera i zaktualizował lokalne repozytorium.'}
+  if(a==='clone'){localCommitsState=JSON.parse(JSON.stringify(remoteCommitsState));remoteInfo.textContent='clone utworzył lokalną kopię całego repozytorium.'}
+  progress.remote=true;save();renderRemote();
+});
+renderRemote();
+
+/* Section 8: conflict */
+let choice=null;
+function renderConflictCard(v='?'){
+  const variant = v==='100' ? 'Wybrano wersję z main' : v==='120' ? 'Wybrano wersję z feature' : v==='110' ? 'Utworzono wersję kompromisową' : 'Oczekuje na decyzję';
+  conflictFile.innerHTML=fileCard('cennik.txt',{statusClass:'mod',statusLabel:'merge conflict',kind:'tekst',extra:variant})+
+                         fileCard('HEAD',{statusClass:'commit',statusLabel:'100 zł',kind:'wariant'})+
+                         fileCard('feature/cennik',{statusClass:'stage',statusLabel:'120 zł',kind:'wariant'});
+}
+document.querySelectorAll('.conflictChoice').forEach(b=>b.onclick=()=>{
+  choice=b.dataset.value;
+  conflictInfo.textContent='Wybrana treść: Cena: '+choice+' zł. Teraz oznacz konflikt jako rozwiązany.';
+  renderConflictCard(choice);
+});
+resolveConflict.onclick=()=>{if(choice){conflictInfo.textContent='Konflikt rozwiązany i zapisany w nowym commicie.';progress.conflict=true;save()}};
+renderConflictCard();
+
+/* Section 9: terminal */
+let term={staged:false,commits:['A'],branch:'main',feature:false};
+function renderTerm(){
+  let html='';
+  html += fileCard('HEAD',{statusClass:'commit',statusLabel:'→ '+term.branch,kind:'wskaźnik'});
+  html += fileCard('app.py',{statusClass:term.staged?'stage':'mod',statusLabel:term.staged?'staged':'modified',kind:'Python'});
+  html += term.commits.map(c=>commitCard(c,'commit '+c,[{name:'app.py',meta:'stan pliku w commit '+c}])).join('');
+  terminalVisual.innerHTML=html;
+}
+terminalIn.onkeydown=e=>{
+  if(e.key!=='Enter')return;
+  const c=terminalIn.value.trim();
+  let m='Nieobsługiwane polecenie.';
+  if(c==='clear'){terminalOut.textContent='';terminalIn.value='';return;}
+  if(c==='git status')m=term.staged?'Zmiany przygotowane do zatwierdzenia: app.py':'Zmiany niezapisane: app.py';
+  if(c==='git add app.py'){term.staged=true;m='Dodano app.py do staging area.'}
+  if(c.startsWith('git commit -m')&&term.staged){term.staged=false;term.commits.push(String.fromCharCode(65+term.commits.length));m='Utworzono commit.';progress.terminal=true;save()}
+  if(c==='git log --oneline')m=[...term.commits].reverse().map(x=>x+' commit').join('\n');
+  if(c==='git branch')m=(term.branch==='main'?'* main':'  main')+(term.feature?'\n'+(term.branch==='feature'?'* ':'  ')+'feature':'');
+  if(c==='git switch -c feature'){term.feature=true;term.branch='feature';m='Utworzono i przełączono na feature.'}
+  if(c==='git switch main'){term.branch='main';m='Przełączono na main.'}
+  if(c==='git merge feature'&&term.feature&&term.branch==='main'){term.commits.push('M');m='Scalono feature do main.'}
+  terminalOut.textContent+='\n$ '+c+'\n'+m;
+  terminalIn.value='';
+  renderTerm();
+};
+renderTerm();
+
+
+/* Tryb swobodny */
+const freeState={
+  initialized:false,
+  current:'main',
+  branches:{main:null},
+  commits:{},
+  working:{},
+  staged:{},
+  stash:[],
+  remoteBranches:{main:null},
+  nextCommit:1
+};
+
+function freeClone(obj){return JSON.parse(JSON.stringify(obj))}
+function freeMessage(message){freeInfo.textContent=message;return message}
+function freeCommitId(){return 'C'+freeState.nextCommit++}
+function freeHeadId(branch=freeState.current){return freeState.branches[branch]||null}
+function freeCurrentSnapshot(){
+  const head=freeHeadId();
+  return head && freeState.commits[head] ? freeClone(freeState.commits[head].snapshot) : {};
+}
+function freeRequireRepo(){
+  if(!freeState.initialized){freeMessage('Najpierw wykonaj git init lub git clone.');return false}
+  return true;
+}
+function freeLog(command,message){
+  freeTerminalOut.textContent += '\n$ '+command+'\n'+message;
+  freeTerminalOut.scrollTop=freeTerminalOut.scrollHeight;
+}
+function freeRefreshBranchSelect(){
+  freeBranchSelect.innerHTML=Object.keys(freeState.branches).map(b=>`<option value="${b}">${b}</option>`).join('');
+  freeBranchSelect.value=freeState.current;
+}
+function freeRenderGraph(){
+  if(!freeState.initialized){
+    freeGraph.innerHTML='<div class="freeEmpty" style="margin:30px">Brak historii. Wykonaj <code>git init</code> lub <code>git clone</code>.</div>';
+    return;
+  }
+  const ids=Object.keys(freeState.commits);
+  if(!ids.length){
+    freeGraph.innerHTML='<div class="freeEmpty" style="margin:30px">Repozytorium istnieje, ale nie zawiera jeszcze commitów.</div>';
+    return;
+  }
+  const branchAt={};
+  Object.entries(freeState.branches).forEach(([name,id])=>{
+    if(id){if(!branchAt[id])branchAt[id]=[];branchAt[id].push(name)}
+  });
+  const remoteAt={};
+  Object.entries(freeState.remoteBranches).forEach(([name,id])=>{
+    if(id){if(!remoteAt[id])remoteAt[id]=[];remoteAt[id].push('origin/'+name)}
+  });
+  const ordered=ids.sort((a,b)=>freeState.commits[b].n-freeState.commits[a].n);
+  freeGraph.innerHTML='<div style="padding:18px;min-width:620px">'+ordered.map((id,index)=>{
+    const c=freeState.commits[id];
+    const branches=(branchAt[id]||[]).map(b=>`<span class="chip ${b===freeState.current?'stage':'commit'}">${b===freeState.current?'HEAD → ':''}${b}</span>`).join(' ');
+    const remotes=(remoteAt[id]||[]).map(b=>`<span class="chip remote">${b}</span>`).join(' ');
+    const parents=(c.parents||[]).join(', ')||'brak';
+    return `<div class="freeCommitRow">
+      <div class="freeBranchName">${branches||remotes||''}</div>
+      <div class="freeRail ${index===ordered.length-1?'last':''}"><div class="freeNode" style="border-color:${c.type==='merge'?'var(--green)':c.type==='revert'?'var(--orange)':'var(--blue)'}"></div></div>
+      <div class="freeCommitCard ${id===freeHeadId()?'active':''} ${remotes?'remoteMark':''}">
+        <strong>${id}</strong> — ${c.message}
+        <div style="font-size:12px;color:var(--muted);margin-top:4px">rodzic: ${parents} · pliki: ${Object.keys(c.snapshot).length} ${remotes}</div>
+      </div>
+    </div>`;
+  }).join('')+'</div>';
+}
+function freeRenderFiles(){
+  const workNames=Object.keys(freeState.working);
+  const stagedNames=Object.keys(freeState.staged);
+  let html='<h4>Katalog roboczy</h4>';
+  html+=workNames.length?workNames.map(name=>fileCard(name,{
+    statusClass:'mod',statusLabel:freeState.working[name].status||'modified',
+    kind:freeState.working[name].kind||'plik',lines:'diffAdd'
+  })).join(''):'<div class="freeEmpty">Brak niezapisanych zmian.</div>';
+  html+='<h4 style="margin-top:18px">Staging area</h4>';
+  html+=stagedNames.length?stagedNames.map(name=>fileCard(name,{
+    statusClass:'stage',statusLabel:'staged',kind:freeState.staged[name].kind||'plik'
+  })).join(''):'<div class="freeEmpty">Staging area jest puste.</div>';
+  freeFiles.innerHTML=html;
+}
+function freeRenderRemote(){
+  const remoteIds=Object.values(freeState.remoteBranches).filter(Boolean);
+  let html='<h4>origin</h4>';
+  html+=remoteIds.length?Object.entries(freeState.remoteBranches).map(([b,id])=>
+    id?commitCard('origin/'+b,'wskazuje '+id,Object.entries(freeState.commits[id]?.snapshot||{}).map(([name,v])=>({name,meta:v.kind||'plik'}))):''
+  ).join(''):'<div class="freeEmpty">Brak zdalnych commitów.</div>';
+  html+='<h4 style="margin-top:18px">Stash</h4>';
+  html+=freeState.stash.length?freeState.stash.map((s,i)=>fileCard('stash@{'+i+'}',{
+    statusClass:'stash',statusLabel:Object.keys(s).length+' plik(i)',kind:'pakiet'
+  })).join(''):'<div class="freeEmpty">Stash jest pusty.</div>';
+  freeRemote.innerHTML=html;
+}
+function freeRender(){
+  freeCurrentBranch.textContent=freeState.current;
+  freeHead.textContent=freeHeadId()||'brak';
+  freeWorkingCount.textContent=Object.keys(freeState.working).length;
+  freeStagedCount.textContent=Object.keys(freeState.staged).length;
+  freeRefreshBranchSelect();
+  freeRenderGraph();
+  freeRenderFiles();
+  freeRenderRemote();
+}
+function freeInit(){
+  if(freeState.initialized)return freeMessage('Repozytorium jest już zainicjalizowane.');
+  freeState.initialized=true;
+  return freeMessage('Utworzono puste repozytorium Git.');
+}
+function freeCloneRepo(){
+  Object.assign(freeState,{
+    initialized:true,current:'main',branches:{main:'C2'},
+    commits:{
+      C1:{n:1,message:'Initial commit',parents:[],snapshot:{'README.md':{kind:'Markdown'}},type:'normal'},
+      C2:{n:2,message:'Dodaj aplikację',parents:['C1'],snapshot:{'README.md':{kind:'Markdown'},'app.py':{kind:'Python'}},type:'normal'}
+    },
+    working:{},staged:{},stash:[],remoteBranches:{main:'C2'},nextCommit:3
+  });
+  return freeMessage('Sklonowano repozytorium origin wraz z historią.');
+}
+function freeEdit(name='app.py'){
+  if(!freeRequireRepo())return freeInfo.textContent;
+  freeState.working[name]={kind:name.endsWith('.py')?'Python':name.endsWith('.md')?'Markdown':'plik',status:'modified'};
+  return freeMessage('Zmodyfikowano plik '+name+'.');
+}
+function freeTouch(name='new_file.txt'){
+  if(!freeRequireRepo())return freeInfo.textContent;
+  freeState.working[name]={kind:name.split('.').pop()||'plik',status:'untracked'};
+  return freeMessage('Utworzono nieśledzony plik '+name+'.');
+}
+function freeAdd(){
+  if(!freeRequireRepo())return freeInfo.textContent;
+  if(!Object.keys(freeState.working).length)return freeMessage('Brak zmian do dodania.');
+  Object.assign(freeState.staged,freeClone(freeState.working));
+  freeState.working={};
+  return freeMessage('Dodano wszystkie zmiany do staging area.');
+}
+function freeCommit(message='Nowy commit'){
+  if(!freeRequireRepo())return freeInfo.textContent;
+  if(!Object.keys(freeState.staged).length)return freeMessage('Staging area jest puste.');
+  const snapshot=freeCurrentSnapshot();
+  Object.entries(freeState.staged).forEach(([name,val])=>snapshot[name]=freeClone(val));
+  const id=freeCommitId(),parent=freeHeadId();
+  freeState.commits[id]={n:freeState.nextCommit-1,message,parents:parent?[parent]:[],snapshot,type:'normal'};
+  freeState.branches[freeState.current]=id;
+  freeState.staged={};
+  progress.sandbox=true;save();
+  return freeMessage('Utworzono commit '+id+': '+message+'.');
+}
+function freeRestore(){
+  if(!freeRequireRepo())return freeInfo.textContent;
+  if(!Object.keys(freeState.working).length)return freeMessage('Brak zmian roboczych do odrzucenia.');
+  freeState.working={};
+  return freeMessage('Odrzucono niezapisane zmiany z katalogu roboczego.');
+}
+function freeUnstage(){
+  if(!freeRequireRepo())return freeInfo.textContent;
+  if(!Object.keys(freeState.staged).length)return freeMessage('Staging area jest puste.');
+  Object.assign(freeState.working,freeClone(freeState.staged));
+  freeState.staged={};
+  return freeMessage('Przeniesiono zmiany ze staging area do katalogu roboczego.');
+}
+function freeBranch(name){
+  if(!freeRequireRepo())return freeInfo.textContent;
+  if(!name)return freeMessage('Podaj nazwę gałęzi.');
+  if(freeState.branches[name]!==undefined)return freeMessage('Gałąź '+name+' już istnieje.');
+  freeState.branches[name]=freeHeadId();
+  freeState.current=name;
+  return freeMessage('Utworzono gałąź '+name+' i przełączono HEAD.');
+}
+function freeSwitch(name){
+  if(!freeRequireRepo())return freeInfo.textContent;
+  if(freeState.branches[name]===undefined)return freeMessage('Nie istnieje gałąź '+name+'.');
+  if(Object.keys(freeState.working).length||Object.keys(freeState.staged).length)return freeMessage('Najpierw zapisz, odłóż lub odrzuć bieżące zmiany.');
+  freeState.current=name;
+  return freeMessage('Przełączono na gałąź '+name+'.');
+}
+function freeMerge(source){
+  if(!freeRequireRepo())return freeInfo.textContent;
+  if(source===freeState.current)return freeMessage('Nie można scalać gałęzi z samą sobą.');
+  if(freeState.branches[source]===undefined)return freeMessage('Nie istnieje gałąź '+source+'.');
+  const sourceId=freeState.branches[source],targetId=freeHeadId();
+  if(!sourceId)return freeMessage('Gałąź źródłowa nie zawiera commitów.');
+  const id=freeCommitId();
+  freeState.commits[id]={
+    n:freeState.nextCommit-1,message:'Merge '+source+' into '+freeState.current,
+    parents:[targetId,sourceId].filter(Boolean),
+    snapshot:freeClone(freeState.commits[sourceId].snapshot),type:'merge'
+  };
+  freeState.branches[freeState.current]=id;
+  return freeMessage('Utworzono commit scalający '+id+'.');
+}
+function freeRebase(base){
+  if(!freeRequireRepo())return freeInfo.textContent;
+  if(freeState.branches[base]===undefined)return freeMessage('Nie istnieje gałąź '+base+'.');
+  if(base===freeState.current)return freeMessage('Nie można wykonać rebase na tej samej gałęzi.');
+  const old=freeHeadId(),baseId=freeState.branches[base];
+  if(!old)return freeMessage('Aktywna gałąź nie zawiera commitów.');
+  const id=freeCommitId();
+  freeState.commits[id]={
+    n:freeState.nextCommit-1,message:'Rebase: '+freeState.commits[old].message,
+    parents:baseId?[baseId]:[],snapshot:freeClone(freeState.commits[old].snapshot),type:'normal'
+  };
+  freeState.branches[freeState.current]=id;
+  return freeMessage('Przepisano ostatni commit na podstawę '+base+'.');
+}
+function freeCherry(id){
+  if(!freeRequireRepo())return freeInfo.textContent;
+  if(!freeState.commits[id])return freeMessage('Nie istnieje commit '+id+'.');
+  const newId=freeCommitId(),parent=freeHeadId();
+  freeState.commits[newId]={
+    n:freeState.nextCommit-1,message:'Cherry-pick '+id,
+    parents:parent?[parent]:[],snapshot:freeClone(freeState.commits[id].snapshot),type:'normal'
+  };
+  freeState.branches[freeState.current]=newId;
+  return freeMessage('Skopiowano commit '+id+' jako '+newId+'.');
+}
+function freeRevert(){
+  if(!freeRequireRepo())return freeInfo.textContent;
+  const head=freeHeadId();
+  if(!head)return freeMessage('Brak commita do odwrócenia.');
+  const parent=freeState.commits[head].parents[0];
+  const snapshot=parent&&freeState.commits[parent]?freeClone(freeState.commits[parent].snapshot):{};
+  const id=freeCommitId();
+  freeState.commits[id]={n:freeState.nextCommit-1,message:'Revert '+head,parents:[head],snapshot,type:'revert'};
+  freeState.branches[freeState.current]=id;
+  return freeMessage('Utworzono commit odwracający '+id+'.');
+}
+function freeReset(mode){
+  if(!freeRequireRepo())return freeInfo.textContent;
+  const head=freeHeadId();
+  if(!head)return freeMessage('Brak commita do cofnięcia.');
+  const c=freeState.commits[head],parent=c.parents[0]||null;
+  freeState.branches[freeState.current]=parent;
+  if(mode==='soft'){
+    const parentSnap=parent&&freeState.commits[parent]?freeState.commits[parent].snapshot:{};
+    Object.entries(c.snapshot).forEach(([name,val])=>{
+      if(JSON.stringify(parentSnap[name])!==JSON.stringify(val))freeState.staged[name]=freeClone(val);
+    });
+  }else{
+    freeState.working={};freeState.staged={};
+  }
+  return freeMessage('Przesunięto HEAD na '+(parent||'początek')+' w trybie --'+mode+'.');
+}
+function freeStashPush(){
+  if(!freeRequireRepo())return freeInfo.textContent;
+  const all={...freeClone(freeState.working),...freeClone(freeState.staged)};
+  if(!Object.keys(all).length)return freeMessage('Brak zmian do odłożenia.');
+  freeState.stash.unshift(all);freeState.working={};freeState.staged={};
+  return freeMessage('Odłożono zmiany jako stash@{0}.');
+}
+function freeStashPop(){
+  if(!freeRequireRepo())return freeInfo.textContent;
+  if(!freeState.stash.length)return freeMessage('Stash jest pusty.');
+  freeState.working=freeState.stash.shift();
+  return freeMessage('Przywrócono ostatni stash do katalogu roboczego.');
+}
+function freePush(){
+  if(!freeRequireRepo())return freeInfo.textContent;
+  freeState.remoteBranches[freeState.current]=freeHeadId();
+  return freeMessage('Wysłano aktywną gałąź do origin.');
+}
+function freeFetch(){
+  if(!freeRequireRepo())return freeInfo.textContent;
+  return freeMessage('Pobrano wskaźniki origin bez zmiany plików lokalnych.');
+}
+function freePull(){
+  if(!freeRequireRepo())return freeInfo.textContent;
+  const remote=freeState.remoteBranches[freeState.current];
+  if(!remote)return freeMessage('Brak zdalnej wersji aktywnej gałęzi.');
+  freeState.branches[freeState.current]=remote;
+  freeState.working={};freeState.staged={};
+  return freeMessage('Zaktualizowano aktywną gałąź do origin/'+freeState.current+'.');
+}
+function freeStatus(){
+  if(!freeState.initialized)return 'fatal: not a git repository';
+  return [
+    'On branch '+freeState.current,
+    Object.keys(freeState.staged).length?'Changes to be committed: '+Object.keys(freeState.staged).join(', '):'Staging area clean',
+    Object.keys(freeState.working).length?'Changes not staged: '+Object.keys(freeState.working).join(', '):'Working tree clean'
+  ].join('\n');
+}
+function freeDiff(){
+  const names=Object.keys(freeState.working);
+  return names.length?names.map(n=>'diff --git a/'+n+' b/'+n+'\n+ zmodyfikowana zawartość').join('\n'):'Brak różnic w katalogu roboczym.';
+}
+function freeHistory(){
+  const ordered=Object.entries(freeState.commits).sort((a,b)=>b[1].n-a[1].n);
+  return ordered.length?ordered.map(([id,c])=>'* '+id+' '+c.message).join('\n'):'Historia jest pusta.';
+}
+function freeRestart(){
+  Object.assign(freeState,{
+    initialized:false,current:'main',branches:{main:null},commits:{},
+    working:{},staged:{},stash:[],remoteBranches:{main:null},nextCommit:1
+  });
+  freeTerminalOut.textContent='Laboratorium wyczyszczone.';
+  return freeMessage('Przywrócono początkowy stan laboratorium.');
+}
+function freeRun(action,arg){
+  let message='';
+  switch(action){
+    case 'init':message=freeInit();break;
+    case 'clone':message=freeCloneRepo();break;
+    case 'edit':message=freeEdit(arg||'app.py');break;
+    case 'touch':message=freeTouch(arg);break;
+    case 'add':message=freeAdd();break;
+    case 'commit':message=freeCommit(arg||'Nowy commit');break;
+    case 'restore':message=freeRestore();break;
+    case 'unstage':message=freeUnstage();break;
+    case 'branch':message=freeBranch(arg);break;
+    case 'switch':message=freeSwitch(arg);break;
+    case 'merge':message=freeMerge(arg);break;
+    case 'rebase':message=freeRebase(arg);break;
+    case 'cherry':message=freeCherry(arg);break;
+    case 'revert':message=freeRevert();break;
+    case 'reset-soft':message=freeReset('soft');break;
+    case 'reset-hard':message=freeReset('hard');break;
+    case 'stash':message=freeStashPush();break;
+    case 'stash-pop':message=freeStashPop();break;
+    case 'push':message=freePush();break;
+    case 'fetch':message=freeFetch();break;
+    case 'pull':message=freePull();break;
+    case 'restart':message=freeRestart();break;
+  }
+  freeRender();return message;
+}
+document.querySelectorAll('[data-free-action]').forEach(btn=>btn.onclick=()=>{
+  const action=btn.dataset.freeAction;
+  let arg='';
+  if(action==='branch')arg=freeBranchNameInput.value.trim();
+  if(['switch','merge','rebase'].includes(action))arg=freeBranchSelect.value;
+  if(action==='cherry')arg=prompt('Podaj identyfikator commita, np. C1:')||'';
+  if(action==='commit')arg=prompt('Komunikat commita:','Nowy commit')||'Nowy commit';
+  const msg=freeRun(action,arg);
+  freeLog(btn.textContent.trim(),msg);
+});
+freeTerminalIn.onkeydown=e=>{
+  if(e.key!=='Enter')return;
+  const raw=freeTerminalIn.value.trim();
+  if(!raw)return;
+  if(raw==='clear'){freeTerminalOut.textContent='';freeTerminalIn.value='';return}
+  let msg='Polecenie nie jest obsługiwane w trybie swobodnym.';
+  let m;
+  if(raw==='git init')msg=freeRun('init');
+  else if(raw.startsWith('git clone'))msg=freeRun('clone');
+  else if((m=raw.match(/^touch\s+(.+)$/)))msg=freeRun('touch',m[1].trim());
+  else if((m=raw.match(/^edit\s+(.+)$/)))msg=freeRun('edit',m[1].trim());
+  else if(raw==='git status')msg=freeStatus();
+  else if(raw==='git diff')msg=freeDiff();
+  else if(raw==='git add .'||raw.startsWith('git add '))msg=freeRun('add');
+  else if((m=raw.match(/^git commit -m ["'](.+)["']$/)))msg=freeRun('commit',m[1]);
+  else if(raw.startsWith('git log'))msg=freeHistory();
+  else if((m=raw.match(/^git switch -c\s+(.+)$/)))msg=freeRun('branch',m[1].trim());
+  else if((m=raw.match(/^git switch\s+(.+)$/)))msg=freeRun('switch',m[1].trim());
+  else if((m=raw.match(/^git merge\s+(.+)$/)))msg=freeRun('merge',m[1].trim());
+  else if((m=raw.match(/^git rebase\s+(.+)$/)))msg=freeRun('rebase',m[1].trim());
+  else if((m=raw.match(/^git cherry-pick\s+(.+)$/)))msg=freeRun('cherry',m[1].trim());
+  else if(raw==='git revert HEAD')msg=freeRun('revert');
+  else if(raw==='git reset --soft HEAD~1')msg=freeRun('reset-soft');
+  else if(raw==='git reset --hard HEAD~1')msg=freeRun('reset-hard');
+  else if(raw==='git restore .'||raw.startsWith('git restore ')&&!raw.includes('--staged'))msg=freeRun('restore');
+  else if(raw.startsWith('git restore --staged'))msg=freeRun('unstage');
+  else if(raw==='git stash'||raw==='git stash push')msg=freeRun('stash');
+  else if(raw==='git stash pop')msg=freeRun('stash-pop');
+  else if(raw==='git fetch')msg=freeRun('fetch');
+  else if(raw==='git pull')msg=freeRun('pull');
+  else if(raw==='git push')msg=freeRun('push');
+  else if(raw==='git branch')msg=Object.keys(freeState.branches).map(b=>(b===freeState.current?'* ':'  ')+b).join('\n');
+  freeLog(raw,msg);
+  freeTerminalIn.value='';
+  freeRender();
+};
+freeRender();
+
+/* Scroll spy */
+const links=[...document.querySelectorAll('.nav a')];
+const obs=new IntersectionObserver(es=>es.forEach(e=>{
+  if(e.isIntersecting) links.forEach(a=>a.classList.toggle('active',a.getAttribute('href')==='#'+e.target.id));
+}),{rootMargin:'-35% 0px -55%'});
+document.querySelectorAll('main section[id]').forEach(s=>obs.observe(s));
+
+updateProgress();
+</script>
+</body>
+</html>
