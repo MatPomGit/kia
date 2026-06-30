@@ -119,7 +119,7 @@ export class AttemptsService {
   }
 
   private assertAttemptId(attemptId: string): void {
-    if (!/^[a-zA-Z0-9_-]{3,80}$/.test(attemptId)) {
+    if (typeof attemptId !== "string" || !/^[a-zA-Z0-9_-]{3,80}$/.test(attemptId)) {
       throw new BadRequestException("Identyfikator próby ma nieprawidłowy format.");
     }
   }
