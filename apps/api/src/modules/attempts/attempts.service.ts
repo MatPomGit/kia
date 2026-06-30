@@ -146,6 +146,10 @@ export class AttemptsService {
   }
 
   private sanitizePayload(event: TelemetryEventDto): SanitizedPayload {
+    if (!event.payload || typeof event.payload !== "object") {
+      throw new BadRequestException("Brak danych payload lub nieprawidłowy format.");
+    }
+
     if (event.type === "pointer_sample") {
       const x = this.requireFiniteNumber(event.payload.x, "payload.x");
       const y = this.requireFiniteNumber(event.payload.y, "payload.y");
