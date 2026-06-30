@@ -1,24 +1,75 @@
+"use client";
+
 import Link from "next/link";
+import { useState } from "react";
 import { Header } from "@/components/Header";
 import { Footer } from "@/components/Footer";
 
-const quizzes = [
-  { title: "Git i praca zespołowa", time: "10 min", status: "Dostępna", available: true },
-  { title: "Terminal i automatyzacja", time: "12 min", status: "Wkrótce", available: false },
-  { title: "Debugowanie i jakość kodu", time: "10 min", status: "Wkrótce", available: false },
+type StudyMode = "fullTime" | "partTime";
+
+type Quiz = {
+  label: string;
+  title: string;
+  time: string;
+  status: string;
+  available: boolean;
+};
+
+type Material = {
+  label: string;
+  title: string;
+  description: string;
+  links: Array<{ label: string; href: string }>;
+};
+
+const studyModes: Array<{ id: StudyMode; label: string }> = [
+  { id: "fullTime", label: "Studia stacjonarne" },
+  { id: "partTime", label: "Studia niestacjonarne" },
 ];
 
-const materials = [
-  { label: "Temat 1", title: "Środowisko pracy programisty", href: "../materialy/ndp_laboratorium_01.html" },
-  { label: "Temat 2", title: "Polecenia powłoki Bash", href: "../materialy/ndp_laboratorium_02.html" },
-  { label: "Temat 3", title: "Skrypty powłoki Bash", href: "../materialy/ndp_laboratorium_03.html" },
-  { label: "Temat 4", title: "Tworzenie dokumentów LaTeX", href: "../materialy/ndp_laboratorium_04.html" },
-  { label: "Temat 5", title: "Pakiety LaTeX i własne makra", href: "../materialy/ndp_laboratorium_05.html" },
-  { label: "Temat 6", title: "System kontroli wersji Git", href: "../materialy/ndp_laboratorium_06.html" },
-  { label: "Ćwiczenia własne", title: "Interaktywny terminal Bash", href: "../materialy/ndp_terminal.html" },
-];
+const quizzesByMode: Record<StudyMode, Quiz[]> = {
+  fullTime: [
+    { label: "Zajęcia 2", title: "Polecenia powłoki Bash", time: "10 min", status: "Dostępna", available: true },
+    { label: "Zajęcia 3", title: "Skrypty powłoki Bash", time: "10 min", status: "Wkrótce", available: false },
+    { label: "Zajęcia 4", title: "Tworzenie dokumentów LaTeX", time: "10 min", status: "Wkrótce", available: false },
+    { label: "Zajęcia 5", title: "Pakiety LaTeX i własne makra", time: "10 min", status: "Wkrótce", available: false },
+    { label: "Zajęcia 6", title: "System kontroli wersji Git", time: "10 min", status: "Wkrótce", available: false },
+  ],
+  partTime: [
+    { label: "Zajęcia 2", title: "Polecenia powłoki Bash", time: "10 min", status: "Dostępna", available: true },
+    { label: "Zajęcia 3", title: "Skrypty powłoki Bash", time: "10 min", status: "Wkrótce", available: false },
+    { label: "Zajęcia 4", title: "LaTeX i własne makra", time: "12 min", status: "Wkrótce", available: false },
+    { label: "Zajęcia 5", title: "System kontroli wersji Git", time: "10 min", status: "Wkrótce", available: false },
+  ],
+};
+
+const materialsByMode: Record<StudyMode, Material[]> = {
+  fullTime: [
+    { label: "Temat 1", title: "Środowisko pracy programisty", description: "Organizacja pracy, macOS, terminal, konfiguracja narzędzi i odpowiedzialne użycie AI.", links: [{ label: "Otwórz materiał", href: "../materialy/ndp_laboratorium_01.html" }] },
+    { label: "Temat 2", title: "Polecenia powłoki Bash", description: "System plików, przekierowania, potoki, kody zakończenia i pierwsze pętle.", links: [{ label: "Otwórz materiał", href: "../materialy/ndp_laboratorium_02.html" }] },
+    { label: "Temat 3", title: "Skrypty powłoki Bash", description: "Zmienne, instrukcje warunkowe, pętle, case, sygnały i podstawy edytora Vim.", links: [{ label: "Otwórz materiał", href: "../materialy/ndp_laboratorium_03.html" }] },
+    { label: "Temat 4", title: "Tworzenie dokumentów LaTeX", description: "Struktura i skład dokumentu, wzory, odwołania, spisy oraz grafika TikZ.", links: [{ label: "Otwórz materiał", href: "../materialy/ndp_laboratorium_04.html" }] },
+    { label: "Temat 5", title: "Pakiety LaTeX i własne makra", description: "Makra, listingi, metadane PDF, bibliografia BibTeX i schematy circuitikz.", links: [{ label: "Otwórz materiał", href: "../materialy/ndp_laboratorium_05.html" }] },
+    { label: "Temat 6", title: "System kontroli wersji Git", description: "Repozytoria, historia zmian, synchronizacja, konflikty, gałęzie i praca zespołowa.", links: [{ label: "Otwórz materiał", href: "../materialy/ndp_laboratorium_06.html" }] },
+    { label: "Ćwiczenia własne", title: "Interaktywny terminal Bash", description: "Samodzielne ćwiczenie podstawowych poleceń w wirtualnym terminalu Bash.", links: [{ label: "Otwórz terminal", href: "../materialy/ndp_terminal.html" }] },
+  ],
+  partTime: [
+    { label: "Temat 1", title: "Środowisko pracy programisty", description: "Organizacja pracy, macOS, terminal, konfiguracja narzędzi i odpowiedzialne użycie AI.", links: [{ label: "Otwórz materiał", href: "../materialy/ndp_laboratorium_01.html" }] },
+    { label: "Temat 2", title: "Polecenia powłoki Bash", description: "System plików, przekierowania, potoki, kody zakończenia i pierwsze pętle.", links: [{ label: "Otwórz materiał", href: "../materialy/ndp_laboratorium_02.html" }] },
+    { label: "Temat 3", title: "Skrypty powłoki Bash", description: "Zmienne, instrukcje warunkowe, pętle, case, sygnały i podstawy edytora Vim.", links: [{ label: "Otwórz materiał", href: "../materialy/ndp_laboratorium_03.html" }] },
+    { label: "Temat 4", title: "LaTeX i własne makra", description: "Połączona instrukcja dla studiów niestacjonarnych: dokumenty LaTeX, pakiety, makra, listingi i bibliografia.", links: [
+      { label: "Część 1: LaTeX", href: "../materialy/ndp_laboratorium_04.html" },
+      { label: "Część 2: makra", href: "../materialy/ndp_laboratorium_05.html" },
+    ] },
+    { label: "Temat 5", title: "System kontroli wersji Git", description: "Repozytoria, historia zmian, synchronizacja, konflikty, gałęzie i praca zespołowa.", links: [{ label: "Otwórz materiał", href: "../materialy/ndp_laboratorium_06.html" }] },
+    { label: "Ćwiczenia własne", title: "Interaktywny terminal Bash", description: "Samodzielne ćwiczenie podstawowych poleceń w wirtualnym terminalu Bash.", links: [{ label: "Otwórz terminal", href: "../materialy/ndp_terminal.html" }] },
+  ],
+};
 
 export default function NdPPage() {
+  const [quizMode, setQuizMode] = useState<StudyMode>("fullTime");
+  const [materialsMode, setMaterialsMode] = useState<StudyMode>("fullTime");
+
   return (
     <div className="shell">
       <Header active="dashboard" title="kia.ndp" />
@@ -28,38 +79,80 @@ export default function NdPPage() {
           <h1>kia.ndp</h1>
           <p>Materiały, wejściówki i wyniki dla przedmiotu Narzędzia dla programistów.</p>
         </section>
-        <section aria-labelledby="materials-heading">
-          <div className="section-head">
+
+        <section className="tabbed-panel" aria-labelledby="quizzes-heading">
+          <div className="section-head compact">
             <div>
-              <h2 id="materials-heading">Materiały edukacyjne</h2>
-              <p>Laboratoria ułożone w kolejności realizacji.</p>
+              <h2 id="quizzes-heading">Wejściówki</h2>
+              <p>Sprawdź wiedzę przed zajęciami. Program niestacjonarny łączy LaTeX i makra w jedną wejściówkę.</p>
             </div>
           </div>
-          <div className="grid">
-            {materials.map((material) => (
-              <article className="card" key={material.label}>
-                <span className="badge success">{material.label}</span>
-                <h2>{material.title}</h2>
-                <a className="btn secondary" href={material.href}>Otwórz materiał</a>
+          <div className="tabs" role="tablist" aria-label="Tryb studiów dla wejściówek">
+            {studyModes.map((mode) => (
+              <button
+                aria-controls={`quizzes-${mode.id}`}
+                aria-selected={quizMode === mode.id}
+                className={quizMode === mode.id ? "active" : ""}
+                id={`quizzes-tab-${mode.id}`}
+                key={mode.id}
+                onClick={() => setQuizMode(mode.id)}
+                role="tab"
+                type="button"
+              >
+                {mode.label}
+              </button>
+            ))}
+          </div>
+          <div aria-labelledby={`quizzes-tab-${quizMode}`} className="grid" id={`quizzes-${quizMode}`} role="tabpanel">
+            {quizzesByMode[quizMode].map((quiz) => (
+              <article className="card" key={`${quiz.label}-${quiz.title}`}>
+                <div className="meta">
+                  <span className="badge success">{quiz.label}</span>
+                  <span className={`badge ${quiz.available ? "success" : ""}`}>{quiz.status}</span>
+                </div>
+                <h2>{quiz.title}</h2>
+                <p>Czas rozwiązania: {quiz.time}. Jedno podejście.</p>
+                {quiz.available ? <Link className="btn" href="/quiz/demo">Rozpocznij</Link> : <button className="btn secondary" disabled>Jeszcze niedostępna</button>}
               </article>
             ))}
           </div>
         </section>
-        <div className="section-head">
-          <div>
-            <h2>Wejściówki</h2>
-            <p>Sprawdź wiedzę przed zajęciami.</p>
+
+        <section className="tabbed-panel" aria-labelledby="materials-heading">
+          <div className="section-head compact">
+            <div>
+              <h2 id="materials-heading">Materiały i instrukcje</h2>
+              <p>Laboratoria ułożone w kolejności realizacji dla wybranego trybu studiów.</p>
+            </div>
           </div>
-        </div>
-        <section className="grid" aria-label="Lista wejściówek">
-          {quizzes.map((quiz) => (
-            <article className="card" key={quiz.title}>
-              <span className={`badge ${quiz.available ? "success" : ""}`}>{quiz.status}</span>
-              <h2>{quiz.title}</h2>
-              <p>Czas rozwiązania: {quiz.time}. Jedno podejście.</p>
-              {quiz.available ? <Link className="btn" href="/quiz/demo">Rozpocznij</Link> : <button className="btn secondary" disabled>Jeszcze niedostępna</button>}
-            </article>
-          ))}
+          <div className="tabs" role="tablist" aria-label="Tryb studiów dla materiałów">
+            {studyModes.map((mode) => (
+              <button
+                aria-controls={`materials-${mode.id}`}
+                aria-selected={materialsMode === mode.id}
+                className={materialsMode === mode.id ? "active" : ""}
+                id={`materials-tab-${mode.id}`}
+                key={mode.id}
+                onClick={() => setMaterialsMode(mode.id)}
+                role="tab"
+                type="button"
+              >
+                {mode.label}
+              </button>
+            ))}
+          </div>
+          <div aria-labelledby={`materials-tab-${materialsMode}`} className="grid" id={`materials-${materialsMode}`} role="tabpanel">
+            {materialsByMode[materialsMode].map((material) => (
+              <article className="card" key={`${material.label}-${material.title}`}>
+                <span className="badge success">{material.label}</span>
+                <h2>{material.title}</h2>
+                <p>{material.description}</p>
+                <div className="card-actions">
+                  {material.links.map((link) => <a className="btn secondary" href={link.href} key={link.href}>{link.label}</a>)}
+                </div>
+              </article>
+            ))}
+          </div>
         </section>
       </main>
       <Footer />
