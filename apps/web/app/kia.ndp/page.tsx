@@ -9,12 +9,13 @@ const quizzes = [
 ];
 
 const materials = [
-  { number: "1", title: "Środowisko pracy programisty", href: "../materialy/ndp_laboratorium_01.html" },
-  { number: "2", title: "Polecenia powłoki Bash", href: "../materialy/ndp_laboratorium_02.html" },
-  { number: "3", title: "Skrypty powłoki Bash", href: "../materialy/ndp_laboratorium_03.html" },
-  { number: "4", title: "Tworzenie dokumentów LaTeX", href: "../materialy/ndp_laboratorium_04.html" },
-  { number: "5", title: "Pakiety LaTeX i własne makra", href: "../materialy/ndp_laboratorium_05.html" },
-  { number: "6", title: "System kontroli wersji Git", href: "../materialy/ndp_laboratorium_06.html" },
+  { label: "Temat 1", title: "Środowisko pracy programisty", href: "../materialy/ndp_laboratorium_01.html" },
+  { label: "Temat 2", title: "Polecenia powłoki Bash", href: "../materialy/ndp_laboratorium_02.html" },
+  { label: "Temat 3", title: "Skrypty powłoki Bash", href: "../materialy/ndp_laboratorium_03.html" },
+  { label: "Temat 4", title: "Tworzenie dokumentów LaTeX", href: "../materialy/ndp_laboratorium_04.html" },
+  { label: "Temat 5", title: "Pakiety LaTeX i własne makra", href: "../materialy/ndp_laboratorium_05.html" },
+  { label: "Temat 6", title: "System kontroli wersji Git", href: "../materialy/ndp_laboratorium_06.html" },
+  { label: "Ćwiczenia własne", title: "Interaktywny terminal Bash", href: "../materialy/ndp_terminal.html" },
 ];
 
 export default function NdPPage() {
@@ -36,8 +37,8 @@ export default function NdPPage() {
           </div>
           <div className="grid">
             {materials.map((material) => (
-              <article className="card" key={material.number}>
-                <span className="badge success">Temat {material.number}</span>
+              <article className="card" key={material.label}>
+                <span className="badge success">{material.label}</span>
                 <h2>{material.title}</h2>
                 <a className="btn secondary" href={material.href}>Otwórz materiał</a>
               </article>

@@ -7,7 +7,8 @@ export default function MaterialsPage() {
     { number: "3", title: "Skrypty powłoki Bash", scope: "Zmienne, instrukcje warunkowe, pętle, case, sygnały i podstawy edytora Vim.", href: "ndp_laboratorium_03.html" },
     { number: "4", title: "Tworzenie dokumentów LaTeX", scope: "Struktura i skład dokumentu, wzory, odwołania, spisy oraz grafika TikZ.", href: "ndp_laboratorium_04.html" },
     { number: "5", title: "Pakiety LaTeX i własne makra", scope: "Makra, listingi, metadane PDF, bibliografia BibTeX i schematy circuitikz.", href: "ndp_laboratorium_05.html" },
-    { number: "6", title: "System kontroli wersji Git", scope: "Repozytoria, historia zmian, synchronizacja, konflikty, gałęzie i praca zespołowa.", href: "ndp_laboratorium_06.html" }
+    { number: "6", title: "System kontroli wersji Git", scope: "Repozytoria, historia zmian, synchronizacja, konflikty, gałęzie i praca zespołowa.", href: "ndp_laboratorium_06.html" },
+    { number: "Ćwiczenia własne", title: "Interaktywny terminal Bash", scope: "Samodzielne ćwiczenie podstawowych poleceń w wirtualnym terminalu Bash.", href: "ndp_terminal.html" }
   ];
 
   return (
