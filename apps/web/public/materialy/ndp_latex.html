@@ -1,0 +1,2262 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="Interaktywne laboratorium do nauki tworzenia dokumentów LaTeX." />
+  <title>LaTeX Learning Lab</title>
+
+  <link rel="preconnect" href="https://cdn.jsdelivr.net" />
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/latex.js@0.12.6/dist/css/base.min.css" />
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/latex.js@0.12.6/dist/css/article.min.css" />
+
+  <style>
+    :root {
+      --bg: #eef2f7;
+      --panel: #ffffff;
+      --panel-alt: #f7f9fc;
+      --border: #cfd7e3;
+      --text: #18212f;
+      --muted: #5f6b7a;
+      --accent: #2457d6;
+      --accent-hover: #1947ba;
+      --success: #137333;
+      --danger: #b3261e;
+      --warning: #8a4f00;
+      --editor-bg: #111827;
+      --editor-text: #e5e7eb;
+      --shadow: 0 10px 30px rgba(20, 35, 60, 0.08);
+      --radius: 12px;
+      --workspace-height: 780px;
+      --a4-ratio: 210 / 297;
+    }
+
+    * { box-sizing: border-box; }
+
+    html, body {
+      margin: 0;
+      min-height: 100%;
+      background: var(--bg);
+      color: var(--text);
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    }
+
+    body {
+      display: flex;
+      flex-direction: column;
+      min-height: 100vh;
+    }
+
+    header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 1rem;
+      padding: 0.42rem 0.85rem;
+      background: #0f172a;
+      color: #fff;
+      border-bottom: 1px solid #253046;
+    }
+
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 0.6rem;
+      min-width: 0;
+    }
+
+    .brand-logo {
+      display: block;
+      width: 84px;
+      height: 44px;
+      object-fit: contain;
+      flex: 0 0 auto;
+      border-radius: 6px;
+      background: #fff;
+      padding: 3px;
+      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.18);
+    }
+
+    .brand-copy { min-width: 0; }
+
+    .brand h1 {
+      margin: 0;
+      font-size: 1.02rem;
+      letter-spacing: 0.01em;
+    }
+
+    .brand p {
+      margin: 0.08rem 0 0;
+      color: #bdc8da;
+      font-size: 0.74rem;
+    }
+
+    .toolbar {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 0.55rem;
+    }
+
+    button, select, input[type="number"] {
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      min-height: 38px;
+      font: inherit;
+    }
+
+    button {
+      cursor: pointer;
+      padding: 0.55rem 0.85rem;
+      background: #fff;
+      color: var(--text);
+      transition: 0.16s ease;
+    }
+
+    button:hover { transform: translateY(-1px); }
+
+    .primary {
+      background: var(--accent);
+      border-color: var(--accent);
+      color: white;
+      font-weight: 700;
+    }
+
+    .primary:hover { background: var(--accent-hover); }
+
+    select {
+      padding: 0 0.7rem;
+      background: #fff;
+      min-width: 200px;
+    }
+
+    main {
+      flex: 1;
+      display: grid;
+      grid-template-columns: 185px minmax(0, 1fr) minmax(0, 1fr);
+      gap: 0.9rem;
+      padding: 0.9rem;
+      min-height: 0;
+      height: var(--workspace-height);
+      align-items: stretch;
+    }
+
+    .project-panel {
+      min-width: 0;
+    }
+
+    .project-actions {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 0.45rem;
+      padding: 0.7rem;
+      border-bottom: 1px solid var(--border);
+      background: var(--panel-alt);
+    }
+
+    .project-actions button {
+      padding: 0.45rem 0.5rem;
+      font-size: 0.8rem;
+    }
+
+    .project-actions .project-import-btn {
+      grid-column: 1 / -1;
+      background: #e7eefc;
+      border-color: #b9c9ef;
+      color: #163d9a;
+      font-weight: 700;
+    }
+
+    .file-list {
+      list-style: none;
+      margin: 0;
+      padding: 0.45rem;
+      overflow: auto;
+      flex: 1;
+    }
+
+    .file-item {
+      display: flex;
+      align-items: center;
+      gap: 0.45rem;
+      width: 100%;
+      padding: 0.55rem 0.6rem;
+      border: 1px solid transparent;
+      border-radius: 8px;
+      color: var(--text);
+      background: transparent;
+      text-align: left;
+      font: 0.84rem/1.3 Consolas, monospace;
+    }
+
+    .file-item:hover {
+      transform: none;
+      background: #eef3fb;
+    }
+
+    .file-item.active {
+      background: #e7eefc;
+      border-color: #b9c9ef;
+      color: #163d9a;
+      font-weight: 700;
+    }
+
+    .file-icon { color: var(--muted); flex: 0 0 auto; }
+
+    .file-item span:last-child {
+      min-width: 0;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .project-info {
+      padding: 0.7rem;
+      border-top: 1px solid var(--border);
+      color: var(--muted);
+      font-size: 0.76rem;
+      line-height: 1.4;
+      background: var(--panel-alt);
+    }
+
+    .panel {
+      min-width: 0;
+      min-height: 0;
+      display: flex;
+      flex-direction: column;
+      background: var(--panel);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      overflow: hidden;
+      height: 100%;
+    }
+
+    .panel-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 1rem;
+      padding: 0.65rem 0.85rem;
+      background: var(--panel-alt);
+      border-bottom: 1px solid var(--border);
+    }
+
+    .panel-header h2 {
+      margin: 0;
+      font-size: 0.95rem;
+    }
+
+    .status {
+      font-size: 0.78rem;
+      color: var(--muted);
+    }
+
+    .status.success { color: var(--success); }
+    .status.error { color: var(--danger); }
+
+    .editor-wrap {
+      flex: 1;
+      min-height: 0;
+      position: relative;
+      background: var(--editor-bg);
+    }
+
+    textarea {
+      width: 100%;
+      height: 100%;
+      min-height: 0;
+      resize: none;
+      border: 0;
+      outline: none;
+      padding: 1rem;
+      background: var(--editor-bg);
+      color: var(--editor-text);
+      font: 15px/1.55 "JetBrains Mono", "Fira Code", Consolas, monospace;
+      tab-size: 2;
+      white-space: pre;
+      overflow: auto;
+    }
+
+    .preview-wrap {
+      flex: 1;
+      min-height: 0;
+      overflow: auto;
+      padding: 1rem;
+      background: #dfe4ea;
+      display: flex;
+      align-items: flex-start;
+      justify-content: center;
+    }
+
+    .paper-stage {
+      position: relative;
+      flex: 0 0 auto;
+      margin: 0 auto;
+    }
+
+    .paper {
+      --page-width: 793.7008px;
+      --page-height: 1122.5197px;
+      --page-padding-top: 60.4724px;
+      --page-padding-right: 60.4724px;
+      --page-padding-bottom: 83.1496px;
+      --page-padding-left: 60.4724px;
+      position: relative;
+      width: var(--page-width);
+      height: var(--page-height);
+      min-width: var(--page-width);
+      min-height: var(--page-height);
+      margin: 0;
+      padding: var(--page-padding-top) var(--page-padding-right) var(--page-padding-bottom) var(--page-padding-left);
+      background: #fff;
+      box-shadow: 0 6px 22px rgba(15, 23, 42, 0.16);
+      overflow: hidden;
+      overflow-wrap: anywhere;
+      font-size: 12pt;
+      line-height: 1.2;
+      transform-origin: top left;
+    }
+
+    .paper.page-landscape {
+      --page-width: 1122.5197px;
+      --page-height: 793.7008px;
+    }
+
+    .paper.page-slide {
+      --page-width: 1280px;
+      --page-height: 720px;
+      --page-padding-top: 54px;
+      --page-padding-right: 72px;
+      --page-padding-bottom: 58px;
+      --page-padding-left: 72px;
+      font-family: Arial, Helvetica, sans-serif;
+      font-size: 24px;
+      line-height: 1.28;
+    }
+
+    .paper.page-slide h1 { font-size: 2em; }
+    .paper.page-slide h2 { font-size: 1.55em; }
+    .paper.page-slide h3 { font-size: 1.2em; }
+
+    .presentation-canvas {
+      width: auto;
+      height: auto;
+      min-width: 0;
+      min-height: 0;
+      padding: 0;
+      background: transparent;
+      box-shadow: none;
+      overflow: visible;
+    }
+
+    .slide-deck {
+      display: flex;
+      flex-direction: column;
+      gap: 28px;
+      align-items: center;
+    }
+
+    .slide-stage {
+      position: relative;
+      width: 1280px;
+      height: 720px;
+      flex: 0 0 auto;
+    }
+
+    .slide-page {
+      position: relative;
+      width: 1280px;
+      height: 720px;
+      padding: 54px 72px 58px;
+      background: #fff;
+      box-shadow: 0 6px 22px rgba(15, 23, 42, 0.16);
+      overflow: hidden;
+      font: 24px/1.28 Arial, Helvetica, sans-serif;
+      transform-origin: top left;
+    }
+
+    .slide-page .slide-title {
+      margin: 0 0 28px;
+      padding-bottom: 14px;
+      border-bottom: 3px solid var(--accent);
+      font-size: 40px;
+      line-height: 1.15;
+      color: #173c8f;
+    }
+
+    .code-block-preview {
+      display: block;
+      max-width: 100%;
+      margin: 0.8em 0;
+      padding: 0.8em 1em;
+      overflow: auto;
+      border: 1px solid #cad3df;
+      border-radius: 6px;
+      background: #f4f6f8;
+      color: #111827;
+      font: 0.82em/1.45 Consolas, "Liberation Mono", monospace;
+      white-space: pre;
+      tab-size: 2;
+    }
+
+    .page-footer {
+      position: absolute;
+      left: 7.619%;
+      right: 7.619%;
+      bottom: 2.7%;
+      padding-top: 0.7%;
+      border-top: 1px solid #999;
+      color: #555;
+      font: 9pt/1.2 "Times New Roman", serif;
+      text-align: center;
+      background: #fff;
+    }
+
+    .paper .body {
+      max-width: none;
+      margin: 0;
+    }
+
+    .console {
+      max-height: 135px;
+      overflow: auto;
+      padding: 0.7rem 0.85rem;
+      background: #fff8e8;
+      border-top: 1px solid #e3c584;
+      color: var(--warning);
+      font: 12.5px/1.45 Consolas, monospace;
+      white-space: pre-wrap;
+    }
+
+    .console[hidden] { display: none; }
+
+    .tips {
+      border-top: 1px solid var(--border);
+      padding: 0.7rem 0.85rem;
+      background: var(--panel-alt);
+      color: var(--muted);
+      font-size: 0.82rem;
+      line-height: 1.45;
+    }
+
+    .tips code {
+      color: #123a9b;
+      font-family: Consolas, monospace;
+    }
+
+    .education-section {
+      margin: 0 0.9rem 0.9rem;
+      background: var(--panel);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      overflow: hidden;
+    }
+
+    .education-header {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 1rem;
+      padding: 1rem 1.1rem;
+      background: var(--panel-alt);
+      border-bottom: 1px solid var(--border);
+    }
+
+    .education-header h2 {
+      margin: 0;
+      font-size: 1.05rem;
+    }
+
+    .education-header p {
+      max-width: 860px;
+      margin: 0.35rem 0 0;
+      color: var(--muted);
+      font-size: 1rem;
+      line-height: 1.7;
+    }
+
+    .lesson-context {
+      margin: 1rem;
+      padding: 1rem 1.1rem;
+      border-left: 4px solid var(--accent);
+      background: #f1f5ff;
+      border-radius: 8px;
+    }
+
+    .lesson-context h3 {
+      margin: 0 0 0.45rem;
+      font-size: 1.12rem;
+    }
+
+    .lesson-context p {
+      margin: 0;
+      color: #35435a;
+      font-size: 1rem;
+      line-height: 1.72;
+    }
+
+    .education-grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 0.85rem;
+      padding: 0 1rem 1rem;
+    }
+
+    .edu-card {
+      padding: 1rem;
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      background: #fff;
+    }
+
+    .edu-card h3 {
+      margin: 0 0 0.55rem;
+      font-size: 1.08rem;
+      color: #173c8f;
+    }
+
+    .edu-card p {
+      margin: 0 0 0.7rem;
+      color: var(--muted);
+      font-size: 0.96rem;
+      line-height: 1.68;
+    }
+
+    .edu-card code {
+      font-family: Consolas, monospace;
+      color: #173c8f;
+      background: #eef3fb;
+      padding: 0.08rem 0.25rem;
+      border-radius: 4px;
+    }
+
+    .edu-card ul {
+      margin: 0;
+      padding-left: 1.1rem;
+      color: #425066;
+      font-size: 0.93rem;
+      line-height: 1.62;
+    }
+
+    .edu-card li + li { margin-top: 0.25rem; }
+
+    .collapsible-toggle {
+      width: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 1rem;
+      padding: 0.95rem 1.1rem;
+      border: 0;
+      border-bottom: 1px solid var(--border);
+      background: var(--panel-alt);
+      color: #173c8f;
+      font: inherit;
+      text-align: left;
+      cursor: pointer;
+    }
+
+    .collapsible-toggle:hover { background: #eaf1ff; }
+
+    .collapsible-toggle h2 {
+      margin: 0;
+      font-size: 1.12rem;
+    }
+
+    .collapsible-icon {
+      flex: 0 0 auto;
+      font-size: 1.25rem;
+      line-height: 1;
+      transition: transform 0.2s ease;
+    }
+
+    .collapsible-toggle[aria-expanded="true"] .collapsible-icon {
+      transform: rotate(180deg);
+    }
+
+    .collapsible-content[hidden] { display: none; }
+
+    .best-practices-section {
+      margin: 0 0.9rem 0.9rem;
+      background: var(--panel);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      overflow: hidden;
+    }
+
+    .best-practices-intro {
+      padding: 1rem 1.1rem;
+      background: linear-gradient(135deg, #eef4ff 0%, #f8fbff 100%);
+      border-bottom: 1px solid var(--border);
+    }
+
+    .best-practices-intro h2 {
+      margin: 0;
+      color: #173c8f;
+      font-size: 1.18rem;
+    }
+
+    .best-practices-intro p {
+      max-width: 980px;
+      margin: 0.45rem 0 0;
+      color: #425066;
+      font-size: 1rem;
+      line-height: 1.72;
+    }
+
+    .best-practices-grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 0.85rem;
+      padding: 1rem;
+    }
+
+    .practice-card {
+      padding: 1rem;
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      background: #fff;
+    }
+
+    .practice-card h3 {
+      margin: 0 0 0.55rem;
+      color: #173c8f;
+      font-size: 1.06rem;
+    }
+
+    .practice-card p,
+    .practice-card li {
+      color: #425066;
+      font-size: 0.95rem;
+      line-height: 1.65;
+    }
+
+    .practice-card p { margin: 0 0 0.65rem; }
+    .practice-card ul { margin: 0; padding-left: 1.15rem; }
+    .practice-card li + li { margin-top: 0.28rem; }
+
+    .practice-card code {
+      font-family: Consolas, monospace;
+      color: #173c8f;
+      background: #eef3fb;
+      padding: 0.08rem 0.25rem;
+      border-radius: 4px;
+    }
+
+    .practice-wide {
+      grid-column: span 3;
+      background: #f8fbff;
+    }
+
+    .practice-checklist {
+      columns: 2;
+      column-gap: 2rem;
+    }
+
+    footer {
+      display: flex;
+      justify-content: space-between;
+      gap: 1rem;
+      padding: 0.55rem 1rem;
+      color: var(--muted);
+      font-size: 0.78rem;
+      border-top: 1px solid var(--border);
+      background: #f8fafc;
+    }
+
+    .panel-resize-handle {
+      position: relative;
+      z-index: 20;
+      flex: 0 0 22px;
+      height: 22px;
+      cursor: ns-resize;
+      background: #f7f9fc;
+      border-top: 1px solid var(--border);
+      touch-action: none;
+      user-select: none;
+    }
+
+    .panel-resize-handle::after {
+      content: "";
+      position: absolute;
+      left: 0;
+      right: 0;
+      top: -8px;
+      bottom: -8px;
+      cursor: ns-resize;
+    }
+
+    .panel-resize-handle::before {
+      content: "";
+      position: absolute;
+      left: 50%;
+      top: 8px;
+      width: 72px;
+      height: 3px;
+      transform: translateX(-50%);
+      border-radius: 999px;
+      background: #9aa8ba;
+    }
+
+    .panel-resize-handle:hover,
+    .panel-resize-handle:focus-visible {
+      background: #eaf0f8;
+      outline: none;
+    }
+
+    .panel-resize-handle:hover::before,
+    .panel-resize-handle:focus-visible::before,
+    body.is-resizing .panel-resize-handle::before {
+      background: var(--accent);
+    }
+
+    body.is-resizing {
+      cursor: ns-resize;
+      user-select: none;
+    }
+
+    .kbd {
+      display: inline-block;
+      padding: 0.08rem 0.36rem;
+      border: 1px solid #aeb8c6;
+      border-bottom-width: 2px;
+      border-radius: 4px;
+      background: #fff;
+      color: #334155;
+      font-family: Consolas, monospace;
+      font-size: 0.75rem;
+    }
+
+    @media (max-width: 980px) {
+      header { align-items: flex-start; flex-direction: column; }
+      .brand-logo { width: 78px; height: 42px; }
+      main { grid-template-columns: 1fr; height: auto; }
+      .panel { height: auto; }
+      .project-panel { max-height: 300px; }
+      .editor-panel, .preview-panel { height: min(76vh, 760px); }
+      textarea { min-height: 0; }
+      .paper-stage { margin: 0 auto; }
+      .education-grid, .best-practices-grid { grid-template-columns: 1fr; }
+      .education-header { flex-direction: column; }
+      .practice-wide { grid-column: auto; }
+      .practice-checklist { columns: 1; }
+    }
+
+    @page {
+      size: A4;
+      margin: 16mm 16mm 22mm;
+    }
+
+    @media print {
+      html, body {
+        width: auto !important;
+        height: auto !important;
+        min-height: 0 !important;
+        margin: 0 !important;
+        padding: 0 !important;
+        background: #fff !important;
+        color: #000;
+        -webkit-print-color-adjust: exact;
+        print-color-adjust: exact;
+      }
+
+      header, .project-panel, .editor-panel, footer, .panel-header,
+      .tips, .console, .education-section, .best-practices-section { display: none !important; }
+
+      main, .preview-panel, .preview-wrap, .paper-stage, .paper {
+        display: block !important;
+        width: auto !important;
+        height: auto !important;
+        min-height: 0 !important;
+        max-height: none !important;
+        margin: 0 !important;
+        padding: 0 !important;
+        border: 0 !important;
+        box-shadow: none !important;
+        background: #fff !important;
+        overflow: visible !important;
+      }
+
+      .paper {
+        transform: none !important;
+        width: auto !important;
+        height: auto !important;
+        min-width: 0 !important;
+        min-height: 0 !important;
+      }
+
+      .slide-deck { gap: 0 !important; }
+      .slide-stage {
+        width: 1280px !important;
+        height: 720px !important;
+        page-break-after: always;
+        break-after: page;
+      }
+      .slide-page {
+        transform: none !important;
+        margin: 0 !important;
+        box-shadow: none !important;
+        page-break-after: always;
+        break-after: page;
+      }
+
+      .paper::before, .paper::after { display: none !important; }
+
+      .page-footer {
+        display: block !important;
+        position: fixed !important;
+        left: 0 !important;
+        right: 0 !important;
+        bottom: -14mm !important;
+        padding-top: 2mm !important;
+        border-top: 0.2mm solid #999 !important;
+        color: #555 !important;
+        font: 9pt/1.2 "Times New Roman", serif !important;
+        text-align: center !important;
+        background: #fff !important;
+      }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="brand">
+      <img class="brand-logo" src="data:image/jpeg;base64,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" alt="Logo Katedry Informatyki i Automatyki" />
+      <div class="brand-copy">
+        <h1>LaTeX Learning Lab</h1>
+        <p>Interaktywna nauka składu dokumentów LaTeX w przeglądarce</p>
+      </div>
+    </div>
+
+    <div class="toolbar" aria-label="Pasek narzędzi">
+      <select id="lessonSelect" aria-label="Wybierz przykład">
+        <option value="basic">01: Podstawowy dokument</option>
+        <option value="structure">02: Sekcje i listy</option>
+        <option value="math">03: Wzory matematyczne</option>
+        <option value="table">04: Tabele</option>
+        <option value="references">05: Odwołania i bibliografia</option>
+        <option value="figures">06: Rysunki i podpisy</option>
+        <option value="scientific">07: Struktura pracy naukowej</option>
+        <option value="presentation">08: Prezentacja Beamer 16:9</option>
+        <option value="code">09: Bloki kodu źródłowego</option>
+      </select>
+      <button id="compileBtn" class="primary">Kompiluj</button>
+      <button id="downloadBtn">Pobierz .tex</button>
+      <button id="printBtn">Zapisz PDF</button>
+    </div>
+  </header>
+
+  <main>
+    <aside class="panel project-panel" aria-labelledby="projectTitle">
+      <div class="panel-header">
+        <h2 id="projectTitle">Pliki projektu</h2>
+        <span id="fileCount" class="status">0 plików</span>
+      </div>
+      <div class="project-actions">
+        <button id="importBtn" class="project-import-btn">+ Dodaj pliki</button>
+        <input id="fileInput" type="file" multiple hidden />
+        <button id="newFileBtn">+ Nowy plik</button>
+        <button id="renameFileBtn">Zmień nazwę</button>
+        <button id="deleteFileBtn">Usuń</button>
+        <button id="saveProjectBtn">Eksport projektu</button>
+      </div>
+      <ul id="fileList" class="file-list" aria-label="Lista plików projektu"></ul>
+      <div class="project-info">
+        Pliki projektu są przechowywane lokalnie w przeglądarce. Przycisk <strong>Dodaj pliki</strong> umożliwia wczytanie dokumentów, obrazów i innych zasobów z dysku. Domyślny plik <code>logo_kia.png</code> służy do ćwiczenia polecenia <code>\includegraphics</code>.
+      </div>
+    </aside>
+
+    <section class="panel editor-panel" aria-labelledby="editorTitle">
+      <div class="panel-header">
+        <h2 id="editorTitle">Kod źródłowy LaTeX: <span id="activeFileName">main.tex</span></h2>
+        <span id="editorStatus" class="status">Gotowy do edycji</span>
+      </div>
+      <div class="editor-wrap">
+        <textarea id="latexInput" spellcheck="false" aria-label="Edytor kodu LaTeX"></textarea>
+      </div>
+      <div class="tips">
+        Użyj <span class="kbd">Ctrl</span> + <span class="kbd">Enter</span>, aby skompilować dokument.
+        Zmiany są również kompilowane automatycznie po krótkiej przerwie w pisaniu.
+      </div>
+    </section>
+
+    <section class="panel preview-panel" aria-labelledby="previewTitle">
+      <div class="panel-header">
+        <h2 id="previewTitle">Podgląd dokumentu</h2>
+        <span id="compileStatus" class="status">Oczekiwanie</span>
+      </div>
+      <div id="previewWrap" class="preview-wrap">
+        <div id="paperStage" class="paper-stage">
+          <article id="preview" class="paper" aria-live="polite"></article>
+        </div>
+      </div>
+      <pre id="console" class="console" hidden></pre>
+      <div id="previewResizeHandle" class="panel-resize-handle" role="separator" aria-orientation="horizontal" aria-label="Zmień wysokość paneli" tabindex="0" title="Chwyć i przeciągnij w górę lub w dół, aby zmienić wysokość paneli"></div>
+    </section>
+  </main>
+
+  <article class="lesson-context" aria-live="polite">
+    <h3 id="lessonContextTitle">Aktualna kategoria: podstawowy dokument</h3>
+    <p id="lessonContextText"></p>
+  </article>
+
+  <section class="education-section" aria-labelledby="educationTitle">
+    <button class="collapsible-toggle" type="button" aria-expanded="false" aria-controls="educationContent">
+      <h2 id="educationTitle">Kompendium składni LaTeX</h2>
+      <span class="collapsible-icon" aria-hidden="true">⌄</span>
+    </button>
+    <div id="educationContent" class="collapsible-content" hidden>
+      <div class="education-header">
+        <div>
+          <p>
+            LaTeX oddziela treść dokumentu od sposobu jej prezentacji. Autor opisuje logiczną strukturę tekstu, a system składu odpowiada za typografię, numerację, rozmieszczenie elementów oraz spójność odsyłaczy. Takie podejście ogranicza liczbę ręcznych operacji i sprzyja przygotowywaniu dokumentów naukowych o jednolitej strukturze.
+            Kod prezentowany w edytorze pozostaje zgodny z klasycznym systemem LaTeX. Podgląd jest generowany przez LaTeX.js, dlatego dla wybranych środowisk stosowana jest wewnętrzna warstwa zgodności. Nie modyfikuje ona pliku źródłowego ani pliku pobieranego przez użytkownika.
+          </p>
+        </div>
+      </div>
+
+      <div class="education-grid">
+      <article class="edu-card">
+        <h3>1. Klasa i preambuła dokumentu</h3>
+        <p>
+          Polecenie <code>\documentclass</code> określa klasę dokumentu, na przykład artykuł, raport lub książkę. Preambuła znajduje się przed środowiskiem <code>document</code>. Umieszcza się w niej pakiety, ustawienia języka, definicje własnych poleceń i informacje wpływające na skład całego dokumentu.
+        </p>
+        <ul>
+          <li><code>article</code> jest odpowiednia dla krótkich prac i artykułów.</li>
+          <li><code>report</code> obsługuje rozdziały i dłuższe opracowania.</li>
+          <li><code>book</code> jest przeznaczona do rozbudowanych publikacji.</li>
+        </ul>
+      </article>
+
+      <article class="edu-card">
+        <h3>2. Struktura logiczna tekstu</h3>
+        <p>
+          Polecenia <code>\section</code>, <code>\subsection</code> i kolejne poziomy nagłówków opisują hierarchię treści. LaTeX automatycznie nadaje im numery, ustala odstępy i może tworzyć spis treści. Autor powinien stosować nagłówki zgodnie z rolą merytoryczną fragmentu, a nie wyłącznie z oczekiwanym wyglądem.
+        </p>
+        <ul>
+          <li>Jeden pusty wiersz rozpoczyna nowy akapit.</li>
+          <li><code>\tableofcontents</code> generuje spis treści.</li>
+          <li>Gwiazdka, na przykład <code>\section*</code>, wyłącza numerację.</li>
+        </ul>
+      </article>
+
+      <article class="edu-card">
+        <h3>3. Skład i wyróżnianie tekstu</h3>
+        <p>
+          Wyróżnienia powinny sygnalizować znaczenie fragmentu. Polecenie <code>\emph</code> służy do emfazy, natomiast <code>\textbf</code>, <code>\textit</code> i <code>\texttt</code> bezpośrednio wybierają odmianę pisma. W publikacjach naukowych należy ograniczać liczbę wyróżnień i zachować ich konsekwentną funkcję.
+        </p>
+        <ul>
+          <li><code>\emph</code> dostosowuje wyróżnienie do kontekstu.</li>
+          <li><code>\texttt</code> jest użyteczne dla kodu i nazw poleceń.</li>
+          <li>Znaki specjalne, takie jak <code>%</code> i <code>_</code>, wymagają poprzedzenia ukośnikiem.</li>
+        </ul>
+      </article>
+
+      <article class="edu-card">
+        <h3>4. Listy i wyliczenia</h3>
+        <p>
+          Środowiska <code>itemize</code> i <code>enumerate</code> tworzą odpowiednio listy punktowane i numerowane. Każdy element rozpoczyna się poleceniem <code>\item</code>. Listy powinny przedstawiać elementy równorzędne pod względem gramatycznym i logicznym.
+        </p>
+        <ul>
+          <li><code>itemize</code> służy do zestawień bez ustalonej kolejności.</li>
+          <li><code>enumerate</code> wskazuje sekwencję lub hierarchię kroków.</li>
+          <li>Listy mogą być zagnieżdżane, lecz zbyt wiele poziomów utrudnia odbiór.</li>
+        </ul>
+      </article>
+
+      <article class="edu-card">
+        <h3>5. Skład matematyczny</h3>
+        <p>
+          Tryb matematyczny zapewnia właściwe odstępy, krój symboli i rozmieszczenie operatorów. Krótkie wzory umieszcza się w tekście między znakami <code>$</code>. Rozbudowane równania powinny występować jako osobne środowiska, na przykład <code>equation</code>.
+        </p>
+        <ul>
+          <li><code>^</code> tworzy indeks górny, a <code>_</code> indeks dolny.</li>
+          <li><code>\frac</code> składa ułamek, a <code>\sqrt</code> pierwiastek.</li>
+          <li><code>\label</code> i <code>\ref</code> umożliwiają odwołanie do numeru równania.</li>
+        </ul>
+      </article>
+
+      <article class="edu-card">
+        <h3>6. Tabele i prezentacja danych</h3>
+        <p>
+          Środowisko <code>tabular</code> odpowiada za układ kolumn i wierszy. Symbole <code>l</code>, <code>c</code> i <code>r</code> określają wyrównanie zawartości. Tabela naukowa powinna mieć zwięzły podpis, jednoznaczne jednostki i konstrukcję umożliwiającą samodzielną interpretację.
+        </p>
+        <ul>
+          <li>Znak <code>&amp;</code> rozdziela komórki.</li>
+          <li><code>\\</code> kończy wiersz tabeli.</li>
+          <li>Środowisko <code>table</code> dodaje podpis i numerację obiektu.</li>
+        </ul>
+      </article>
+
+      <article class="edu-card">
+        <h3>7. Rysunki i obiekty pływające</h3>
+        <p>
+          Rysunki umieszcza się zwykle w środowisku <code>figure</code>. Jest to obiekt pływający, więc LaTeX może zmienić jego położenie, aby zachować poprawny układ strony. Polecenie <code>\caption</code> tworzy podpis, a <code>\label</code> identyfikator używany w odsyłaczach.
+        </p>
+        <ul>
+          <li>Pakiet <code>graphicx</code> udostępnia <code>\includegraphics</code>.</li>
+          <li>Rysunek powinien być przywołany w tekście przed jego interpretacją.</li>
+          <li>Podpis powinien wyjaśniać treść bez konieczności analizy całego rozdziału.</li>
+        </ul>
+      </article>
+
+      <article class="edu-card">
+        <h3>8. Odsyłacze i bibliografia</h3>
+        <p>
+          Mechanizm etykiet pozwala tworzyć odsyłacze odporne na zmiany numeracji. Polecenie <code>\label</code> przypisuje identyfikator, a <code>\ref</code> wstawia aktualny numer wskazanego elementu. Bibliografię można tworzyć ręcznie albo zarządzać nią za pomocą BibTeX lub Biber.
+        </p>
+        <ul>
+          <li>Etykiety warto poprzedzać prefiksem, na przykład <code>fig:</code> lub <code>sec:</code>.</li>
+          <li><code>\cite</code> tworzy cytowanie pozycji bibliograficznej.</li>
+          <li>Każde źródło w bibliografii powinno być przywołane w tekście.</li>
+        </ul>
+      </article>
+
+      <article class="edu-card">
+        <h3>9. Organizacja projektu naukowego</h3>
+        <p>
+          Rozbudowany dokument warto dzielić na osobne pliki i łączyć za pomocą poleceń <code>\input</code> lub <code>\include</code>. Taki podział ułatwia współpracę, kontrolę wersji i ponowne wykorzystanie fragmentów. Plik główny powinien zawierać preambułę oraz logiczną kolejność włączanych części.
+        </p>
+        <ul>
+          <li><code>main.tex</code> powinien pełnić rolę pliku wejściowego projektu.</li>
+          <li>Nazwy plików powinny być krótkie, jednoznaczne i pozbawione spacji.</li>
+          <li>Grafiki, dane i bibliografię warto przechowywać w osobnych katalogach.</li>
+        </ul>
+      </article>
+
+      <article class="edu-card">
+        <h3>10. Prezentacje multimedialne Beamer</h3>
+        <p>
+          Klasa <code>beamer</code> służy do przygotowywania prezentacji. Każdy slajd jest definiowany przez środowisko <code>frame</code>, a jego tytuł można podać jako argument środowiska lub polecenie <code>\frametitle</code>. Format 16:9 uzyskuje się przez opcję <code>aspectratio=169</code>.
+        </p>
+        <ul>
+          <li><code>\usetheme</code> wybiera motyw wizualny prezentacji.</li>
+          <li>Treść slajdu powinna być skrótowa i hierarchiczna.</li>
+          <li>Wzory, tabele i grafiki stosują tę samą składnię co w artykule.</li>
+        </ul>
+      </article>
+
+      <article class="edu-card">
+        <h3>11. Bloki kodu źródłowego</h3>
+        <p>
+          Najprostszy blok kodu można utworzyć w środowisku <code>verbatim</code>. Pakiet <code>listings</code> udostępnia środowisko <code>lstlisting</code>, numerowanie wierszy, oznaczenie języka i kontrolę stylu. Kod jest składany czcionką stałej szerokości, a znaki specjalne nie wymagają uciekania.
+        </p>
+        <ul>
+          <li><code>language=Python</code> określa język programu.</li>
+          <li><code>numbers=left</code> włącza numery wierszy.</li>
+          <li>Długie wiersze należy dzielić lub włączyć automatyczne łamanie.</li>
+        </ul>
+      </article>
+      </div>
+    </div>
+  </section>
+
+
+  <section class="best-practices-section" aria-labelledby="bestPracticesTitle">
+    <button class="collapsible-toggle" type="button" aria-expanded="false" aria-controls="bestPracticesContent">
+      <h2 id="bestPracticesTitle">Dobre praktyki LaTeX</h2>
+      <span class="collapsible-icon" aria-hidden="true">⌄</span>
+    </button>
+    <div id="bestPracticesContent" class="collapsible-content" hidden>
+      <div class="best-practices-intro">
+        <p>
+          Sprawna praca w LaTeX-u nie polega wyłącznie na znajomości poleceń. Duże znaczenie mają również organizacja projektu, konsekwentne nazewnictwo, kontrola wersji, świadome zarządzanie bibliografią oraz systematyczne wykrywanie błędów. Poniższe zasady ograniczają liczbę problemów podczas przygotowywania artykułów, raportów, prac dyplomowych i prezentacji.
+        </p>
+      </div>
+
+      <div class="best-practices-grid">
+      <article class="practice-card">
+        <h3>1. Oddzielaj treść od formatowania</h3>
+        <p>Opisuj funkcję elementu, zamiast ręcznie wymuszać jego wygląd. Struktura logiczna pozostaje wtedy czytelna i łatwa do zmiany.</p>
+        <ul>
+          <li>Używaj <code>\section</code>, a nie ręcznie pogrubionych nagłówków.</li>
+          <li>Stosuj <code>\emph</code> do emfazy semantycznej.</li>
+          <li>Definiuj własne polecenia dla często powtarzanych konstrukcji.</li>
+        </ul>
+      </article>
+
+      <article class="practice-card">
+        <h3>2. Organizuj projekt modułowo</h3>
+        <p>Dłuższy dokument powinien składać się z pliku głównego oraz osobnych plików rozdziałów, tabel i dodatków.</p>
+        <ul>
+          <li>Trzymaj preambułę i kolejność części w <code>main.tex</code>.</li>
+          <li>Włączaj części przez <code>\input</code> lub <code>\include</code>.</li>
+          <li>Przechowuj grafiki, dane i bibliografię w osobnych katalogach.</li>
+        </ul>
+      </article>
+
+      <article class="practice-card">
+        <h3>3. Stosuj jednoznaczne nazwy</h3>
+        <p>Nazwy plików i etykiet powinny opisywać zawartość oraz nie zawierać spacji ani znaków diakrytycznych.</p>
+        <ul>
+          <li>Przykład pliku: <code>wyniki_eksperymentu.tex</code>.</li>
+          <li>Przykład rysunku: <code>fig:architektura</code>.</li>
+          <li>Przykład tabeli: <code>tab:metryki_modelu</code>.</li>
+        </ul>
+      </article>
+
+      <article class="practice-card">
+        <h3>4. Kompiluj często i małymi krokami</h3>
+        <p>Po każdej większej zmianie wykonaj kompilację. Błąd jest wtedy łatwiejszy do powiązania z ostatnią modyfikacją.</p>
+        <ul>
+          <li>Najpierw sprawdzaj pierwszy komunikat błędu.</li>
+          <li>Kontroluj zgodność par <code>\begin</code> i <code>\end</code>.</li>
+          <li>W razie problemu czasowo komentuj fragmenty kodu znakiem <code>%</code>.</li>
+        </ul>
+      </article>
+
+      <article class="practice-card">
+        <h3>5. Zarządzaj bibliografią automatycznie</h3>
+        <p>Przy większej liczbie źródeł korzystaj z BibTeX lub Biber. Dane bibliograficzne powinny znajdować się w osobnym pliku <code>.bib</code>.</p>
+        <ul>
+          <li>Używaj stabilnych kluczy, na przykład <code>knuth1984texbook</code>.</li>
+          <li>Nie wpisuj numerów cytowań ręcznie.</li>
+          <li>Sprawdzaj kompletność DOI, numerów stron i nazw czasopism.</li>
+        </ul>
+      </article>
+
+      <article class="practice-card">
+        <h3>6. Przygotowuj grafiki świadomie</h3>
+        <p>Dobieraj format obrazu do jego charakteru. Wykresy i schematy najlepiej zachowują jakość jako grafika wektorowa.</p>
+        <ul>
+          <li>Używaj PDF lub SVG dla diagramów i wykresów.</li>
+          <li>Używaj PNG lub JPEG dla fotografii i obrazów rastrowych.</li>
+          <li>Skaluj przez szerokość, na przykład <code>width=0.8\linewidth</code>.</li>
+        </ul>
+      </article>
+
+      <article class="practice-card">
+        <h3>7. Dbaj o typografię matematyczną</h3>
+        <p>Zmienne zapisuj kursywą, jednostki i nazwy funkcji pismem prostym, a operatory za pomocą przeznaczonych do tego poleceń.</p>
+        <ul>
+          <li>Zapisuj jednostki jako <code>\mathrm{m}</code> lub używaj pakietu <code>siunitx</code>.</li>
+          <li>Stosuj <code>\sin</code>, <code>\log</code> i <code>\exp</code>, nie zwykły tekst.</li>
+          <li>Dodawaj niewielki odstęp przed różniczką: <code>\,dx</code>.</li>
+        </ul>
+      </article>
+
+      <article class="practice-card">
+        <h3>8. Używaj odsyłaczy zamiast numerów</h3>
+        <p>Numery rysunków, tabel, sekcji i równań powinny być generowane automatycznie.</p>
+        <ul>
+          <li>Łącz <code>\label</code> z <code>\ref</code> lub <code>\eqref</code>.</li>
+          <li>Umieszczaj <code>\label</code> po <code>\caption</code>.</li>
+          <li>Rozważ pakiet <code>cleveref</code> do automatycznych nazw odsyłaczy.</li>
+        </ul>
+      </article>
+
+      <article class="practice-card">
+        <h3>9. Korzystaj z kontroli wersji</h3>
+        <p>Pliki tekstowe LaTeX dobrze współpracują z systemem Git. Ułatwia to śledzenie zmian, współpracę i przywracanie wcześniejszych wersji.</p>
+        <ul>
+          <li>Wykonuj małe, opisowe commity.</li>
+          <li>Nie zapisuj w repozytorium plików pomocniczych kompilatora.</li>
+          <li>Dodaj do <code>.gitignore</code> między innymi <code>*.aux</code>, <code>*.log</code> i <code>*.out</code>.</li>
+        </ul>
+      </article>
+
+      <article class="practice-card">
+        <h3>10. Przydatne sztuczki: tekst i odsyłacze</h3>
+        <p>Proste reguły typograficzne poprawiają czytelność i zapobiegają niepożądanym podziałom wierszy.</p>
+        <ul>
+          <li>Używaj <code>~</code> jako spacji nierozdzielającej, na przykład <code>rys.~\ref{fig:model}</code>.</li>
+          <li>Stosuj <code>\dots</code> zamiast ręcznie wpisanych trzech kropek.</li>
+          <li>Wstawiaj komentarze robocze po znaku <code>%</code>.</li>
+          <li>Do wielokrotnie używanych symboli twórz własne polecenia.</li>
+        </ul>
+      </article>
+
+      <article class="practice-card">
+        <h3>11. Przydatne sztuczki: własne polecenia</h3>
+        <p>Polecenie <code>\newcommand</code> ogranicza powtórzenia i umożliwia globalną zmianę zapisu w całym dokumencie.</p>
+        <ul>
+          <li><code>\newcommand{\R}{\mathbb{R}}</code> definiuje skrót dla zbioru liczb rzeczywistych.</li>
+          <li><code>\newcommand{\vect}[1]{\mathbf{#1}}</code> tworzy polecenie z argumentem.</li>
+          <li>Definicje umieszczaj w preambule albo w osobnym pliku stylu.</li>
+          <li>Nie nadpisuj istniejących poleceń bez wyraźnej potrzeby.</li>
+        </ul>
+      </article>
+
+      <article class="practice-card">
+        <h3>12. Przydatne sztuczki: szybsza kompilacja</h3>
+        <p>W dużych projektach warto ograniczać zakres kompilacji i izolować fragmenty powodujące błędy.</p>
+        <ul>
+          <li>Stosuj <code>\includeonly{rozdzial2}</code>, aby kompilować wybrane rozdziały.</li>
+          <li>Używaj <code>\input</code> dla krótszych fragmentów bez wymuszania nowej strony.</li>
+          <li>Tymczasowo zastępuj ciężkie grafiki atrapami podczas intensywnej redakcji.</li>
+          <li>Po zakończeniu pracy wykonaj pełną kompilację całego dokumentu.</li>
+        </ul>
+      </article>
+
+      <article class="practice-card practice-wide">
+        <h3>Lista kontrolna przed oddaniem dokumentu</h3>
+        <ul class="practice-checklist">
+          <li>Dokument kompiluje się bez błędów i istotnych ostrzeżeń.</li>
+          <li>Każdy rysunek i każda tabela są przywołane w tekście.</li>
+          <li>Podpisy obiektów są samodzielnie zrozumiałe.</li>
+          <li>Wszystkie cytowane źródła znajdują się w bibliografii.</li>
+          <li>Nie występują ręcznie wpisane numery sekcji, tabel ani rysunków.</li>
+          <li>Jednostki, symbole i oznaczenia są stosowane konsekwentnie.</li>
+          <li>Nazwy plików są jednoznaczne i pozbawione spacji.</li>
+          <li>Grafiki mają wystarczającą rozdzielczość i czytelne opisy osi.</li>
+          <li>Dokument został sprawdzony po eksporcie do PDF.</li>
+          <li>Pliki źródłowe zostały zapisane w repozytorium lub kopii zapasowej.</li>
+        </ul>
+      </article>
+      </div>
+    </div>
+  </section>
+
+  <footer>
+    <span>Renderowanie: LaTeX.js: podgląd edukacyjny w przeglądarce</span>
+    <span>Mateusz Pomianek</span>
+  </footer>
+
+  <script src="https://cdn.jsdelivr.net/npm/latex.js@0.12.6/dist/latex.min.js"></script>
+  <script>
+    const examples = {
+      basic: String.raw`\documentclass{article}
+
+\title{Mój pierwszy dokument w \LaTeX}
+\author{Imię i nazwisko}
+\date{\today}
+
+\begin{document}
+
+\maketitle
+
+\section{Wprowadzenie}
+LaTeX jest systemem składu dokumentów szczególnie przydatnym
+w publikacjach naukowych i technicznych.
+
+\section{Pierwszy akapit}
+Treść dokumentu umieszcza się między poleceniami
+\texttt{\\begin\{document\}} i \texttt{\\end\{document\}}.
+
+\end{document}`,
+
+      structure: String.raw`\documentclass{article}
+
+\title{Struktura dokumentu}
+\author{Student}
+
+\begin{document}
+\maketitle
+
+\section{Sekcja główna}
+Sekcje porządkują treść dokumentu.
+
+\subsection{Lista punktowana}
+\begin{itemize}
+  \item pierwszy element,
+  \item drugi element,
+  \item trzeci element.
+\end{itemize}
+
+\subsection{Lista numerowana}
+\begin{enumerate}
+  \item przygotuj kod,
+  \item skompiluj dokument,
+  \item sprawdź wynik.
+\end{enumerate}
+
+\section{Formatowanie tekstu}
+Można stosować tekst \textbf{pogrubiony}, \textit{pochylony}
+oraz \texttt{monospace}.
+
+\end{document}`,
+
+      math: String.raw`\documentclass{article}
+
+\title{Wzory matematyczne}
+\author{Student}
+
+\begin{document}
+\maketitle
+
+Wzór w tekście: $E = mc^2$.
+
+Wzór wyśrodkowany:
+\[
+  f(x) = \frac{1}{\sigma\sqrt{2\pi}}
+  \exp\left(-\frac{(x-\mu)^2}{2\sigma^2}\right)
+\]
+
+Równanie numerowane:
+\begin{equation}
+  \int_{-\infty}^{\infty} e^{-x^2}\,dx = \sqrt{\pi}
+\end{equation}
+
+Indeksy: $x_1, x_2, \ldots, x_n$ oraz $a^2+b^2=c^2$.
+
+\end{document}`,
+
+      table: String.raw`\documentclass{article}
+
+\title{Tabele w LaTeX}
+\author{Student}
+
+\begin{document}
+\maketitle
+
+\section{Przykładowa tabela}
+
+\begin{center}
+\begin{tabular}{|l|c|r|}
+\hline
+Metoda & Dokładność & Czas [ms] \\
+\hline
+Model A & 91.2\% & 18 \\
+Model B & 94.7\% & 31 \\
+Model C & 93.5\% & 24 \\
+\hline
+\end{tabular}
+\end{center}
+
+Kolumny oznaczono jako: \texttt{l}: wyrównanie do lewej,
+\texttt{c}: wyśrodkowanie, \texttt{r}: wyrównanie do prawej.
+
+\end{document}`,
+
+      references: String.raw`\documentclass{article}
+
+\title{Odwołania w dokumencie}
+\author{Student}
+
+\begin{document}
+\maketitle
+
+\section{Metoda}\label{sec:metoda}
+W tej sekcji opisano metodę badawczą.
+
+\section{Wyniki}
+Opis metody znajduje się w sekcji \ref{sec:metoda}.
+
+\begin{thebibliography}{9}
+
+\bibitem{lamport}
+Leslie Lamport,
+\textit{LaTeX: A Document Preparation System},
+Addison-Wesley, 1994.
+
+\bibitem{knuth}
+Donald E. Knuth,
+\textit{The TeXbook},
+Addison-Wesley, 1984.
+
+\end{thebibliography}
+
+\end{document}`,
+
+      figures: String.raw`\documentclass{article}
+\usepackage{graphicx}
+
+\title{Rysunki w dokumencie}
+\author{Student}
+
+\begin{document}
+\maketitle
+
+\section{Prezentacja wyników}
+Na rysunku \ref{fig:schemat} przedstawiono przykładowy obiekt.
+
+\begin{figure}[ht]
+  \centering
+  \includegraphics[width=0.55\linewidth]{logo_kia.png}
+  \caption{Logo Katedry Informatyki i Automatyki dołączone z pliku projektu.}
+  \label{fig:schemat}
+\end{figure}
+
+\end{document}`,
+
+      scientific: String.raw`\documentclass{article}
+
+\title{Struktura krótkiego opracowania naukowego}
+\author{Imię i nazwisko}
+\date{\today}
+
+\begin{document}
+\maketitle
+
+\begin{abstract}
+Zwięzłe przedstawienie celu, metody, wyników i wniosku.
+\end{abstract}
+
+\section{Wprowadzenie}
+Uzasadnienie problemu i sformułowanie celu pracy.
+
+\section{Metoda}
+Opis materiału, procedury i sposobu analizy danych.
+
+\section{Wyniki}
+Prezentacja rezultatów bez nadmiernej interpretacji.
+
+\section{Dyskusja}
+Interpretacja wyników, ograniczenia i odniesienie do literatury.
+
+\section{Wnioski}
+Najważniejsze ustalenia wynikające z przeprowadzonej analizy.
+
+\end{document}`,
+
+      presentation: String.raw`\documentclass[aspectratio=169]{beamer}
+\usetheme{Madrid}
+
+\title{Przykładowa prezentacja naukowa}
+\author{Imię i nazwisko}
+\date{\today}
+
+\begin{document}
+
+\begin{frame}
+  \titlepage
+\end{frame}
+
+\begin{frame}{Cel prezentacji}
+  \begin{itemize}
+    \item przedstawienie problemu badawczego,
+    \item omówienie zastosowanej metody,
+    \item syntetyczna prezentacja wyników.
+  \end{itemize}
+\end{frame}
+
+\begin{frame}{Model matematyczny}
+  Rozważmy zależność:
+  \[
+    y = \beta_0 + \beta_1 x + \varepsilon.
+  \]
+\end{frame}
+
+\end{document}`,
+
+      code: String.raw`\documentclass{article}
+\usepackage{listings}
+
+\title{Kod źródłowy w dokumencie}
+\author{Student}
+
+\begin{document}
+\maketitle
+
+\section{Przykład w języku Python}
+
+\begin{lstlisting}[language=Python, numbers=left]
+def srednia(wartosci):
+    if not wartosci:
+        raise ValueError("Lista nie może być pusta")
+    return sum(wartosci) / len(wartosci)
+
+print(srednia([2, 4, 6, 8]))
+\end{lstlisting}
+
+\section{Prosty zapis dosłowny}
+\begin{verbatim}
+Polecenia LaTeX, takie jak \section{...},
+są tutaj wyświetlane bez interpretacji.
+\end{verbatim}
+
+\end{document}`
+    };
+
+    const lessonDescriptions = {
+      basic: {
+        title: 'Aktualna kategoria: podstawowy dokument',
+        text: 'Przykład przedstawia minimalną strukturę poprawnego dokumentu. Klasa dokumentu i metadane znajdują się w preambule, natomiast treść jest ograniczona środowiskiem document. Polecenie \maketitle wykorzystuje wcześniej zdefiniowane informacje o tytule, autorze i dacie.'
+      },
+      structure: {
+        title: 'Aktualna kategoria: sekcje, akapity i listy',
+        text: 'Ten przykład pokazuje semantyczną organizację treści. Nagłówki opisują hierarchię dokumentu, a środowiska itemize i enumerate porządkują elementy równorzędne lub następujące po sobie. Formatowanie tekstu powinno wspierać znaczenie wypowiedzi, nie zastępować struktury logicznej.'
+      },
+      math: {
+        title: 'Aktualna kategoria: skład matematyczny',
+        text: 'Tryb matematyczny korzysta z odrębnych reguł typograficznych. Wzory krótkie można umieszczać w akapicie, natomiast równania istotne dla wywodu powinny być wyodrębnione i numerowane. Symbole, indeksy oraz operatory należy zapisywać za pomocą poleceń matematycznych, ponieważ LaTeX dobiera dla nich właściwy krój pisma i odstępy. W praktyce naukowej numeruje się przede wszystkim te równania, do których tekst odwołuje się w dalszej części dokumentu.'
+      },
+      table: {
+        title: 'Aktualna kategoria: tabele',
+        text: 'Tabela służy do zwartej prezentacji danych porównawczych. Specyfikacja kolumn kontroluje wyrównanie, znak & rozdziela komórki, a podwójny ukośnik kończy wiersz. Środowisko tabular definiuje samą siatkę danych, natomiast środowisko table nadaje obiektowi numer, podpis i możliwość elastycznego rozmieszczenia. W publikacji naukowej każda kolumna powinna mieć jednoznaczny nagłówek, a jednostki należy podawać w nagłówkach zamiast powtarzać je w każdej komórce.'
+      },
+      references: {
+        title: 'Aktualna kategoria: odsyłacze i bibliografia',
+        text: 'Etykiety i odsyłacze uniezależniają tekst od ręcznej numeracji. Po zmianie kolejności sekcji, tabel, rysunków lub równań LaTeX aktualizuje numery automatycznie. Polecenie label należy umieszczać przy numerowanym elemencie, a polecenie ref w miejscu odwołania. Bibliografia porządkuje dane źródeł i umożliwia jednoznaczne powiązanie cytowania z opisem publikacji. W większych projektach zaleca się przechowywanie rekordów bibliograficznych w osobnym pliku i użycie systemu BibTeX albo Biber.'
+      },
+      figures: {
+        title: 'Aktualna kategoria: rysunki',
+        text: 'Rysunek jest obiektem pływającym. LaTeX może przesunąć go względem miejsca wpisania kodu, aby uniknąć niekorzystnych podziałów strony i nadmiernych pustych obszarów. Parametr po nazwie środowiska określa preferowane położenie, ale nie stanowi bezwzględnego polecenia. Podpis powinien identyfikować przedstawione dane, metodę lub schemat, a etykieta umożliwiać poprawne odwołanie z tekstu. W dokumentach naukowych rysunki powinny zachowywać czytelność po wydruku i posiadać objaśnione osie, symbole oraz jednostki.'
+      },
+      scientific: {
+        title: 'Aktualna kategoria: organizacja tekstu naukowego',
+        text: 'Przykład odzwierciedla podstawową logikę opracowania empirycznego. Każda część odpowiada na odrębne pytanie: dlaczego przeprowadzono badanie, jak je wykonano, co uzyskano oraz jak należy interpretować wyniki. LaTeX wspiera ten podział przez konsekwentną hierarchię nagłówków.'
+      },
+      presentation: {
+        title: 'Aktualna kategoria: prezentacja Beamer',
+        text: 'Klasa beamer organizuje prezentację jako zbiór ramek. Opcja aspectratio=169 ustala proporcje 16:9, dlatego podgląd przełącza się z kartki A4 na slajdy panoramiczne. Właściwa wielkość tekstu powinna wynikać z hierarchii treści, a nie z ręcznego zmniejszania całej prezentacji.'
+      },
+      code: {
+        title: 'Aktualna kategoria: bloki kodu źródłowego',
+        text: 'Środowiska verbatim i lstlisting zachowują układ wierszy, spacje oraz znaki specjalne. Pakiet listings pozwala wskazać język, numerować wiersze i kontrolować sposób łamania kodu. Podgląd przeglądarkowy odwzorowuje kod czcionką stałej szerokości, bez ingerencji w zawartość pliku źródłowego.'
+      }
+    };
+
+    const input = document.getElementById('latexInput');
+    const preview = document.getElementById('preview');
+    const previewWrap = document.getElementById('previewWrap');
+    const paperStage = document.getElementById('paperStage');
+    const consoleBox = document.getElementById('console');
+    const compileStatus = document.getElementById('compileStatus');
+    const editorStatus = document.getElementById('editorStatus');
+    const lessonSelect = document.getElementById('lessonSelect');
+    const compileBtn = document.getElementById('compileBtn');
+    const workspaceHeight = document.getElementById('workspaceHeight');
+    const workspaceHeightValue = document.getElementById('workspaceHeightValue');
+    const downloadBtn = document.getElementById('downloadBtn');
+    const printBtn = document.getElementById('printBtn');
+    const importBtn = document.getElementById('importBtn');
+    const fileInput = document.getElementById('fileInput');
+    const fileList = document.getElementById('fileList');
+    const fileCount = document.getElementById('fileCount');
+    const activeFileName = document.getElementById('activeFileName');
+    const newFileBtn = document.getElementById('newFileBtn');
+    const renameFileBtn = document.getElementById('renameFileBtn');
+    const deleteFileBtn = document.getElementById('deleteFileBtn');
+    const saveProjectBtn = document.getElementById('saveProjectBtn');
+    const lessonContextTitle = document.getElementById('lessonContextTitle');
+    const lessonContextText = document.getElementById('lessonContextText');
+
+    const defaultProjectAssets = {
+      'logo_kia.png': 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAOIAAACBCAIAAABSEvF0AABoX0lEQVR42u29d5xdZ3U1vPZTTrt1mqplWe64V7DBhlBDrwkYQocXCDXUUEIgEAIhgUASML2a3jGmmg4GG3DHRW6yukbTbjvtKfv749w7M5JsXvjeYMuxzu/8RqORZubec9bZde21iZlx9znYwjvAghSEAKSFcEB1CQgAIBnKApZBgGYIAzIAgQEGPIEkIF1BMpIlIWc4AQOkHrfuxFe+fflPfn7xVb+7FN6rVptJOscUBuwECBABpABpsIdxcEaGAdg558AM8hCCpBRCkGDvvfce3gMOAIgIPnC5YAtWnoSHdKQAYgj2TEpwadFbQBiecuopT37iXz/iQUETiAEFKCDP+iGZWqhADgCgbOFLp4IkccCgQBJCAxJmdDGqQyx93BcsdEfcN7qbwdTDu+HFJQIpB7hlF58YmkAeQ1CSh3SAN6Zk65TQQmp2VBoOk6BfwCqQxtYZfPS8b13wvR/sWkjDxurZbuqMj+o1pVSaFZ5ZBhGT8ExgAjNYQEnoUEth0z7BeybAj1BBAJCnEAJSDD/CgwlstS8EsydiCA/FRAwBCBhDQRAIQWxdkVtTwHNE2XPOeejjHnG/Y48eFw4NXeG1MEVfS+k9i6AOyNmFLG7UhESaopXcJkzF6AIegOkdAdMRGGh4/asvVJeA2Qt4SdXfGQx4nzsThkl1n5hRockBJbDQw9e/ffH7Pvzx627ctPLgDTqOt26dhm4hSCiIVaCttWwdVBgmcdHtQ2tSmgXBMobmk8AezBBi+Cq4ej6gowSABzOzr54uBtgCjuB5ET0kwAJAEAWmyDhNARcoKQmwxpt+K/S9uZ1PesKjX//3/2dlG515UwvQqmkBa0zR6/UazZZWsfFsHQJNEp4WH5jldnSvy3gApncETIcGtbrKnuGZvSACPLMfOVg2HkLFDkgzdp5qNThgvo+bNvU//LFPX37N9btmuvWxicJhx7YdUHLlIUf0jCq9tGWJogARgoCkZGYUBYSAqoINwHs4B+9BkhhMGGG0ekkEZvjhEwMpICWklJJcWSxDxjKMWAuCJK/AirwAh1Jo4pkdWw89+KBbb91o8s7LXvR/XvGyJzQCSGD79un1a1YIeGPzSGkCBumgltRu193fJkzpDrpvdz+Y8uiT6hKTBznAw5ZQlcn01rMUmkh4hLO9UkeB0kMjetGlnY998otf+8YFImokzTEHnaUZwqA9NuEJ3U4PugEVghneQ0mhtTcFBn3ZbLqygMkBQCodKEmCiLy18Oy9Z2aGICIiSUQkNUBMlTmlYZwKDy1B+7pgD2dJq1CCnLV5avIMzhBoanwqG6QT481ssLDr+iuPPPmY177mxY980KEKMAaJQkTelf0wIIBdYWRYB+Se0BS3ezEPwPTPBNMlgzWyQiAHWJQlggAEQDgIhvRQHjCABwrG1751zbkf++wVl1yO5sp1Rxzb7RelZ+PIegfyAOAMvAAkogRawlsYC3gIIljJTOzAnogle+9tWZZsbRInAJiZiPwIpgxRlkZKrbSWUlfG1xhTskMQDu3xnkjVYWDyDFkObyhQUaC1lAJyYbbXrNfTtC+kH2vX+r3dgXSnnXj4+9/z8lCipRAAwgyC4XslUHIApvuFz2dAAsQALODAFgCcg9Ig5SE8pAUsMNtDrYHzvvi7T573hetv3R41V+hkYiH1ZSejiZVcWhCJKACxz/twFkqJMGJmeMvOwmRwVgc6jvSgMxcppRWInTcls9eSAiV37dolFSmtlQqIpPfeenjPUZg4hjWemUgKrQKtNQXBgvWexDJ3LIbe1xgAIAGtAyW99zbPkZdjk6vnp6dFpOvNepr22edxQDaf137wmY//132OawSAsi6SFmVWpINwbMU+ML3zj7sdTB3gAQnIIUY92A9zEUiGKhy8Gsagm7anL/y71+6a6w9y1knbylpaEFRdNydMtw+pAQ9XAhaSAA9biFD4dABvdRxHoYQ1ZZGSL0NJwhtfZFnaleBVK1ccc/SR69evO/qow1Sg4zjWYSghjeeysKV13U5venrmxhtvvuGmW3bu3DlIM0mKtVaNcSsUgKp8xVCeiKEYQuiAhHTWozBgQhiqKLKzMzIJPROzh5RgA1eG2vvB3MqmftY5j3rRMx84pqEsBHnAQSwLKg7A9E6CqS/hCF4CxmSBVEJIsCjzIoiaDJSAI5TATy7a/cnzPvf9n/yiNj7FKiqcyEpyKlFxy1iBXo7WGLIMbBFrqeHLjG2hYAIyQAnnCV7A+bJ0ZcqmOPOeJx99+IZ7n3bK8ccdvWYF4nDJofplLpSXeXKPUTEA2DWDGzduv2Xr9i989VsbN22emVtottpxrZUWpvRSRolDUHrBkFABKAAILMEWfgDhISQ8wTGYISAF+by7shn2tt/8/Kc94a2veWzISOd8oy0gl1y5tVZKSUTOOSnlAZjeYTC1Dsag1FAECIg0LQIdKx3mBplBmGA+xXvP/d7HzvtiPzMTqw+aXlhwUuqoocJ6VjIGJcJYtSdtmlbmE0UKGBFQpIRCAdPzRc9aW0+iIw879Oz7nPGgvzj7+GNibxDrqngO7+AdtIBUWJYE7R1wegYzSIAAC6Qp0gxjE+gVuPb6zg8u/PEF37vwuhs36aQ5sWrd9tleUGtRUC+cgBdQEYSCL+E6EB5CwQt4gpcQAoRQULFz87q1E66z+xH3P+M9b39awOjPozUGD5ZyCNUqaL4tmPr/S+R6AKb/bzDNACYI470UESHwQGEBBQt85otXvflf3jXbKdduOLKwmJmbiyfbKooLY8peBhUlrTHjvJmdo1oMtoHgJBDwRTHo5mkXZrBhdfOUE4958AMfdMa9Tlg7NbRNAlAAYWSqHMCQ1T+Q2eeWD4u6DAHAeGZmKQUti62dBws4YMcMPv7Z8z/+mS+VCPqWnIhF3HIqRukAjUDALkB6iACQcAqQ8ApEgp3P+g3Frj9Peedvn/3UN77mLwOC8CB2QojlSGVmMczb/D4X9QBM/+cPyygsF4JihnLQaQERAsB1t+If3/qeX1585djKdWnu5rpp3GjKKE5d7oscQskodmWJhQ4C3Z4cM1kftlRk2OaD7ux4s/bwhz3kCY99+DGHtVsJQjm8gc5DEyTBFJACgRgV8gmwzvtCBKP+Ey2/5Xt8Yo117KWUUoTpoExqoSeUBtZDhrBAt8C3Lvz9+d/90U9/fXnBOmiOp6WHJVGLvBmAGKKKBBS8gpdgIM/aY62FXdvWTo2X/bm5XVtf+/K/e/VLT4+BgGGd994HgQLgvRdLtQW/j0FVB2D6P35UZRfkpc9KiutRCWzZhZ9dcsPL//5NE6vWz/WKvLRjq9ZmRZnPLcipKWdLeAdnIRFFUSzJ5X0zWJhsJDu23kI2v++9T3/qU5/4gL84rhEhz9GMlqI7Y0AMIlaCtAQBzOytk1WDkxbto9/HJgk4BylAe5R82DNRMIwHPIRC1eytDHLm8YuLd37kvM//7Fe/8TKMa63cUSGkhwQUSAEKLOElAJRGBTLWsjezc3Ky7Yq0zAeve9kzX/n0UyIGgDy3YaSIbhOmy8F6AKZ/llTfViFhSTDAdbfio+d982Of+2rUnOz0UtRakArdDibGm+3x7s4daI3DWZQ5fCnYSJcpk0qTct595Utf8LfPfUwjgrGQhAqIeWEFsxAi0LJqzgvAs2dXVegtAVKSUmoI5mHSJPaoQQ6bUg7e7wVW79h7r7Suvss6DxKQWCzxWuB7P7vpPf/1gd9dcXVtbLVNpnIOnfNgBZJEin3V4uIgUMS2yLpBpKXkrN+dCPOvv/8fzjrh4KqrJRWIYK1Xai+P7/d0+uIATP+nYZp5U0I3REn45g9ufOPb33PddZtbG+4xYFEfn8y9L0ypI11mfaQDtJooBebm0KiNrxqf23Ijbrr2qHue+LfPfPJTHnevmobwyAY2iVWgAGB2dn5iYmzfAM55J4VcjkAAxhhnfBTFexC0lv8ngvfDJGZUBfBCCGbO81QrpZQaFgIgZufmxyfGHJBbkIIHPn7e9//h7f8Vrjq560JjHDsHUkSCaHjT6/Vab/e21ppVadYzu7Ym6w9Kt1z79Psf88rnPPGEE+4x7IMIlKWtvP8+ppRHgfcBmP5x2KPbTkL3ifEZtgQp7JzBez/0lS988/vzBcL2VCEDq2U2vwBBqNcqnwipIQhFNrlyvDs3Xd5y/Ybjj37dK17w2AccGgIB4EtoAa0ARlGkQggdBM45hmMIIhZCEbh6Ac47IQSBMGS1gEAEsUc5atlhLEtJtE8VqEL8kB3CDGeH+bgKAOE9vAAIHshLLJT4i8e+aqEM89IYR0yKlGYoRxSGYdHvIVLIBtSIoijMpnc0mrJ33a/O/bc3P/2ch2oBwSDAmVKHalnDS2D4Gw6kUH9iY0nsgVEPIM/TOIrZ82CQ1estU5bMBK1ziWtvwXvf97UvfPV8H9TG16ztudJkHbRi5ANICVZCNkJZz/pO20FbTO/e/PvDD1//yr970ZOfcJoAmBFS1SAYgm550xIEkB/VQ8VtxZ3/s43HEVxGYQMv+wcL5MB7P/Sjt73jP2rjK0Wt3SuFlbFHAFKj32jBDvDEVrLRPjfdXT8+//MnHIoI4CILA1Fm/SBpOkgeYhSSl7F0//wtU3FXx+he9pOAitQZR/HGGzaSUPVGa8u2nSoMdKitxHd+3n/K8//lc1+6YO3RJ06uP2xuds4YoyamsHs+aI1DaDD5Xi+b2TUWSVl06rb//n9+wxU/+fiznnCa6aLs25hQ1XUAC9hhQ3/5q9mDWPTHXWH6f7mDFaNv+RUYFr8UEANPftT9PvfR93A2k3WnkxDeFlE9Gj1LAqzAEiwEC0aY+ZqVE//5kS+WgGFIqW2RBklUXWM/qojdwbbtrm1NF7s1YnijR0R3oNPtNJvjgJjtZM1W7BhEeN9Hf/T2c7/mg/F+MTAmk/WaShJjyRtOmuPpjun22tVlv5cubAeVSYi/POu0N7zw2UevF0rCOliDOK7KTGUgBMBUBWcsRjTqO8i6/PHXJy0gQ+Qe51+48SV//2YTNEUy0e9bRA1UIQUD7AFH7AEwU8AZDXac/5n33+f4Wgzk/fm4HgGCIR1UdbVl5TPo//EZu3tY0xG5eTlGh06/1Wxbi9yj3op3zqMkvPuD3/nn95w7O7MQtBr18TY0QVNRpL7X0zpJd3Z1Mrlw446xMFoz0Vgzhn/+h+f817uee+RhQgh0eyAxxKgx1lqL/QiNf8AIIQlgUgQCj37IkW954+t83pe+BAxQgh3Yj1yRYBKAEKSkCj3kxz7xaQYcI663XGkXoSIW3/gd+P7v2jBdFhr5EY9k0SGphX5OAhmjPoZXvOm8N7z9faivXHPiCbtuvWl+drqxapVnCa/i9gqTlqFOAuMOWrtix41X3ev4gy/+4Qee8ajTG0BvoZQCrSaUAHtY75VGEKjb8Hu0P14dYrC1CmCLpz7++Nf83Qs7u26dGIuVN+ASvHwSTDAkhMh66eTk2u98/8dzPRgPsCiMH/08v2RAyd9WU+oATG83hxhhdOlNSWPRbCcVleTpL37fx877xtSG4wYcbp+fwUQTjUavk7KXcTKmoYW14zVRdLfm8zd/8gP/8tH3Pj8hJIDgbLI9LKcXufXslBACUEuVzJHH3z+Rykj7vWZduQyxggJe/Kx7n/P4R83edF3ARcAFsQX75UhVOoRh62C9/P4PLyeJ3CKptQAisIAXsKIKyuFB/o55y+J/CUaXbkzllERawAIF8IRnvOPbP7q4tnLD7j6hNgZXynYNRBC1sbGDs5m0e9Mtq8eTHdf+7LEPO+HCC97zmIesTIAWIWSuUywBZ1kRkkgFkpzPiyK96/gar8nDlHEExVCAZLzjn562auW44kKx0WyI7egxq9iMghrNblrU2lNf+vq3DeCryuwwxx+OHd7B7+N/gTXdM+clCSgHhDXsmMWTn/n2n/3yd+OrDqF4Ak4ZCtEcd70BoGH9/JZtzVZ9Yv2KbRt/+18feNub3/Csw9cgBIQxwlhy5DMvgECRtaa0uWMTCBmH8Z6Df/v1oZOktzAL9hKY3t4NCZrxzre+IfCF8qWAkXCjIqgARJnmca1elK6w9NOLLukVgEJaLkLFL0v37zj83PVhyh6usqZkSgbE7IKxQK/EM573uksuva61Yv18z+ZOQsZAiFJA10EK/Y4KfXfm5kR3PvPZ9zzlsfc4ZAoaJkCmFYgUHIQSxBCwoaJIKU1ilMqLPTBK+zFiyTem2pXDWb+6qYFWgEc+8JBjDj9YmEEjVKEED/pKa5AECUgphAIJyyKqjV986W4H6GDZ1R4FV3dkWequD1MiSGkyM78wUEGwa66ojenZAR77pNdeef3moDFFYUslLUcKhcEgx3xRkw1s295e2QjlwuGHRB/7wJsfdNYaDSgYDQss+bnF+zBydn8EKvc3vC5OJsIuFlMV8LynnyN92Z/bDWtUPbbGwFhAgNk6J6LYC1WyvPq6G+1oIHx0LhUHPAQfgOkfG52yJBk2x1qpQ30i3DqDN7ztU1fcsK02sa5EtDDfM5W5bSa62ULYHmyf3XDcUQsbf3PPk6Yu/Na7jjs8ieEDWAUQQvgYrJY1q6vclpadYulksV9n+nu8MAa85GH/7JF/eeSGg1cLNmCrKo6MlGAPQmFzHSdOaCf1z3/9O8Ojp5X3eHrvMIze9WHKVTAqlJYOsIQSeMu7zvvEZ75O8YRRtV7JCBIVaC4GcLmZ212XmGiGt1z8o5e+8rmffP8bQxQNlN7PB3ASEl7AL2vjiKWgbVnPRiyddwFvI4YDAFQ905AMBQjgEQ998FizLtk7U+ogQBjCewiwKUkKRySD5LIrf5+VWHLzQ7MqhiOPB2D6xyPVZJaB+Q4g8aZ//danP3/++CHHZFRbSD2CRNUSkw4A02gnWmWcbhnsvv6Nb3rZa1/62CbQhPA+a4iQKozyEkZZeAgPwh645DujV/j/akv3IDFVf7clHvvIv4wCYU0mQJII1kISJABXlCWTFFE4MzvfG4ycfkWU4SXk+AMw/WNRaoyOlAdqLbzn3B+970OfiibXUjgWtVZ6FYsgtoWBLRuNRHFhulvrwdxb3/iclz/v/nUg7+cBdEPUhQvgxeI9ZAELGMBiT2jyH8pUhud+Vv3gIc+JlgVJICAJsGEd2q2GK00Sh9ZaDAYIArCD1lwWUAJCAbRtp9/DmgKLnuSA0/9jjzIrwej28PNfbv73d7/PUzS15tDZbbsHnQy93LOAELWxNvli/paNcexe/5qnPPepf6EBxZhMoryD3jTDB/AC7Cv9PQfrAAvhFmXo7mIWFEvR6FAdA8OWFHwFXmIQcNaZZ3rvmJmdH46xOhskIbzTWhvnEcW3bt3ml6PlzrgO+x9Mq5LHMgM2+tMzLC/2P0ZfDZs1S7js2h3PedGrETcn1x+2ZdsOWrFKtJuoRVICRd9nnd70lkYr/s+3/+MzHv+XEQoN5H1LjHoNjZb2JZZFb5bA1ZA03UbKvGeivw/XhG//XGbPlp93gNcXew4DgoCygDN40APOCqQzWV9IIIrgHKwJwxCepAhNYbWOZmamq/QJAKCAAJB3cNK4v8HUD6eDRyVk5mGXycDP9nfnvssorE3hHRzKAn3GtgJPfP5rd+W6fcjRMzt2QUlVU950IQpvZgNVIJ2eDNwbX/ycv37wkRoghATUGspLOAkOQJXknhCABrQEBUAIH3CV0Y6CVLFUmnLVicVTVKffB4Z7FsT9su6uG3Fl/oxhqRxiSnBViaKhMEAtRAAcd8S4Tedd2auFAt5CALHu7dgWjU3Y3Plu1oiTmeltANxwLlYDuvL4hEVS990NppWk6PK/jojPhcub9YYWyqG01kLIdL7QGqXEw57wxtkcUxuOnl5IsXItGg0ztxu2gE3rIU02dNmZfvGzznnB008z/YoqumReKsB5gltqCaqhoiT7ZZ1rD/K8bMRur1iA/9RrznQHOdC9NbPEIoKVQCgx3qwJ8r5iSzGDHaT0huEEBbEzdtBfGIW0fulnMQBLf+bHbH+FaTUEvMyNLtoDTRAggiAEYdT0HlE7LAXe/q4fXHvJb9esO2R692yZl/VaHWkGHUJJ5GkofHd2x+Me+eC/e+GDhUO7Nvxpi9z75YVQ2veV3MZE8tJny7+d4MXwxO2dtFjb4qrELquCwp11saVEGGL16tWVYMQI1gytrbXe+yRJjDHz8/N3fia4/9VPaEg/WkQqQ8KGQlpvAMkIHMRCBivxic/95t/f+9/r7nWfoNHkhZ6KkqyfoSjjJNHwjbHGzK03H3fkIR9874vnZxBKwEMyCLY6JXx10h7as3vB8DZG0kZwrAT4Ki2R4Q8heKoSlH3OfaLUPVj3d8oRaBx88MF7wZSU8tZ67+M4ttYuLCwcgOk+r4cESA2Nz+KwDhx7F4qQoVLD3RxhHb/9ffrmd/6XHluRedp0y9b6IYcJGbq8QBAhS0WeUz6YakVf+eybNbB6EsVgoKQBzFD1hnmUro3OpcBxDzvIo5OWY3EJ3MsmL3jZEMZt5lD7T8Vg9DLWrVsHwDkHqgTXWQgBZu+9lNJ7X5blnf5i1X4F0qqAUj09VOXdPOSSCiE9C5AONKBRAC9+zZt2p7Z1yOEznT5Ik47KXrdWqw3mZsOglue9QX/6/As+XycIBy0hlAEYvEwVcdHhDgWa/V5idHybSd7yTyoexvKOzB8Q/F6mZsaj/3Cnd1hXrVo1MhFi+PSODuccEd25Imf7qdNflv16kAM5VNRdFkVuuwNngH6J93z4V5ddfNXqw4+bm+9TrR1MruzNLYBIspfwyhY15f7zX99yzGEgi0iiyBdUWBlmDNm9XuyRiPNy+GB5tuRvww7taSd5kZqyJ9ttLztdpSACvMwU3+m2td1uVypRi+q+zrnq87IshRBRFB2A6W1YqsVC6SjXru4toriW1GQvw8VX9N727//dOurE6V6OpMWDouz3VZK0mvXuzI71ayY705sf/eD7Pf6RRyZymNdHUWjyDABIgSRIgoZt+yFq9zaW+8aqfilY3sN9L+ZgChAQ1Vl9uSpmueHzBg+ygMefXBz4M2Wr8IwoikaKFTR6VpmEAGCMEUKEYcgHYLrXYZejY7E4ZR0ozA36BpnHs1/wd0F93AaxIQ2p4Fg3x6wpOrM7Goma3nLDsYeufffbnhiOSgQMBgQFCRBaJ0GCIUAKflhI4LK8vVo177lXYo+vWlsM0so8dntp9eKremqnl+ZlCRIgLrL+qKS1WGYdNikYd1pzlT2shSAMBgMhhDGGlIK1ldCK1pqI8jwPwzBJEjoA071ejRIgwHtnbQm/KNQdMdAZQGu86nUfgq7XJlYM+ilDQEVwbGwB7+qRaoTciPzb3vwaTUg0JENIeFDuZeaDgQ+cEgWhJFhCP6/kQwXJcFnA6ivynrg9c88A0O8sQOkwafZ7GQuqNetbdy4MDHLGgBE26yKKtu2enVvohkl92bf7oZL6knL1nYNUGilTpWlKRLQ43KU1mK21QgittZSyVqsdcPq38YIEQOykJAgJqty0muuj1sZ5X7r6J7/4zaBEv3DUbMI7pCkaTXS7MOl4Q09vv/GFz3ri/c5oD+ZBHp2uq2xX6hVU7ITMgdkMKVAAqVOFh/WAVvsUniq559tNcertsWp0r9aozS4YB0ytbqsIJSEnLHjkwNjUVK09UUKXdq8q7DBapTvV81ex6NzcHBFV0lQVxxzM3lopZZU8jY2NHcj0946XJMAMISsVUM8M6xkCQQ0W+Ie3/GttxYZeLzNz88n69SkKpE43ApMjhN+94+YHnX3qc5/1EA1MtCGAVktWg3uf+uIPmuMr+pnVQb0sbSj9WD0aLEzHih/5l2clCpKxZwIEQNBIWkeMBn/3jEeRFxABGm3dSZEk2DaHL17wk93zC7352al27WEP+otTj10Fh1CFDhCwNBIxF8Oaxp3pTisDunPnzgqmbqigPkz2hRCudHmZj4+PH4DpPm7VgIirHpEHSstMukqNX/n6zzpKFrpZrTXWtbPpoAsdox6adNBIItudjah89zvf2IwBBynRHxQyDnd2+DdX3fSGt/5n3F4118uSpC4J+WBBcVHXfqoZnnzyyWumarVoxKcY6pdwRWXf2+EMd40JQOycnptcOe6A2R7qDfz60ulXvOEtmzt2odNfMdXuz01/8ryvvPj5z3rqEx6+amiPKv3F4VayERnkTnNozABh69atFSiHDCljhlkgYIxhW65YseKA0987NZECQhDAzllrvNQhKXLAJVekn/3yN2tjK3KLvDRo1EEeaR/Owtm0t1AOOq9+xQsPmkIAaGkAI5UTAuNjtHN24HTbR5NB+6CBDUzQlPVJFzQpaq1Zf+SadbUg2tP7Vrk87ZU+7VE+MqWdWjnugcyg3kA3xzlPf/ZNW2c4nESymqOVHE7u2p2//0Of+4/3fdLskYoJsKCl9sGdZxE8PGP79u1LMBWV/K8kIu89ex8EwcEHH3wg07/dupRgKK0Z2gPzffzHf76v1hxf6GVhrV5mBbwXYQCboSg1kevO3//sM5//9L/YubMjYb1LgdL5kgEDfOOCC52qL6SiMBHiMSuT+viq5sRqCupnP/AhDsjdnhjkPUYob/O66UDlORjQGv0Mb3vHJ2ZmOhOrDs5dBNHavcAqWXn0yffbOZN+9vPf2rQVDvB7tqOGHdQ7zyJUyyh3796NavllZU2JlFLM7JzTQTA2NnbIIeGBTH/vo8zSSkTLQXtEFtjdx9U3zH7nwp+qpNUYG0/nF+L2GAz7zCCpxaHwg7lGTb3yJf9HAetXtdJBR0oFiCRuGUbh8OvfXj42vhIqRBjr2pjJbG9gup10Zsf0qSecIoBILrOWw+XQEiQBkvBqWDxaGjMFeecQRSgLZDniGJ/5/FcOPe6UHXP9gjQMZHO852jTzt1xczyoty788UVLEOXR+lz+k0D1/zfbWiLxeLAFDzlflmEYJaOTFZ7FcDU1EWRAQgGGeVDTZqqtm3o4O7X004YkmlGv8G4HU/KFzyF9alypggIYAHEdT3n2S+LJtTkj9w5RbB3Xxldi4JWXKp+L7cxzn/ywM48LpQMZU0uapmfgY+FJA51ZFAPT73VjDZjMZGnQnnC5ib0YV+Gxa+s1D82Qo73OOUQBVUI5KLCCZ7AjOA+Uw5MdvFS+O9dPAtQjXP37QgaNXimNqmGQYqrlXAYBkYSpdyXj99ff6DCUbdiLBMh7W/E9vsR79sP4D/6fZWdVkV1mvtmDDbgA52ADeC/hAvzoku3RxGqrojQvRKBQGnBojI8bgV/YrPzOZz7xAVQgXExiRnwwEIiFXAbgu5c1bTQbvUE/CMKFnqkaUO/+0E9KiqHrToSF89DKlGbQ7UPokGQzpISyV7/4MRrIewOtJIpSJ3X44V3aeP2c1qFSCsSAhWMmyc7HWh22bu1kHcJBVkwCWDdkZS+O/GK0U0ECkiErihUD3mOsVfcGZY6jjwgXZjvOSlDQOOwIbN1BtSacSwfZqtWriURrrM3LzRsNeWB7cP95WUeD/D480dvqh/1fvuqXfbFq2y5K8IlqJOr6TVsNNKSGUMQORKg1wcKzSSZik80cvm6qEVYY9XsrY96BNJr9MDb1bC2AZkN7YHaA/z73oyppeKEcydKBggjeIxuIQMGWu7bf+sbXv6oWYdBHu10DvLHDVd6lhSf88le/UmEgpGQAJEHeswWx5/K0008OIwiCtxVhlOXw9BUqAcALsIJXi4QpgiIoWwDVMDEj0thw0IbB3NyGFWt619woDzqcOwXmBuO1dnf3gi2K9evW0B4YLUADUBfUX5qZWaQBYA+61t6MWFrOEPDLoSz2jhP2XI+7xKAVgKiathf/+hLnqlSAvPcQgCTkeZEOojAUoA0bNqDq8u8VSNDdXDiS0Ww2s6ysCozv+8D5g8x5ERdeOQRgIYSUSiHUsaK8P3vEIQc97ZzTB3006xBAZ363rromBBAc4ZLfXap04ADjPZSEUi7LpKROZ+FeZ5xa/U9mi9tg6GEf7ZOl+xyEAgwhEGvYAV754uf5rNvfvXVsxbi75capSNXbzRp5M+i4rPvUJ5627HszIANSYAAUgNmTQ4ilj8toK0ukQfbLGwSLUL6t27rPEp+hDVcMGIvM4beXXe58taSahuX9woAESpP1ukcdccTqVYEARlrNd9ro7P4IU5S2HgfGYq6Lcz/4idUbjhqUAl5Z0hCBK10gqBEoLvvSDN70+leZHGN1SCBNO63xdrVcvmralw43btrCMigtrGeoAEGALNMB5YPO8ccdmVV0FNhF3pQEJJwcrlsajUQvMe+HPGjA+6KEAwGNGM982gmPeegZg9kbo2J6aiqc23RVSw6233zVmrHos5/8MPyQAUOwtAfC7CjmvH2a6h6MWLcPy3ovHN/+neWKha1A0gFS4Yabi5nZThBEQlRzNR7ewhiZxFrJbJA+9CF/qQHnoZRaxrxZZs7pbjsLxQwhwVAKH//U9xyC+Z6FjKFq7AVUiLJkb4UrOOuectyRD73/mjKFAJzztUoingAVVC3zm27FfK/nhbRVt0AQiOCtFqI5VluzCuyqtiGP3KugYQ47slgj3h2GIrQFoQAyIBcRQXoAJKCAf3vHK1/yvMfvvOlXg51Xrkj66czGM05Y/4H/etvZ95pUvDiAJUbDmRqIAL1svIVu57xNmYC9/O4fARei4WQLi4r/ctGvfiPDOIjqjJEptQZlGhDD2UjJ+599NgG25KWWxx5V5DtuOHa/60LBMlSU5tjexcc++dlVhxy5c3sfU5OgAGmqmrFlJ5l90WuG9PxnPFkDK8aRDkpvu2GrlnY7Sa0JCQekBa68ZmPpiUhAKXgJ5+EKhJJgj73HEUmMSC+r5+81E8UCwjOJod4fDFAKmErdzptCBHUICRZZZq3Uq8aiv3/Fk1/8gic7h9/97tKjjz5q/ZraIIfNURut3iMWQAiEQ+u4OMcyZEyLpbxpMaNaLN8yg8CQbo941N/G2rPbQK4YjUOqaiA2Z5z/nR/ESdMC1no4qCi0vgTY5ynn2WHrDjrs0MTkqGliW5ISf8Ij8b8dpgIyACAVvvO9n0/PD7RI9aqDDDRkhHJByrqV0MJ7l06ONR7zsEPIQko0Ek3USPvzSbMJyIozlxncsmVbxdnTKiwswzlYp0INPzj88CMBCAmUWbUPmiEZovK+EiDywNDw0NDd82JNSYQRvHPOSZ0ILRKtOvl8PWrGdVla/4gHnFIBrxUhTwuJcIlyxYsyTKL6TTzC13IqCo1qk0RiWRFAVKv0FvMqDyH2TKSWO0q/dwFVYcQjnJ3HJb++tLnuqMKwsxZCaq29M4EKyAyIy6MOP6QRAvlQzf12fB/dLZ0+AJJMWOjj3I9+ut6a1FHdzHUAiXSg1q4ptm9LkjAUtrvlpnf/6z8FQCCHyRLgk3pFmRMMKhn1Bs77zBfa41N5YZSOIRQcIwo1cb83f7+zz8yzarTEgRQgMwMLDOywPrp7fmAIJQ9Zd3MLAyBkBM5L6xSQQLSgxwqE0LWSVRyNVWudo6HCnZfAoL9Qi4QE4JEN9h4qygtYQmrQK5FztbcBeRVSAL1i+EoyAwZ6vbKSDOo5lEDqhoxAB9HpZ7ys9bo896++lA4G6SADYa5bVlzXr59/8dS6Q7sznXqjDangIYi9KX3Rb8XSZoOnPemJ5FALMTfboWUb1e+Uaa79bBaK4BlW4LwvXzjdSRGt8KTRrqEsYaxNB6gHbLN+f9fpZ5569IZaNUQM9kNu/NB/SwcIwu4OCsueJJHyw3KhhLPZ/O6a5jNOP6YWwxgjBRGzg7AMzxAKBugb1MYbBihHw06tVjsrPFtZq40zUI5WhVcg5tG6xsIiVDAFlBTWuVa9XW2QkkIkNZXnpfOUxNoDeQadoAS8hvXYtK285robtm7fJqVstVob1h9yyvGTsylaCShAr0BQjzKGIRiJqj9mgKIAGzNWr+3be1oEk7M2riVElGa23goWCogQ3/zOhTOdTNTbTBqmCybnnARHGkV/Plb+fveeCBimQLOWgPyejV3B8HfkHNf+BVMPdEqoBJ/+0vmpkzpIMuODVlR2M3hLJIXwCmVvYdcz/uGFE61RaZP8Mi+nPFQllHLTzb2i9D4QBOmcg3UIZC3QgyJrtsLVEyAgzbqtZhPQuQEFuPCnmy76zWVxvdbrzMJl5HUcrOSSk8B2Z7edcsIRTznn/kUBR3jTWz/Fqs4y8UJ6OIYlGEEcqigKgn5nd6Rtuy5f9sKnlIWLIibB1hZRFPaL0pDuZzZKVAHMDvDpz/7wIx/7+OabbqxPrZ6YmkrTbPfM7nqtJomf/fS/ef5zn7CiDRGiAH71223f/OHPWQS1SAlvI+kHC9PNWL/oec8ea0hxW3tPq5InETGQFa4WK6lx1Ua+7KprORxLGmOl81ABlAIgycMMfNF50hMeowBnEQcgaJN1dRIv0hexV0X27gZTB+TAVVeWN27bHbdX50IhK8ssg2RoroVi0OmSylatHH/cI067rQ1a1aTysLpz9e+vL50nkBDKWw/nJAWaQFF4zFGHScAxGo0GQKUHadyyAx/85Jcv/P5Ppg5ZLxX6nWlYGgtXdWcWVo5FaWf7C593fl5AhtiyBZ/63He8bnnd8FKDnOdSoCAAHEiC4pSL+Qfe54TCoh5rwMLbfNCvt3QUhhbQseoYfPWCn7/6Df9GuhlF8dQ9TreOZwuvgvFVh67ZuW3LunXrzvvaDz78qS9//9ufW38QXInHPOk5VJtCEHCRadhGLGx//vij1j/7Gc9sN6SvWhJ72DhvbRmGobVWKtVqhwsZZIxPfeaLYdKK6xOZg00zBGEYaGtL8lb4Ugvzipf+jS1AVTQEq4UcBaJij5wMd1B0ut8NQKsEH/rMVxC3nY5y4xEEGPRRq1EIm3U0lWln9zOe9thGPAJjlSCPXJKHrLxwbnHFVdfsMe7sWRINFjqBoPuffR8MlVREmuYyqVvgdW/+j1/+bmPj4GN397MoCZLx9WRsPuCVa1Zuuv7yX/38u+sOIQDW49qbpl3QcLrFQcvLgGE8F0QFWJSlArs1Y5PzO/LjTztTB2DAZFkQ6XqrlRtDOkwZnvDBT37jP97/8WTikMIHJQtrUVrnrYfUmoJVR566ZftW5FxLpu79wKdcfulnv/ql33E8FU+shwj687sFCpawlB96+PETk9pjGV92ycN4qQiAY29KlgEFIa67Fd/6zoU6HjeQNi+reL2wBtkgEOzK/snHHL52BbhALYYrS5v3w2btzs1k9juYTvfx3R9f5HSSF569CNq1cqELLpTw+fyusTp5K5725L8eTk3t0SmvJIyH1rTTxe+vvU6qoCpZChBYEMNbA2tOOekk56osm8M4scBHP/2Ln110WSHGo/oq+F6pkKe9UIjJhLZuvencD/3HUcdIZszPozmGy666wilhpDCSrCBmQSQJggRRs+WKvNBy4OzRJ5xoCQFXYg0BPIU67jtIiTe94zOf+tI3e2Wd+wwpVBjrOIlEUFYtSyl3Ti/I2pRIfBCIemvynme9iH05turQromkjhEaJawOvcnSE0+5lxvG6MuipyGnG0oq51ygA+thPUjg81/4+sxCR9RjRDFUiFALQT7rg6iWhN2Z7vOf+wxj0QhBDKmkrMX7QQFoP4tNv/W969N+XrKCDgGy1iKJ4Eq2BciXxeC+Z59x6CF6uMqdFh3QEKMYGdm5Dm7dtDUIIiIihiIBEux8oFQg6OCDkqoPYIwBid9duent//YeFbdE0Jqf6YmkrWoTUHWrdOa6f/nIMx/3hOOyEpu27BgbhyFctfE3InGceB+xDxwHzgfWR9bFbETuA7+zs8OFbsORU1UTNm7UwGJ+94JneMa3v7/5wx+7oLs7WHfoPcdWH4Fk3Bqd5SK12trA94zZuSBbK92OeSeS+d29Xbs6zal1zYm1C32bL+SDgXdWDwr0CxSWTjzlnn6Uxu390IMBFEVRVbicw423FN/+zvcajTEP5UAiiEgH3jloLcPQ2vK4Y496yAMOYwcBODu8qD4dYLmp/tPl3fZ7mN52AWO5jsPwf1X1vK+dfwE1x5hUozkOEr43CIIA3rIpJlpJOrf7UQ9+QN5HsFxqZKT0tFhNZGCQmvmFHunQC+VIsJAgFt5yljWDYM0EQg0HFJz0HV7win8YQLgwskIEEyt86spds63WmM867Tq9912vVkA9wGEHT0n4fjf/zre+JJET596l8DlcCW+YPbNHkSNQcOW6NRNrJxECZTaAcyDZXrFyIYWVeMrfPH/l+mNWHnnS5lt3z890YTyCiIRCnmHQheBkou6239I+7CDfnwmbtal162d2zWY+KBGh1pK1uqrViciZkr098og9SEuj9v1I948pCCIAuQVpfP2C727eOa+isaQ+QUJ7k3N/Dlk3VBQI6u2efvLjHhkAkQR7SAVb5DBWJLXhbxhlAsT/m6gnjOVDw7xc45MN5/1qk7vnYQ3o5m247PIr2XtI1RlkqLdQb5d5CRKJFrbfmaqHj37wCZN1CAsywxvhqjtibKVkZkoQ8O0LL1x1+BEzCz3U6xyEWXdBBFJ6ExSDpz/uETCwDgMLH+C5r3r/xt3etls901HjYdmda9TaKIHpbe2i883zPtiQiAHFqUKuUNTY/PSCbzzsvmcGRU/lA80Wzqq4KYMmUg+RJKxVWT7xoQ8OHZQp4gAQxCQWDHwNT/rbD9DaQ7ukds3sDFa2IYB6LZDEOzavEWUyt/ngbPs9x/xJq1He9Mum30XpNpMtUFwzHIFiSOW6M0o7X8wnYXHW6ceQgR4V/P3SWiCBii/rpBIqKwuhcfN0/t6PflK11gx8Y2BC9gowcVvCzkvuZwvzK9qtFz7j7BCIFZQACCpOENZAenHylkZSRnckSUrdUc58r+UsDFtSqGEKqLiStxcaF/7kF1JqU3VgKgVeZkAQQwG9+dnHP+7B0kExJME5I5W2AIb68gR4sIgDpMBvL72sm+cI9KC0cEAYCCHI2FooVkw0Qw0GLPCxz172s4tvDNrrU11AedtbaK3c0Lny+tXrVshi5p/e8tp1kxQJKBiwre5Pu9nYcHDyn+984TNuwAtf9c6FknbNd20vRaiQtJALYRzZ8rCDVscCSlRvAZYhAnz3F/O//f2NiBoLvS7qSelNuHKyuPUWF8fr1q8cbL75P9/86r969BG1BCVj+wI++40fnnveV3fu2iybB5m0QHMc3kAoz2UYK1/2Tjr+yEa4qLU7uta0h6vpLAzi8VoOvOYf3zaxesPN183F69droc2gKwKSYKGpoUWadV/56pfrvTGxX4SFd9qLcI4BOOOd42ohNgNf/do3pNJSagDwHs7De7ATDGZnTfGkJ/01jSYyqx5jFXKRAJYpcuUGl152hbWeohqMATPpSIAcu8IOjjv1mAKwwHU34S1v+4+yDMo8cEUoVRsWaW8ONdpxy2UvfcmTH/eYE9VQb56ZF6dB0WpJAPc4AtdfcfXCQkeooBILCYIAAtZkEnz8scfSIsnUsfXwwKfP+2xnZlZICSaSEsYUnTkI125E0zs2veENL3/kI4+oJbAeUmPFFF7w3Af+4xtfEzfiRjNOxhrozsEzlDZFGYa63+vc595nLC6/2UNIlYZbK4qybI7VLOMnF93y29/dcvO1tx508ilZd9q4DHDewBViLBmf3bHj6CPWPPMpx+yfy63uOJju9f6l1oCQQVC9BibsmsXlV15DSpMQoMqaengP7wQ5V+SrV6869ZTxIVkEUJVJxEhFjzwAtvDA5s1Ff1BIHeswAgSUkiBrLRGXXJ5w6ng3hwFe+NK/b7TWDjJFaEjUfIGw1jK7to036bTTD3/e084UDAF4751zo4ahqEKX+QVs2Q70e0KIer0OreFcOT+nyDubNxu1ww9vjN658CSFxM2b8ZOf/7w2uQKgqNlkY+AMTBatGB/0ZrQonvX0e7SasA7MKEss9BwBp52+vij7CzO70v4CAgVbAsRlSUCRpcfdYz0B3u17IyuuHTyhJKQOb/rn//bUDlZsmOt2EQAuRSRhiUrSXtpu5/nP+Ktwf93BdueZdCGK7gAyEHLI9vj1JVcaJoKkRafPDt6BWcCVxeC+9z5TE6SEtcMZc2NKVLEthnrbDszAFb+/rt4cI6GNBSBJKGstG6MkHXXckSUQR3jDP3/q0suunVx1qMlFoJoBNQJKiunpsRXtms6++ZU3zc3PRVQIoGJij5T3RcXDaLXxu8t2ROsOBsmiKMBMYQghJHm4csMh65IQ1o5UfIV2wJe/dr6xSGp1ktpaCyEgCIKVzfPpW9/z7/8kh+KNLgoRBhhryMzj1xddWUsCGQrs2t6emhwO1sHD2fF2a3wMBEiqAGkr1imP+DEMiCgogHe+54Lrbp7rF3FzfH06M49AUKLhbKAjDTWzdfvD7n/fpz7u+IpweACmi3M/BIjcVGJg8MCgwI9+elGzNcEkmBf3jXuQI1gBq+Af+pAHZnlFh1t8+QTAuhzw8B4QQpMDfnvpZXHSzAvDRQkSbCysUSS8tyeeehoRvvvLWz/08c9tOO60q6/fFLcmSuuIqZiZm5wan99648c+8M6awOqxWKFYUusbWneH0aKob37r/Dipl2VZ9HogUkLKKBBcSDb3POXEqgbExgGCCSXw1W9eMLFi9UJnAAg73w2iQEkiz/352Ua7/qiHHMweAuh0tlvXzct5AcQCN99yI4jbjQYmJvrdHqQAQ0hF4FNPPr7qXiiJRV2qxWE9AA6iBH74q1ve9+HzWlOHinhiZseMWnUQmFSg0e8oOJcPlCtf+aLnNiSE9eIATPc6ms1WxV7zwGwHl1x2tQgi68lVyWq1uQgs2Qpva6G69xnrAwHvoKu8k1lrOXJwMM4OAWHxm0uvsBDe+GoYDXkOINCU9QfHHX/Kljm85OX/uOrgY2c6GQJtyZGwaWdu1UGTWWfXv7z1tccfpQNAoZTLqHDGOmuch6jIfBa46eZNMggbjRZUCBWYXs+ZwptCkTnznicTICUsw3nhgCt+P3fDpq0iqDkWNssRhtZaeF8LA838sIc8sNdFKCDhV60c09LHwTC4ufyyK3tbds7untNRzXa7kBJ5pgDh3V+cfRb7yv7Z0SxAdTmEh3JQFtg849/4L+8dW71hPi0KUnpytZ3tUmPcDHIIgs9cOvPcpz3uPqfElCNWd6p0wP4IU2tJhUXhLMMBCz23eft0YYXzo8kbqpZCOElewNYiPdVCFMAMB/KQZv3l/UAesoYxKHDDTZutI4hAJXWhNWwhBWsFNxicce+1r3ntBx3Xd82lrGMKdVAXjtKxyWTnzdc98XEPedoTT0pkVc6R2SC11lWpmtaBCmMhgyrCmJ3D9PTszI7prDDwXmsN5lazCZdrlIcfttZWir8QzgsPXHbldVBRd1C2J1ei05tYu8b3+mzdYL4TQDz1iU9sJrCmYiRa563zHsDcAD//2a9XH3GPVnvKLPSCRgsMFBmcZV8ed8xRvio/uHLRy1f7yiq2ngHe/5Evb94xmOlnCBTDefKQIfcNelljcjKkQlH3ja9/tAJgymXbne/GMN0jPFcaJEjI6q5/6zsXSp2QioQMiSSIBAk4z2URasoHvec+86mdeUhAq2EaG0YRwxO8lsp5F4Sx83DANRunVViTYQwS1rN3DmEANnBl0Kh//rNX//KXl0s9IVSr8MQh5XbOUzfLpw8/as1b/uHRNYm0ZzUADuNkKlQ6TbMqky4LgxFv+vfXzsW1hkoSKTWEkEJB60GvQy6vx2rDumGHjIQSmgzwqc99Ze3BR0AGczMLWLlqfn5eNhKwa8dxOj9/zOFBpBBrAN4WpRSBFDGAm27YEcbtvKB+r0BQ8x5SELythaozO3vCMWuSAIAHcSWyOShKB5FZWKAEvnT+pR/+1Dc5nGStvXRRK3DpAkpPqo6g0Z+ZGSxs/egH/7UeQXgEccCDYv8UwhF3BDD35Owsb0qRgmE44Pobby1YOWgPqiRJvfdCQEnhisKX2VGHb2g1q8B0+LhbV3qu1O2EEAIQhQEDV1+90ZO2XkAFcAzvITjUZMvByccf8/3vfpe9FBRHyZhhJxSLyFvTkaJ43WteVukmjDUUwcOrcuAAKDUsR0gp/Wgu6MqrrylKK1TAIJB0zsGxliKQ/oR7HKZHCmYshAP6BbZPz3V6RekEhIL33lpmDpSQ4OOOPLIWYsSR8UpoYKhKdMMN2yTVvQ9IhqQDIiL2kCIQOGz9Qe1GNctVTTDrQVoEYc0CpLBQ4vLrF974L++Nmwf1+xw12tbl+cyW+nhDtprcHawZG+ctm5737CeedeZaBRBb188oqgEHnP4eBX5R1ZI8IzO49IprWASOlGNIKcEMb4l9qMhk/TiQxx+zKpRVz37YZfXMln1pLSAI0jNKwx74yS8u9qSNB3RYaZaASCtKB/P3v/99Dl6zcsX4hDUsKEBeFiYl6YK6SAfd8XadgNIsXhQiCqt2d/VXqbTxQ7GJX150SVY4pUPLQLWwxlqtNZvsfmedXs27V2+wZGzZXs50Bn1jqygWJGA9vJcEZ8qz732vWI/qnSygAkBbV/2Wy4VISksktJDSOcOuDBS5Mj3z9FMlYEoPVLm/MExVfNpz8AGe+YJX75gvUxfL5uSgzFWsRF33d2+hvDfRjLdvvObYex3/sr99VE2B2ZBmGQR3cKd+f4LpbRpUCEA4MxRQnJnFpi3bhU4cpHcshR4KbXorwOzLw9YftGICEiAHOdy3CK21EgrDcU3hHJQkBi697Eqh4tJC6Hio1knWc+Gz7hmnn/B/nnsOXD8b9AEgiWGttVarQAp97vs+xIxYo9Odq+bydETsIQjOV/0HEAkB5BZXXXONB6TUxhgItSiDmg06p554jASkGL5V53Hz5u1Kx0IlpEPIACQBeO/Zu7Q7e/ppJ9IiPrwBFDvBDAYu+c2VnqLSsAN78t5kcGWoRWdh9j5nnC6BUIuqy+U812utvkMJDAxe8NIPbJst65PrLWkZxm6hV6vVNBE6MyvH4u6um2uqeMeb/n4qQa/XV9XSmFDaPN8/C6d3sDX1S71+gmP2BEHYtG0Ay0FUd17AC6kVhEBFrXBGS9zr1JOHi24ZSovhzJsgAIEMAHgH9ggizHexc3qOlGYQpBg1Y6w1GQX+4IPpxOP13OzNSpVSII5rCGrs1aBr6uHkRT+/NB1AACoQgB3q8tKwZ8aeGKIakNs5jc5CL9ARM8P4oSi4kNaUmtza1Suq76ueES+w8eZbwqQlVOgraX6SlTgjO1MUnSMOXU3DGb1Rqs5CKswuYMv23UrHTGDJTAVQeFdo8mbQPemEY52FloB1gDCWezlriZ7Fv//Xd7/9vV/VJg7pGx00m+X8DOJG1rfF7EJjcrwmU9O75Q2veubZpwUSmGzUATlIM8elagQHYLpvgX+4veGqq6+TjTZIeSgQAQTvhZRgds4qQaederIAyEPK4cil86Yyb4LEsEJJYMJVV+8goT0kSI7K/h5wnot1B61qNVEPccLx68bGwkHazTodEqGSNRg96PLK8fW/+dV2BmpRXLgBpPcjdlyFUOuG2fTVV20USqtAex4VGQBoXebFYRvWN2o0JGrxcPL/mmtvgJDWEUqHyp2LSmjEJLFasWrR31hIgES1s/aaa7skAlKKtCIlIC0CFrDkzPjE2No1MNUIoJRg0kEsQ3LABz78ow+/6/1HnnTvue0dlbRLk4F80p4sF9LW+Aoq8o2X/PA1f/esFz77nrryTkB/UCZJkxT4jtpBeleCqVLDVv5vfndZrd40FhACUlrvYYyUskIqMR9+6IalqInYVgJOENbbURQJIQDGLy/6Va3Rco5JaXgHAOyIWAs64bh7JAIKeMYzHuVs15oBCgvWplBBvMLkoRKtb3ztu+kAgGdpPQpHdjjALwRGc0WO8Zvf/CYIAiEUkUAQwsNZK5Uqy/w+Z54RBksBT8Uiuu66jY6JIYZ6FqjaEd6zXbN2aqw9vBPO54CHM1UH4beXXh7XGtY7FsxkwaUIqo335fHHHFOPEEVgDxB55wBIwrkfu/Df3vVf40edsPH6Te1DjzOGUQzQSqwRkPVE16Wz9zzzhNe9/FEayDNUe5+dUQ7Cgx0s361hum9gzlxJnJQeN9x4kwrizFgICSk9OxgroQIZSBB7Mz4WDKM3BryElVIEw5/BzG6onGeAq67fpJNm6UkoCVetPrMKPpRiw4b1Vdhxxn3O2L3jllpdxSvGgyBAL4OMxlav3bRz+pIrfy8iDCwp1B2cGllKEoohrJMOyEtcd+MtkIEjeAkVSLCFc0IIOHPyiUdEemlvb3Vs37aDSEqloAIoDVJwgCOy/qCVzXCoRmK5ct8ODBjGxptuDuOoMMZ7z87BeIKUwjufHXXUIQQoQjoowLr0Ud/hy9+76h3v+bCsT4q4oRrNhbkZuFI1E1hTzu6aaNZ2XPm7ow9b962vvpsdmNGKIQFToNVWxnK/TLG/HnegNd0bqeQchESni63bd/SyXEVJlVFZaxE3y4KDICnLUkm7ejUEoGUFU6F0DFYMqaW2+UAIeIIBuh4/uuSKAQLWsev2oySGK6JQtkI9u+mWRzz0EQXDA81249jTThCqyPrTpRmgXS+zbl8Myhpt3LFj43Y4EVnUfS4IIlSEStwPCGJVcbd//utLRZR00tRLtt6ALYXKE1AOTjjm4FiUEtZZU7Ubds5AylB6KO+Et3AOjom14EhTeOKR64QxMTyBJUIgVEHSzeAJF1x4IQKl45BIInVBfcrlrAOwS0856R7Vk1CrhZ5RSvG1H9z8ird8sK9WudrqmV5qi95Ym1DMutmZVUnYDE02c8OhR698+5teERF8wRFBwBOhVoMEIkWNoEHQdHesm+J22PtVfFk1k1J4CFQyTxAgD7YQikia0klJK6fGiPYUAeXFF886kPCOgZKxdRcyL6ATwwJJ3ZS5VCJfmEGZh7V41aRMCBJoKTz64Q/pzmxptSLuzUIC9dhwGbSScHz8E587v5JLisIEQ1cNRWAPz3DALZuhwjrpgLQqjYEroYht4XoLSSM+aPWkgCE4pcRizuhd1RW2YFP9K+Arhg17G2ld8RycFc5IB4Qxbt0BBxTWZFnGnkDK5R7G97sLgvxppx63a3q4hrKT4pe/2f2iV711rgs9sY6dakysCJq1/mB+op2MxUE2uytCGnD/21//z5OPjVyBWkhiuIPDAAawBC+gxB0lq3tXik2rY2amV5UomXmo9uaMEEJKWRSF1nrDhg3ydtpZotpa4031MFx+5c2jNVwMSS5PkyhAnsLlh69btW4cAUAOIfDoB/8F5nbWQ4EyHyriOAegVmt8+ctfrdYlDMW9rCEejgdaAwCXXXG5DgMi0ipgY8BeB5qcQTY4+rDDppohIL2DgKxUQZWC8wXDMBkWxlPBsmBZOFF4YdcdcqQFNm+bs16pOBFKeGCQ44qrbpE6lFI7a4NQySjy3kopJlpj7Nz6NWiNwQHdDD++6PpznvF/ZK2p25PGAaUrPYxj01nIizRQrrNzkym611913sQYCAg0tNxPCXv7H0yHiQS27dzBtGxFgSCwEwJE7G2htDj8iEPptvut1fiKg5TOQQpcdNFFUVLLrYVUMA7WCnCYhL4YnH7SsRpAiYaEZBy+BqsOWmMGHd1ICIyiBFHRT63j2dn5LdvgGTxMz0rAEKyQEKrKbC7zULn1UgeAgJBxIANYsDn7jNMIgCXBAgxnACAMkRYpC8cwTCWEgSghSyhrJf32qutLYGLtpJOwQK+ABcIIP/vFrzxLIRWIpJRKElurlMoGg5NPOm2+C6VhCZ/+4o9f9IrXI2zppG0M1VrjmJwotm/lMkumJgLNu3fectZZp/zu15+YX0AAFDlGmmWLSzEq/Syxn7bz72iY3s7zu23btmEq7f2QSUnkvSXBYMfs1qxZtXfZdemvnssSQKV4fPFvLwtrdV86oSIICaXyPK/FYd6bv/dpJwRA4Dhk6MImwFP+6tHd3bvqUQhrICU8gXRpudGeuODbF5IAqUoBAEBZYVYI5B5XX7ux8CgMQ4WQUkpiU8LkCuaMk06UDIgQQqNaCgpIBecss/PkQBbCDnXUpbWKts1mOZB6zA6QATLCVdcV//DWL/7y15elubNegMmUrixLlDl7bxw95KGPrDexZRee8fz3vuvcT2VUa6xYPzc/QFGmeQEihKo11oDN53fe+qD7nvaFT7++EWJVG8xoRBAAezOKuQ5Y00V0/sHZru07d4zWD49QqIX3htmRltaWjcaynZ+0vK012i5KxALdHDdv3kI6AgsvJIIAQViUObzztjzumKMUIw4JXMTaB8CTHvtoV2SDTsdnGUiBoZtNyECGtS9+9fxuCkdgN5wtwEiJb/s0tuzabUg6KAcJIQEUWUrOxJKP3LCyKoJVdqrqlyrCqhWTzI6XkEEgASEdRb+46IovfXvHfA5dw/ZZfPxzl732H9/xvg9/etuuBS8CFgpB7JiZACFICLPQm1q1/jNf2fKQx7z4uz+/JOWIw7Fd84Nkag2abZ7Zhf48hOns3MTF3NPOeex5H3rV7m39ENAADCTAzgraS1tS/IGSzP5w3JlyElX4NzMzg+V7ieCFkj6zXqggCMqiVEr9AcMswxqgWOHqa2ZL43LjEcRwXGUIQiprBxMTYwevnRAVsIsBwporcMRhtUM3rL9+2wBJE94BEqQNk7Tips3brr+50z6+BY+QCMRMVKlH37R55/ygQK0NEZYO8MRS2NK04zBhrFmxuJQeIEQBDCNUOO3Uk7//66sEC8cCrEASzGAJ0q1Djn/Vm9+dLcysmmxl/a63ZZqXqw85qm9IWWG8IK3ZsdCBj8Ak24cc9fy/fQXg4cqpqfWkVBLUBr007XahlWiEEoXZsumgQ1f/zWMf/aq/fXgIHHVwnYA0Kxtx4EweapWlWZxEB6zpH2tfGUjT1AMsqmXuviIiwVlmVlpYa5cZob0e9WpViUwNe2DjTZugwsxaRDGsQV6iyOM4AvHq1SvbrepXD0WnirzQAiefcHyjntRbDXiGlKafusI5kmG9fd3Nm0vASMEsAclCeSC12LZrxjiIIIbUsK7aq06Cm/XaWKueRNWD5sssBSAV2ICAE487VlaDCEzwCl7DR/AxfK3TtRnHY2sPN7LRL8X46g318VW5U2HSYlJFbtlalKX3HkBpyoIVKFy14cgVG46aGZiU1c7d80EY6yRE0Q9cX2WzYxPhf7/tta//24dzXonAeAU0YyVgQi2NWcSoGAWmB2B6O4Up51gpWIebb7652WwWRQHnEGgApixhbRRFxhiX539gUbaHSI2rCJ0X/uTnzfFJrUJkA8QhAlV19ZUSZ555Zl5iSHkLI0DESZgbPPFJf10UWZkOYHMIhi11LS6s0XH93I980gJOoGQJ6O7AOEAr/Oinv1BxzFJVhA9EGvAuSwe9zqMe+dDRQ+iDUFdvV0nkKZ70Vw80WVr2+o2g0aqNoZDoWKRSyRYQq1q7QNC3FNRac70UKsyMOfbEk5xnSIF+P2g3MeiMj7dAPrMGY+M753rTCxlF9cJT3GwIchEMmV4+fctj73/qJd//5INPWykyOxUhIRsKJ2EkjIAHvNbBflLk2e9gyvt+wuwBkrDekRRCCGiN0g27+VGc5zlBBrXa3OyCve0sTAACKnTAIMctt9xibJGnXXCJziy4AJW+zHrzM6efdkoUgAiQCqTKPCMNZqw7qBEquLwLLmuRpIgCwYGiPE93zuy+/hYmCQvloEQYeCC3uPrKK4i5THtCAS4TkmuxjGo6Szv3u+8ZtBRDD0c+lECs0Qhxr5NOPPzgdb0tt3a27dAkxiZXrj/4MDszp2s1m6VpmoahJuJed6FRT+539lnPfc4jhXCtZqTadV/0QK4zswNlX0lAEpRQkQriQJAr0+5gdltv501Tdf+J/37Huf/yzFUJEkY95MHMNoIh2NEUyrJglGmZEOTSBb27T5b62/n1ZVkOi51RBGvgQSSCJLFZRkRxHG/atOkPNLSqNGXXzt6WW29SXIRUJHWpIlZ+IDmnvGMGnZOOO4KA/sAXpQFRarwHogDrV+L+9z4tFnkrcqa3QxQLLpslm3qTDnqdX138KwaK0jIAFgKY221vvfH6ViRCn0WcI1/gbNYO5jjv9HdvPubwMMuqNtminpUlINJoBPj3f37NjltvkOROOPpwmffnN92w+dqrklqkOANnoSgDUQo/WDNZf9qTHvOBdz3ulGPhb7k2Xdihfd+lc42EpOmONSPpBgHnwg1sb3e+e0s+vzNCf2VTvOlVL/jZt859/AMPDhzqEnbQ6e/aUhtv7I3OSpy9yuGWJvs94MX+W4+6Q1Iovi2M0ijXsNYaGMdSauWyDFo44wOl4VgIzY6uv36jWrIBi2KRFfWNCbAem2/ZqH1BnAuHvJNrFbJ1bMtaIiZWjdXDavySwlADvtVuzw9MVNOwePBZp/7kxz+UXFBh61HEthRchoo54N9cctHjHnbv1S0FQEvkBW667qqGRmjTtGAiD1sqkjqgVltHrbWtCL6iLJFkYuLhKgfFKpQ4Yj3+851veuVr//nKi38wNrlGxbxuTXu2szC9Y9fYmgk36Mzcuu0+9zzplS97yVlntB0wvRtIfENk3mewmS6LojcnVGEGmVAhsRfOtZv1e5568mMf+uCz7nXIQRPDlY1pN40SqZKgHq8cPdDLhSbEqMp2e5ZE3B1hyntehiUVVwGLaoOyzrOcRQgARJAaeWbhIbSUOh+UN9+86XZsvwCchI+FWNWuvez5TyfdlFFzZj4dH5+y1ppskISYqIdjCRQQhQR4hvdAqIUEagqPfvApW296VFJvO0/NsXZRZEXWj0LpbRHFqtpAogApEIRY3Yj/6VUv7paUs1Zxm7TOy0L4shXwWE0GqNZbgCGBCqauErnQUB54zMMOe/ADP/6P//SpT37q86tWrp7dOpMVeasR5tO7zzztpJe+53X3P2O1xFDEZVzin9/wIhFEeWG0VCBvsiyM49pYe/XaNevXr2k3IQmC0QpRk1CMhd2DyYlas5m4vCeDCES9znyj3V6s4VfZEu2TitJStX8/RSqNFqj9+WBabc5c3LQECV/tMyiBFPjLJ7z8qs29Qk9wPAVjoS3SDHIMxjVjOZi7sa1mfvPzL6+pIQDILl1zSwCMBAiymxZRElfuzTCqdfUEeItAQXkIgjeFUGJQZFGcAKrTHTSbNQB5hiBCaaACAMhNlcihn6KVALkTbHQYAcgHZVQLCg9WKEf1cQakQyxR9PN6PXIjsy98CS6rCRBGMD9wSSOZ7oIZ7RYuu2xu6+YtcaO26uD1K1fpFXV4C9MrNflaEik9FNCzQFYiCZaiSDfy4ov+WwGKRwtKvXN5Jmv1vCwX+tnU5JgYTpiLpd2QvHddj+BHP7j6keLu6PT/cG1qzZo1v996g9a6LAqoEN4hjKvNDMwcBEGe5tdeu3HNaUfua6IJgM0hZTOSYHgPYyE8CoMwRKBQFAgIbB0EC/Yg1OLYgSWsK/rKJ4PuoB7XK5FpaQE5vEuO0U7gDSItAUKRQcpIOXiEDGdgLYIIxiFQUNV3yYJYMSkGJAgVcQumchLjjaCT9VY2G5mDtzjj5HE6eZyBguE9IiBQQKsiE2TwKrBWqpgBBWiGKWDKUgqu1TXD5YUhkloGAoyisCZXWsB5aCWTGCRUFDWjqAACCAnxB3KDZe6++rg/6p6IPz8QRUVZrkRqxLLHuEo1pybGlaRAyeEEvvc6iAEGsSMKkqbl4OabdzD2+E4ell2JVADPIICNNwWXWRSilSAggKCFB4EUQWK4QA8Ac5ZnU1MTIFdrJpAO3koNOAuGVpBAMUgl4Exe6SuwdyCGVsX87qrOVY8QAsJCAa60vsxUFACe3aIiA0FIiACiGknwzTgi2ESipkDMCijTIiY0JDTgihTFaNOuGchAuTxzRRFKSCAK0aippCZd2SMUcUhRACkseUOBUEkCHSCKqs5sWRRLKeZoA2W1LHi5+uOyeqnYz0tUf3anD7dnSZ8XPbdIDVIWn/jyT//xnR9BfU3mYsQ1sAEznIQnCI5F0ZaDtuhd9J1zWwqmmwb1AALz3QWOwlpYC4Y+q8Lf7V/o29uuue+30JLJXpqk23cdKC2Z9VFst+Rbl30Fy9Z8Cb4dKIx+0Z5ZOWHPdMczvIFjeAkhIYjlMEdnDDeaMg8po4TCW8lelhmFAXKDKAGUK6yM4qJwYSiX/W6/bJOBuPs5fb6tTGq0/VIKpYHVK1d4Z7UgMMFVXXuCECCGR2aBzBlfFgZzPUy0E5QpItluNUrIQTFQYUMuTSz/6X6D/m9UGfpD3057FXFv6yt/3G/DskXit/t0ecBD+qEuNknyQ4YuYLsd1WoBGMzN1cbHIEnCK6kQCbCHlqaf6npLhmFnbq41Pr7PqxHLIt67ebOU9rjuSkJJHL7hUGJH7LSS8BbeohJGkhJSwCO3nOb2S1+/RFYdviAq0pQACY612p+rff9DN0gs+4sQUApaDOerHUQBkUFmaiyCSbNepzY5yUJaiMyGPaMdxdO7C6gaoole34JEozW+R2OQ79TO+f4CU9qHJDUkLlOVVa47KGzWG2zKobCyd0NOshBQAcJYRomMG+/7yCd1AkcACa0i56x3RSQU4W51iEoYWkJQVT8iA2EgjHcZEh2Nj1nCQo6ZHgogBwZAHo0PCC5At5CWQBLW3p7BFndXmC4H674FZY9agKMPP8yWhfBODucueajSyIBQFNZE3Lxp6/SPfrXTEAoHoWMplc9zgr2boLM6CZAMubTHvhrNcoDL4SzkTGozADE++aXfrTvinBUHPfahT37H9y7ZfMM0eozGlC4cDEOqxXGdJa0k3o85KH/+FAp+WR6wVPhgDwiVGjiNd37gx+96/3lUXwkdW3IO5L0ajlsCgAmRRWb+HuvGvvvFtwQekQCxhcsgJSjYH9et//li/cU+HBlQJc4OB2URzucujqJdHbzujR/93oUXt8bXOpK7dm9pTbX689OPeMBZL33eU047NokI/dlsYiwecQ8AGrL3sb+29f/cMF1MXcWeSTHYeFJBZuACXLoRj/jrZzg9pmpjJTsD4VmBBajS+PSEvKlMZ9PV3/ryJ+97assPEFIWxQLwIH0Xh6n/E1zcEKYeotp16xkwkBZqZ2fQbtW+f9Hm1/3Dv/VzJcPxXbt6SXuyNjk2Pz9j57YT+mPanHqPda94/lMe/BfHSwZgwVzlrAzllgpYd1OYVhdjjzXarrAyCEqHEigVjjzpGSmHUWuqb5wVAQsN0iBdqXyDy4iKfGbzKUcf9P0v/1MCRACxhTEIwrsWJ+3/FaYww5ScyEFVZO1KJvK9H7rwo+d9dXoul1FbBg3IuPCC+7mcHNOc2s72tS05u/nqFYn9yH//6/3PPn35j9rPYXoH3GBeBlixeE9kEIChJfIMCvirxz28lShb9JuNBne78F4qCXg4hzQlqfJ+EY+v3Lyr860fbp3uwACAMsaDRSVGAsA5VyyrbN+lkLr3wJwxZsmCjHy998aUXZAFVY4eBhg4LJR4/NP+/dyPfWO+r5KxtU4EuTNOOUaJsZbrp0Vpxyam5ubm4iT5u1e8/Oz7nr4vDAj777jpHWaHxChCFzzc3Qgw2KOZQAKPe+Rf7ty0cbJd73a7enyyUW+QNygzsEGg2JjGqrVZ38x0s2c+78VxCxaYmS91UnOenXPOOWYmojAMAaRpepcC6G0cWmtmrtYSVbmmcwBJHSYMkXvq5iiBArjgezvvddYrrt44Mz/QFE7IqMk6oFDKgCn0MJmuJ4Hg3Vs2RaF657++/bGPfdSfUj6+2zh9Bvtho27kVqple8aANCsYQgk84OEvu3m6N++aycTaLMvYltABmEgHEJKdQdonada0gjV1+sqn3zqVQFhoNbzElfkJggCAtfY2Jqj2X5juRQYRgCjLMggCMIxhIahaepUVJWsLGTKkA+ZzvPM/vvOJT59fUuJEJKNa0moUNit609BeRNIXZRRPaY+sN22701/6zLkPuGdbOtQk1D50E96P8XrHWNNhYLqn3fBCKiGrWUfYEm9502vnt9xcazQ8E3d7gG9GAflCsFUSsDZZsZJlODcw192687Nf+10BDAzSnBfNj9bae8/MdxGM/iH4Dne4AWp5aVgEkEkJWQK/vqr7jOe/6yOf/ko0trK5Yq2qjalaPbeu6PfgHIU60FII73o7MdgV+f5FP/7cvU5qewctsW37Lt4LAAzi/XQ/xB1UkKr2FvDoyaWqzlQtRnIMJS1hdw+1Bs546Itv6tRlbYUvc4lSkLfWOkgDUR9f0d+2DfUaiu54rFx/9yf++90POKPuer4Re2bWWgNg5jRNkyQZyZ/s/9bULWN50jLoiCwrvEOtFgLodHKllK6rDBgw3v3eCz74sc8aqjUn1vYyWNLWAVLAFOBC16J6TZty4AadqOjXNf/4wk/UYwQKAWAKXw+FhKVFSgKrYQS8v8an4g77LbcVgnljUnhPwHgDxuGVr3hp2elkcwutRpOd68/OJIEMJGDK/g0bp448GpCwamAoteqcZz7/2ptQa4jKdvb7fQBEpLW+i2B0X8gumQxmxHFYq4VVfthqRbWa8oyfXdx98jP/830f+UrUXKPrY7P91Ci2KBEylIPyIolCLednF/rbZ32e3+v4I379w080FeoKMaCAskgrZXhe5uj2yNXuhjDl0eqPPaovjIrTp3VQaZITUAz8wx9y5L3u/0D0036/752DM5FSrkijQIUHrd19ww0iTqCCwmJ81cFhc/Kcpz37l7+62hizaEor738XTPP3PtI0W8RrhdRrr9n0gQ9845y/edFVv58Oa2usqIf1MS/JZZ1kIpaRk5GjGDqgPM8x329MrHn0Qx/5/ne9vq0xFkMYKCDPsvFmvZ91q3vC+z1A7yCnz8sMhV8aGAPYuyKTYQiIhU5fJ3UViAHwy5vw6Ce9Uriy3Wq6vKzVG9s3b0/WHJwOSj25yszPI5BaedPZPTkWZ7tvWhWk73zL3z/iYfdetAxFkSuBQFcxnVii6i3mCLSMW/d/f/3+//djT3+oQFf9j71SKD9SWZEeop9akApjOOBbF1z2qfM+99NfXxNMHm9Vy8DlaQ8SarwFzXZupsolyblYKS6Mtu7xj37MW//+AStC+NxFkWRCURgdasdG0HBmD9WgA++ZxdHdD6a3cWsWv1R16lhgSKOAAfrA377m3Msu//3u+VwF4xy05ndnaE6BBEiAHFAAA0ImkQXe6MJx1n/ec576mlc8XAHGoq6gUEhY7wyxUjKBFy4DASIctcctLDMqwZtldHWmfW2d/VPsjCxLknKYmAsekkiHwpc0/IneGaE1vHOltY7DJAJ5kANXs1PkoCx0CRjg+7/Y9YnPn//TX15e+HBscpUVort7BlEUtseKwQDOIo7BFjZrhgJZt7vlxsMOWvHmv3/FXz3yHrLSEqR9b4QfvZzbnTy5O8L0jzwc0PfwAn/xsOded/P0qvUnbt6ZqeYaiwhMw0Y2CmAAKgiZ9AKpXD25Yvvm69eurr39La96yNnrqh6/giFYclAyHA73OoDgHKRaNklBgIXxVgfqNm9Staj0j34HwwoDV23Iij/NYIY1hVJK6eXPhAcJMKzlfr9bq8U6DIyzDgoSJXDhRTd/7ms//Mmvfz/TMQja0E0AsBniUIWRzUuUFvVYKWm783BpOxELmzfe8/jD3v3Pb7jXse28y/UG7b+z93dpmFZ9vx1zeMAj/mbnPE8edNSuBYugCdIgAbKAARXgEmSkF81wxfyWbVOrxrUsF3bfcs5fPeyVLzlnvIFGMJxqYjaKhrvM2YONF6ChuFrFOuJ9uP2LhRkmQP0JxpQAAjN774moUuxf/u3pYKADqavirjGlMYW3jXrbL4sPBwY33OLf+o5337h1181bpy2F9anVUavdyTIz19XNCTMoURao1eJ6kqd9zntBKAPO+ls3vuD5T/vHV/91XSAiaKBI0zBJDsD0fz42yAygYYGLr+z89dNfUIqGD9oyHktLgNRoIqLqY1uwwny+9vBjprffanpzq1dP7Np241QzePmLn/ukJ9yzkUAJlKUVKJJQE5wAAuhl0aobgZJGq879krdnAAG8/hNgKsCuhGQSy42Y8N7neRknydBj9AcA6vVaJY2Sep8OXLuh5/r48lcvPu8zX7/iiutlbSxsjEXNJgKV2TKzOciTiHi+bK3ewOy63XkJ6+wAJms3VEDFB/7rX88+qVGkmEiggWywUK/V9s9J0bs2TCukOiA1cAo/vWTn4578nObKQ7xuZE45ClCJcS97yUKHPs1gXRCFsVQ+G2SDBZ93WzWc89ePfPazHn/ousWii1dwJs1C0lprpcTSrFJFxCYP9stMqQc0fPynpcDSgoZT0NZYDxZSk9CFtUopXpZTAugWyDxUhKuv3vWJT3/5u9//9SATjfZqETREUHOec2eyvA+TQnrEKtS1gJrZoLS9BZ2oWigH3V0rJ5KzzjjxnW97+twuv3JCNAMooNPZMdZIlAgA/b+A6LjfwbTCjCUYwrYFXHrtlhe+7HVzuxaigw63CB1pRgBIsAAUyEJ6aBnIANZzbhQoJCHZ2rxTpLNR4E444dCHP/y+D3jQmQdPBQrD2uFi7kBLhXU/Gi9cRgRhBQ73lFr5gx+r7VXkAeEcMwQk+dGzx0DqUBoEETywadPCNRtv+eoFF152xfXbNu8QtfGksaKw0okoro8N5nvDEcBQhrFWgp0pTFG6jAOpAs3Sl2V/ZuVE8txnPvGFzzlbDVn9SPOBJlcLJcD9Qb9RmzwA0/95jJaDFCSDJOwZiAB94Hs/ue5Vb/zn3EcGkUfsEHqOGBosIQ3iEj5DNwdJRE0UDOfHWmMmHRBbuDzPuuB83UEr73PmaaeffPTD7ndspKA1QgUpFzeFQtHeXSBaVucFV7sr/q8fYRjOAzxUQHdAv0SWo9mEAWa6uOr3t/7gxz/9+S8u2rlz2lOkwlVCNzNTZnkh47g2NpaWxk7PYHIKnuEYttp8AgVSxHHA5PO8N9+I8IRHP/iVL3n8ZBN5H77IJyeiUaroPWxepElYJ4QHnP6fweV7z0VRMge1ZODAEhlwydW7nvG8l1qqOY4tEubYIQQHTlokBUxX1FvklZvv6Pp4HMTdm24NpqZ8YQUhCjSs6/e77EwSWGF23OOINWedddZ9zzrr2ONWj9eH0JSjsus+SP0TMpDK7JZVBCHggV3z2Hjj9C3btn/3ez+8/Oprtu/YnYyNJbVmN82c5Xp9RZqHQCRCSYHIvYHJIAXiAM7AAp7hSDEFUNKTRGGyXYPu9oc/5AGvf/VLjjuMJAMGtaAKVSyIwa4sbRCGDsRgCUkHYPrngCngqyqpo2Hib4DLblz4x7f8+0W/uKwxdQgFbevCIKj3y9z6PqLh/khoFYZRmZfc7SJpEQvyUrCSXoIVsZDINO2WNCiKosgGQmD1qpXHHnPkYYesP+s+954Ya6xaoSfGl5IOuv2hYLcM09W2MWNQGmzcOLd5y64rr/79lVf9/qZbt8x1B56FV2EQJl5oLxQL6auVDETsNZeBULGKlBPO2Rw2g/TQBGfQT0W92QijrNNTHgFkZ27r8cdOveQFT338w05QQDFAI0IkAbbw1R6YqkwqQMItxTMHMv0/F0yr4o6wEHaU2Pcd3vGuL3zwo5+Pkqlac+XcXKprbWrUM+eYLWCQ95BnqMX1iYn+Qg8g+IC8BmviQHhJZJyZCZVRSoGdc0aAA02hVp35Wc/GWyfgG7Vk9ZpV69evX7mi3ayHSnIQBEEQaK2llFWZiYjyPF9YWNi1a9e2bdu2b98+PT3d65dJbQVTSFKRVBAKpC3gqNq2qDxpJvI0khf13Gy1e70eLyzAWbQbwVjTusJ35+pTYz7P0t27taZEiM7Wzfc47rjXvupvH3T/VbEYjokpRkAe7ExvQdfqS7pSJEBwAOgATP+MMMWQ5k9VeDfcbdctEQb4wc+3vvAlr+30zbEnnHrNxh3Wt0R9LIiV5dy6PqgUESklyiIbcn9YgwOwhNcElsITW+89sScieGtMAVtCkNYUak3E3lnnDBFJ4rTbr5ZULQIUADMPFhYgpVBKa62UGv4ryf6ghFRKh1IqCOWZDMP5ijWr/WJkwQQwuEB3lxhL4qRuDaxlInLGcp4jH7Snmr5Y6O645cij17/0Rc99xEOP10BDVQ3hLCSqBwpww+lQxnDIkUSV0jFQLdg+ANM/T1OV/ag+OtQCcRAOKD16BZIYgxKvfu2HP/u5L6w99CTW6+Z7NisHMqCgppwsS5PBpojDJTnPxcqAl2HcsIV1RQbnoaXWWkkigikyISAk2HlrSzdcVkuRrtEImt5755z33nvfbDYBVJ/z4gEk9YZxzhhnjHGeWUgSiqTynkES1XbdYRudgUyoDnEOS84RSibIWpw04qjoL8xtv+ne9zn5xS98+hmnr2mFIEABpswD+DiIBDyBXZ4Rs4gieAEaUfIWhYOWN2kPwPTPglfyywU5nGdIckBh4QCh8Nsr5l/z+rddff382NR6nUQLvW6/yMJaoqKwZFtWy6GXdFaqApOGjYAQEtWiOecMvAecDALvHZtiyEfSMorjIIi6s32CpNGx9AKZFz9W/ySEIOKiswApoTVpLaUEBFd9KVsF3DRcAs0CzKCs2Sh78zvJYaw1HpHszi2UvZ4SfNoJR7/m5S86816NKrcrnbOm345qCss4CNWKIuec8TIKh+jfi1jzv0JvY38s7y9dXl7sBgmAB4MsjBMolBZCwQH9Aj+5aOt73/+xX/34F82DD12xZv2WnXNFZlqr1/Wy3AtAeFBVb7cgD69QhhABKcXMsHa4CU8ICEBKIUkI4b33xqAs4RyiOlgQCILE6CMTvHVMgGcGL6ubkpRyEc3M7JyD98PNbItnVaZlAeRsF0LtQ0llv5/P7JqaHHvyXz32qU963NGHCgkUGUxZtFthRaDOs0EsI+mFtdZYHwSBjoL/ZYi8azRLlwvD0V4iRwRXWkdCBSIt2RHpAH0HJfHLyzf/27s+9POfXRGPr2+MHzzXM5CJI8HCgxxEASpBBiyIA/Y0GoEDpBRhoJQo8xzODaWBpITWKgikpCJNwTzc7VN9ZABMQcgEYlRgRfURglTE1sMYOAcwpCQtlZDWlkQkMIwQ4J33IHbNer2zawt8dua9TnjO3zzmkQ8+str/G8D3urNjzSYgjLUgKWQgGcgZFUWRAIK1EApUSakuFSjsMulnfaBueofAdGRWvSlFEIFgrJNKMmFg8kAHnTJVQV0AN23FBz/ypa9f8MuZuTKePNiStkIx2UplCVQO0woWEEM3PVxV70qECcjD07BQzxbWwxlEwdL6P2DJIlY6TMP9gNUIoh8mbaRBlU2t9lkasFNKCRbwBGfZleRy9jlc2UrqTznnr596ztmHrAIBIRAACgX7TAkBUJGWYdL0XpaFj0IFDxQMIgQAwXp4HoqpD8OjoTz04jjeAZj+uZ0+bnfJOfZsjnv2goTz8AI545e/S7/wzZ9/4Rs/KDOI8UnvDQUVu8ozidvSNL2trhLE/99lswpeEothvEEFk4cjIESu0e8ryk+8x9q/esx9Hnz/0448WMpRdZOW1jhUUOPls6Z7tBCWO3regya7rHm2/wpB/qnH/weGOn5tjZWKxgAAAABJRU5ErkJggg=='
+    };
+
+    let debounceTimer;
+    let previewImageTokens = new Map();
+    let previewCodeTokens = new Map();
+    let currentPreviewMode = 'document';
+    let currentPreviewLabel = 'A4, 12 pt';
+    let project = loadProject();
+    let activeFile = localStorage.getItem('latex-learning-active-file');
+
+    if (!activeFile || !project[activeFile]) {
+      activeFile = Object.keys(project).find(name => name.toLowerCase().endsWith('.tex')) || Object.keys(project)[0];
+    }
+
+    function loadProject() {
+      try {
+        const stored = JSON.parse(localStorage.getItem('latex-learning-project') || '{}');
+        if (stored && Object.keys(stored).length) {
+          return { ...stored, ...Object.fromEntries(
+            Object.entries(defaultProjectAssets).filter(([name]) => !(name in stored))
+          ) };
+        }
+      } catch (_) {}
+
+      const legacyCode = localStorage.getItem('latex-learning-code');
+      return {
+        'main.tex': legacyCode || examples.basic,
+        ...defaultProjectAssets
+      };
+    }
+
+    function saveProject() {
+      localStorage.setItem('latex-learning-project', JSON.stringify(project));
+      localStorage.setItem('latex-learning-active-file', activeFile);
+    }
+
+    function uniqueFileName(name) {
+      const clean = (name || 'plik').trim().replace(/[\\/:*?"<>|]/g, '_') || 'plik';
+      if (!project[clean]) return clean;
+      const dot = clean.lastIndexOf('.');
+      const base = dot > 0 ? clean.slice(0, dot) : clean;
+      const extension = dot > 0 ? clean.slice(dot) : '';
+      let index = 2;
+      while (project[`${base}_${index}${extension}`]) index++;
+      return `${base}_${index}${extension}`;
+    }
+
+    function renderFileList() {
+      fileList.replaceChildren();
+      Object.keys(project).sort((a, b) => a.localeCompare(b, 'pl')).forEach(name => {
+        const li = document.createElement('li');
+        const button = document.createElement('button');
+        const isTex = name.toLowerCase().endsWith('.tex');
+        button.className = 'file-item' + (name === activeFile ? ' active' : '');
+        button.type = 'button';
+        button.title = isTex ? `Edytuj ${name}` : `Wyświetl zasób ${name}`;
+        button.innerHTML = `<span class="file-icon">${isTex ? '▤' : '▧'}</span><span>${escapeHtml(name)}</span>`;
+        button.addEventListener('click', () => isTex ? switchFile(name) : previewAsset(name));
+        li.appendChild(button);
+        fileList.appendChild(li);
+      });
+      const count = Object.keys(project).length;
+      fileCount.textContent = `${count} ${count === 1 ? 'plik' : count < 5 ? 'pliki' : 'plików'}`;
+      activeFileName.textContent = activeFile;
+    }
+
+    function escapeHtml(value) {
+      return value.replace(/[&<>'"]/g, char => ({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'}[char]));
+    }
+
+    function switchFile(name) {
+      if (!project[name] || !name.toLowerCase().endsWith('.tex')) return;
+      project[activeFile] = input.value;
+      activeFile = name;
+      input.value = project[name];
+      saveProject();
+      renderFileList();
+      compileLatex();
+    }
+
+    function previewAsset(name) {
+      const source = project[name];
+      if (!source || !source.startsWith('data:image/')) return;
+      preview.replaceChildren();
+      const figure = document.createElement('figure');
+      figure.style.margin = '2rem auto';
+      figure.style.textAlign = 'center';
+      const image = document.createElement('img');
+      image.src = source;
+      image.alt = `Podgląd pliku ${name}`;
+      image.style.maxWidth = '80%';
+      image.style.height = 'auto';
+      image.style.border = '1px solid var(--border)';
+      image.style.borderRadius = '8px';
+      const caption = document.createElement('figcaption');
+      caption.textContent = name;
+      caption.style.marginTop = '0.75rem';
+      caption.style.color = 'var(--muted)';
+      figure.append(image, caption);
+      preview.appendChild(figure);
+      appendPageFooter();
+      setStatus(`Podgląd zasobu: ${name}`, 'success');
+    }
+
+    function setStatus(message, type = '') {
+      compileStatus.textContent = message;
+      compileStatus.className = 'status' + (type ? ' ' + type : '');
+    }
+
+    function preparePreviewSource(source) {
+      let previewSource = source;
+      previewImageTokens = new Map();
+      previewCodeTokens = new Map();
+
+      previewSource = previewSource.replace(/\\usepackage(?:\[[^\]]*\])?\{listings\}/g, '');
+      previewSource = previewSource.replace(/\\begin\{(?:lstlisting|verbatim)\}(?:\[[^\]]*\])?([\s\S]*?)\\end\{(?:lstlisting|verbatim)\}/g, (_, body) => {
+        const token = `CODEBLOCK${previewCodeTokens.size}PLACEHOLDER`;
+        previewCodeTokens.set(token, body.replace(/^\n|\n$/g, ''));
+        return token;
+      });
+
+      // LaTeX.js nie implementuje części standardowych środowisk LaTeX.
+      // Transformacje dotyczą wyłącznie podglądu i nie zmieniają kodu w edytorze.
+      previewSource = previewSource.replace(/\\usepackage(?:\[[^\]]*\])?\{graphicx\}/g, '');
+
+      previewSource = previewSource.replace(
+        /\\begin\{equation\}(?:\s*\\label\{([^}]+)\})?([\s\S]*?)\\end\{equation\}/g,
+        (_, label, body) => `$$${body.trim()}$$${label ? `\\label{${label}}` : ''}`
+      );
+
+      previewSource = previewSource.replace(
+        /\\begin\{table\}(?:\[[^\]]*\])?([\s\S]*?)\\end\{table\}/g,
+        '$1'
+      );
+
+      previewSource = previewSource.replace(
+        /\\begin\{tabular\}\{[^}]*\}([\s\S]*?)\\end\{tabular\}/g,
+        (_, body) => {
+          const rows = body
+            .replace(/\\hline/g, '')
+            .split(/\\\\/)
+            .map(row => row.trim())
+            .filter(Boolean)
+            .map(row => row.split('&').map(cell => cell.trim()).join(' | '));
+          if (!rows.length) return '';
+          return `\\begin{description}\n${rows.map((row, index) =>
+            index === 0 ? `\\item[Kolumny:] ${row}` : `\\item[Wiersz ${index}:] ${row}`
+          ).join('\n')}\n\\end{description}`;
+        }
+      );
+
+      previewSource = previewSource.replace(
+        /\\begin\{thebibliography\}\{[^}]*\}([\s\S]*?)\\end\{thebibliography\}/g,
+        (_, body) => {
+          const entries = body.split(/\\bibitem\{[^}]+\}/).map(item => item.trim()).filter(Boolean);
+          return `\\section*{Bibliografia}\n\\begin{enumerate}\n${entries.map(item => `\\item ${item}`).join('\n')}\n\\end{enumerate}`;
+        }
+      );
+
+      previewSource = previewSource.replace(
+        /\\begin\{figure\}(?:\[[^\]]*\])?([\s\S]*?)\\end\{figure\}/g,
+        (_, body) => {
+          const captionMatch = body.match(/\\caption\{([\s\S]*?)\}/);
+          const labelMatch = body.match(/\\label\{([^}]+)\}/);
+          const imageMatch = body.match(/\\includegraphics(?:\[[^\]]*\])?\{([^}]+)\}/);
+          const caption = captionMatch ? captionMatch[1].trim() : 'Rysunek';
+          const label = labelMatch ? `\\label{${labelMatch[1]}}` : '';
+          const imageName = imageMatch ? imageMatch[1].trim() : '';
+          let imagePlaceholder = '\\fbox{Miejsce na materiał graficzny}';
+          if (imageName && project[imageName] && String(project[imageName]).startsWith('data:image/')) {
+            const token = `PROJECTIMAGE${previewImageTokens.size}PLACEHOLDER`;
+            previewImageTokens.set(token, imageName);
+            imagePlaceholder = token;
+          }
+          return `\\begin{center}\n${imagePlaceholder}\n\n\\textit{${caption}}${label}\n\\end{center}`;
+        }
+      );
+
+      previewSource = previewSource.replace(/\\centering\b/g, '');
+      return previewSource;
+    }
+
+    function hydrateProjectImages(root) {
+      const walker = document.createTreeWalker(root, NodeFilter.SHOW_TEXT);
+      const textNodes = [];
+      while (walker.nextNode()) textNodes.push(walker.currentNode);
+
+      for (const node of textNodes) {
+        const value = node.nodeValue || '';
+        const token = Array.from(previewImageTokens.keys()).find(key => value.includes(key));
+        if (!token) continue;
+        const name = previewImageTokens.get(token);
+        const source = project[name];
+        if (!source || !String(source).startsWith('data:image/')) continue;
+
+        const fragment = document.createDocumentFragment();
+        const before = value.slice(0, value.indexOf(token));
+        const after = value.slice(value.indexOf(token) + token.length);
+        if (before) fragment.appendChild(document.createTextNode(before));
+        const image = document.createElement('img');
+        image.src = source;
+        image.alt = `Grafika dołączona z pliku ${name}`;
+        image.style.display = 'block';
+        image.style.maxWidth = '55%';
+        image.style.height = 'auto';
+        image.style.margin = '1rem auto';
+        fragment.appendChild(image);
+        if (after) fragment.appendChild(document.createTextNode(after));
+        node.parentNode.replaceChild(fragment, node);
+      }
+    }
+
+    function hydrateCodeBlocks(root) {
+      const walker = document.createTreeWalker(root, NodeFilter.SHOW_TEXT);
+      const textNodes = [];
+      while (walker.nextNode()) textNodes.push(walker.currentNode);
+
+      for (const node of textNodes) {
+        const value = node.nodeValue || '';
+        const token = Array.from(previewCodeTokens.keys()).find(key => value.includes(key));
+        if (!token) continue;
+        const code = previewCodeTokens.get(token) || '';
+        const pre = document.createElement('pre');
+        pre.className = 'code-block-preview';
+        pre.textContent = code;
+        node.parentNode.replaceChild(pre, node);
+      }
+    }
+
+    function detectPreviewMode(source) {
+      const classMatch = source.match(/\\documentclass(?:\[([^\]]*)\])?\{([^}]+)\}/i);
+      const options = classMatch?.[1] || '';
+      const documentClass = (classMatch?.[2] || 'article').toLowerCase();
+      if (documentClass === 'beamer') return { mode: 'presentation', width: 1280, height: 720, fontSize: 24, label: 'Beamer 16:9' };
+
+      const optionText = `${options} ${source.match(/\\usepackage\[([^\]]*)\]\{geometry\}/i)?.[1] || ''}`;
+      const landscape = /landscape/i.test(optionText);
+      let widthMm = 210;
+      let heightMm = 297;
+      let formatName = 'A4';
+      if (/a5paper/i.test(optionText)) { [widthMm, heightMm] = [148, 210]; formatName = 'A5'; }
+      else if (/letterpaper/i.test(optionText)) { [widthMm, heightMm] = [215.9, 279.4]; formatName = 'Letter'; }
+      else if (/legalpaper/i.test(optionText)) { [widthMm, heightMm] = [215.9, 355.6]; formatName = 'Legal'; }
+      if (landscape) [widthMm, heightMm] = [heightMm, widthMm];
+
+      const fontSize = /10pt/i.test(options) ? 10 : /11pt/i.test(options) ? 11 : 12;
+      return {
+        mode: 'document',
+        landscape,
+        width: widthMm * 96 / 25.4,
+        height: heightMm * 96 / 25.4,
+        fontSize,
+        label: `${formatName}${landscape ? ' poziomo' : ''}, ${fontSize} pt`,
+        formatName,
+        widthMm,
+        heightMm
+      };
+    }
+
+    function updateDynamicPageStyle(geometry) {
+      let style = document.getElementById('dynamic-page-style');
+      if (!style) {
+        style = document.createElement('style');
+        style.id = 'dynamic-page-style';
+        document.head.appendChild(style);
+      }
+      if (geometry.mode === 'presentation') {
+        style.textContent = '@page { size: 13.333in 7.5in; margin: 0; }';
+      } else {
+        style.textContent = `@page { size: ${geometry.widthMm}mm ${geometry.heightMm}mm; margin: 16mm 16mm 22mm; }`;
+      }
+    }
+
+    function setPageGeometry(source) {
+      const geometry = detectPreviewMode(source);
+      currentPreviewMode = geometry.mode;
+      currentPreviewLabel = geometry.label;
+      updateDynamicPageStyle(geometry);
+      if (geometry.mode === 'presentation') {
+        preview.className = 'presentation-canvas';
+        preview.style.removeProperty('--page-width');
+        preview.style.removeProperty('--page-height');
+        preview.style.removeProperty('font-size');
+      } else {
+        preview.className = 'paper page-document';
+        preview.style.setProperty('--page-width', `${geometry.width}px`);
+        preview.style.setProperty('--page-height', `${geometry.height}px`);
+        preview.style.fontSize = `${geometry.fontSize}pt`;
+      }
+      return geometry;
+    }
+
+    function fitPreviewToPanel() {
+      if (!previewWrap || !paperStage) return;
+      const horizontalPadding = 32;
+      const verticalPadding = 32;
+      const availableWidth = Math.max(160, previewWrap.clientWidth - horizontalPadding);
+      const availableHeight = Math.max(160, previewWrap.clientHeight - verticalPadding);
+      const pages = currentPreviewMode === 'presentation'
+        ? Array.from(preview.querySelectorAll('.slide-page'))
+        : [preview];
+      if (!pages.length) return;
+
+      if (currentPreviewMode === 'presentation') {
+        const nativeWidth = 1280;
+        const nativeHeight = 720;
+        const scale = Math.min(availableWidth / nativeWidth, Math.max(0.28, availableHeight / nativeHeight));
+        preview.querySelectorAll('.slide-stage').forEach(stage => {
+          const page = stage.querySelector('.slide-page');
+          if (!page) return;
+          page.style.transform = `scale(${scale})`;
+          stage.style.width = `${nativeWidth * scale}px`;
+          stage.style.height = `${nativeHeight * scale}px`;
+        });
+        preview.style.width = `${nativeWidth * scale}px`;
+        preview.style.height = 'auto';
+        paperStage.style.width = `${nativeWidth * scale}px`;
+        paperStage.style.height = 'auto';
+      } else {
+        const style = getComputedStyle(preview);
+        const nativeWidth = parseFloat(style.getPropertyValue('--page-width')) || 793.7008;
+        const nativeHeight = parseFloat(style.getPropertyValue('--page-height')) || 1122.5197;
+        const scale = Math.min(availableWidth / nativeWidth, availableHeight / nativeHeight, 1);
+        preview.style.transform = `scale(${scale})`;
+        paperStage.style.width = `${nativeWidth * scale}px`;
+        paperStage.style.height = `${nativeHeight * scale}px`;
+      }
+    }
+
+    function extractCommand(source, command) {
+      const match = source.match(new RegExp('\\\\' + command + '\\{([\\s\\S]*?)\\}', 'i'));
+      return match ? match[1].trim() : '';
+    }
+
+    function compileBeamerPreview(source) {
+      currentPreviewMode = 'presentation';
+      preview.className = 'presentation-canvas';
+      preview.replaceChildren();
+      const deck = document.createElement('div');
+      deck.className = 'slide-deck';
+      const title = extractCommand(source, 'title');
+      const author = extractCommand(source, 'author');
+      const date = extractCommand(source, 'date');
+      const frameRegex = /\\begin\{frame\}(?:\[[^\]]*\])?(?:\{([^}]*)\})?([\s\S]*?)\\end\{frame\}/g;
+      let match;
+      let frameIndex = 0;
+      while ((match = frameRegex.exec(source))) {
+        frameIndex += 1;
+        let frameTitle = (match[1] || '').trim();
+        let body = match[2].trim();
+        if (/\\titlepage/.test(body)) {
+          frameTitle = title || 'Prezentacja';
+          body = `${author ? `\\textbf{${author}}\\\\` : ''}${date || ''}`;
+        } else {
+          const explicitTitle = body.match(/\\frametitle\{([^}]*)\}/);
+          if (explicitTitle) {
+            frameTitle = explicitTitle[1].trim();
+            body = body.replace(explicitTitle[0], '').trim();
+          }
+        }
+        const page = document.createElement('section');
+        page.className = 'slide-page';
+        if (frameTitle) {
+          const heading = document.createElement('h2');
+          heading.className = 'slide-title';
+          heading.textContent = frameTitle;
+          page.appendChild(heading);
+        }
+        body = body
+          .replace(/\\pause\b/g, '')
+          .replace(/\\only(?:<[^>]+>)?\{([\s\S]*?)\}/g, '$1')
+          .replace(/\\uncover(?:<[^>]+>)?\{([\s\S]*?)\}/g, '$1')
+          .replace(/\\visible(?:<[^>]+>)?\{([\s\S]*?)\}/g, '$1')
+          .replace(/\\alert\{([\s\S]*?)\}/g, '\\textbf{$1}')
+          .replace(/\\begin\{columns\}/g, '')
+          .replace(/\\end\{columns\}/g, '')
+          .replace(/\\begin\{column\}(?:\{[^}]+\})?/g, '')
+          .replace(/\\end\{column\}/g, '')
+          .replace(/\\setbeamer[^\n]*/g, '')
+          .replace(/\\beamertemplatenavigationsymbolsempty/g, '');
+        const wrappedSource = `\\documentclass{article}\n\\begin{document}\n${body}\n\\end{document}`;
+        const generator = new latexjs.HtmlGenerator({ hyphenate: false });
+        const prepared = preparePreviewSource(wrappedSource);
+        const documentNode = latexjs.parse(prepared, { generator }).htmlDocument();
+        Array.from(documentNode.body.childNodes).forEach(node => page.appendChild(node.cloneNode(true)));
+        hydrateProjectImages(page);
+        hydrateCodeBlocks(page);
+        const number = document.createElement('div');
+        number.style.cssText = 'position:absolute;right:34px;bottom:22px;color:#6b7280;font-size:17px';
+        number.textContent = String(frameIndex);
+        page.appendChild(number);
+        const stage = document.createElement('div');
+        stage.className = 'slide-stage';
+        stage.appendChild(page);
+        deck.appendChild(stage);
+      }
+      if (!frameIndex) throw new Error('Nie znaleziono środowisk frame w prezentacji Beamer.');
+      preview.appendChild(deck);
+      fitPreviewToPanel();
+    }
+
+    function compileLatex() {
+      project[activeFile] = input.value;
+      saveProject();
+      setStatus('Kompilowanie…');
+      consoleBox.hidden = true;
+      consoleBox.textContent = '';
+
+      try {
+        if (typeof latexjs === 'undefined') {
+          throw new Error('Biblioteka LaTeX.js nie została załadowana. Sprawdź połączenie z Internetem.');
+        }
+
+        const geometry = setPageGeometry(input.value);
+        if (geometry.mode === 'presentation') {
+          compileBeamerPreview(input.value);
+        } else {
+          const generator = new latexjs.HtmlGenerator({ hyphenate: false });
+          const previewSource = preparePreviewSource(input.value);
+          const documentNode = latexjs.parse(previewSource, { generator }).htmlDocument();
+          preview.replaceChildren();
+          Array.from(documentNode.body.childNodes).forEach(node => preview.appendChild(node.cloneNode(true)));
+          hydrateProjectImages(preview);
+          hydrateCodeBlocks(preview);
+          appendPageFooter();
+          fitPreviewToPanel();
+
+          let generatedStyle = document.getElementById('latexjs-generated-style');
+          if (!generatedStyle) {
+            generatedStyle = document.createElement('style');
+            generatedStyle.id = 'latexjs-generated-style';
+            document.head.appendChild(generatedStyle);
+          }
+          generatedStyle.textContent = Array.from(documentNode.head.querySelectorAll('style'))
+            .map(style => style.textContent).join('\n');
+        }
+
+        setStatus(`${currentPreviewLabel}: podgląd proporcjonalny`, 'success');
+        editorStatus.textContent = `${input.value.split('\n').length} wierszy`;
+      } catch (error) {
+        setStatus('Błąd kompilacji', 'error');
+        consoleBox.hidden = false;
+        consoleBox.textContent = `Błąd:\n${error.message || error}`;
+      }
+    }
+
+    function loadExample(key) {
+      project[activeFile] = examples[key];
+      input.value = project[activeFile];
+      localStorage.setItem('latex-learning-example', key);
+      updateLessonContext(key);
+      saveProject();
+      compileLatex();
+    }
+
+    function updateLessonContext(key) {
+      const description = lessonDescriptions[key] || lessonDescriptions.basic;
+      lessonContextTitle.textContent = description.title;
+      lessonContextText.textContent = description.text;
+    }
+
+    function downloadTex() {
+      downloadBlob(input.value, activeFile, 'application/x-tex;charset=utf-8');
+    }
+
+    function downloadBlob(content, filename, type) {
+      const blob = new Blob([content], { type });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = filename;
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+      URL.revokeObjectURL(url);
+    }
+
+    function readFileAsDataUrl(file) {
+      return new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onload = () => resolve(String(reader.result));
+        reader.onerror = () => reject(reader.error || new Error(`Nie można odczytać pliku ${file.name}.`));
+        reader.readAsDataURL(file);
+      });
+    }
+
+    async function importFiles(files) {
+      const textExtensions = new Set(['tex', 'bib', 'sty', 'cls', 'txt', 'md', 'csv', 'json', 'xml', 'yaml', 'yml']);
+      let lastTex = null;
+      for (const file of files) {
+        const name = uniqueFileName(file.name);
+        const extension = (file.name.split('.').pop() || '').toLowerCase();
+        const isText = file.type.startsWith('text/') || textExtensions.has(extension);
+        project[name] = isText ? await file.text() : await readFileAsDataUrl(file);
+        if (extension === 'tex') lastTex = name;
+      }
+      if (lastTex) {
+        activeFile = lastTex;
+        input.value = project[activeFile];
+      }
+      saveProject();
+      renderFileList();
+      if (lastTex) compileLatex();
+      else setStatus('Pliki dodano do projektu', 'success');
+      fileInput.value = '';
+    }
+
+    function createNewFile() {
+      const proposed = prompt('Nazwa nowego pliku:', 'rozdzial.tex');
+      if (!proposed) return;
+      const requestedName = proposed.trim().toLowerCase().endsWith('.tex') ? proposed.trim() : `${proposed.trim()}.tex`;
+      const name = uniqueFileName(requestedName);
+      project[name] = String.raw`\documentclass{article}
+
+\begin{document}
+
+Nowy dokument.
+
+\end{document}`;
+      activeFile = name;
+      input.value = project[name];
+      saveProject();
+      renderFileList();
+      compileLatex();
+    }
+
+    function renameActiveFile() {
+      const proposed = prompt('Nowa nazwa pliku:', activeFile);
+      if (!proposed) return;
+      const clean = proposed.trim().toLowerCase().endsWith('.tex') ? proposed.trim() : `${proposed.trim()}.tex`;
+      if (clean !== activeFile && project[clean]) {
+        alert('Plik o tej nazwie już istnieje.');
+        return;
+      }
+      project[clean] = input.value;
+      if (clean !== activeFile) delete project[activeFile];
+      activeFile = clean;
+      saveProject();
+      renderFileList();
+    }
+
+    function deleteActiveFile() {
+      if (Object.keys(project).length === 1) {
+        alert('Projekt musi zawierać co najmniej jeden plik.');
+        return;
+      }
+      if (!confirm(`Usunąć plik „${activeFile}”?`)) return;
+      delete project[activeFile];
+      activeFile = Object.keys(project).find(name => name.toLowerCase().endsWith('.tex')) || Object.keys(project)[0];
+      input.value = project[activeFile];
+      saveProject();
+      renderFileList();
+      compileLatex();
+    }
+
+    function exportProject() {
+      project[activeFile] = input.value;
+      const payload = JSON.stringify({ format: 'latex-learning-project', version: 1, files: project }, null, 2);
+      downloadBlob(payload, 'projekt-latex.json', 'application/json;charset=utf-8');
+    }
+
+    input.addEventListener('input', () => {
+      editorStatus.textContent = 'Zmodyfikowano';
+      project[activeFile] = input.value;
+      saveProject();
+      clearTimeout(debounceTimer);
+      debounceTimer = setTimeout(compileLatex, 650);
+    });
+
+    input.addEventListener('keydown', event => {
+      if (event.key === 'Tab') {
+        event.preventDefault();
+        const start = input.selectionStart;
+        const end = input.selectionEnd;
+        input.value = input.value.slice(0, start) + '  ' + input.value.slice(end);
+        input.selectionStart = input.selectionEnd = start + 2;
+        input.dispatchEvent(new Event('input'));
+      }
+      if ((event.ctrlKey || event.metaKey) && event.key === 'Enter') {
+        event.preventDefault();
+        compileLatex();
+      }
+    });
+
+    lessonSelect.addEventListener('change', () => loadExample(lessonSelect.value));
+    const MIN_WORKSPACE_HEIGHT = 780;
+    const MAX_WORKSPACE_HEIGHT = 1100;
+    const resizeHandle = document.getElementById('previewResizeHandle');
+
+    function setWorkspaceHeight(value, persist = true) {
+      const height = Math.min(MAX_WORKSPACE_HEIGHT, Math.max(MIN_WORKSPACE_HEIGHT, Number(value) || 760));
+      document.documentElement.style.setProperty('--workspace-height', `${height}px`);
+      resizeHandle.setAttribute('aria-valuemin', String(MIN_WORKSPACE_HEIGHT));
+      resizeHandle.setAttribute('aria-valuemax', String(MAX_WORKSPACE_HEIGHT));
+      resizeHandle.setAttribute('aria-valuenow', String(height));
+      if (persist) localStorage.setItem('latexLabWorkspaceHeight', String(height));
+      requestAnimationFrame(fitPreviewToPanel);
+    }
+
+    let resizeStartY = 0;
+    let resizeStartHeight = 0;
+    let isMouseResizing = false;
+
+    function beginMouseResize(event) {
+      if (event.button !== 0) return;
+      event.preventDefault();
+      isMouseResizing = true;
+      resizeStartY = event.clientY;
+      resizeStartHeight = Math.round(document.querySelector('main').getBoundingClientRect().height);
+      document.body.classList.add('is-resizing');
+      document.addEventListener('mousemove', moveMouseResize, true);
+      document.addEventListener('mouseup', finishMouseResize, true);
+      window.addEventListener('blur', finishMouseResize, { once: true });
+    }
+
+    function moveMouseResize(event) {
+      if (!isMouseResizing) return;
+      event.preventDefault();
+      const delta = event.clientY - resizeStartY;
+      setWorkspaceHeight(resizeStartHeight + delta, false);
+    }
+
+    function finishMouseResize() {
+      if (!isMouseResizing) return;
+      isMouseResizing = false;
+      document.removeEventListener('mousemove', moveMouseResize, true);
+      document.removeEventListener('mouseup', finishMouseResize, true);
+      document.body.classList.remove('is-resizing');
+      const height = Math.round(document.querySelector('main').getBoundingClientRect().height);
+      setWorkspaceHeight(height, true);
+    }
+
+    let touchStartY = 0;
+    let touchStartHeight = 0;
+
+    resizeHandle.addEventListener('mousedown', beginMouseResize);
+    resizeHandle.addEventListener('touchstart', event => {
+      if (event.touches.length !== 1) return;
+      event.preventDefault();
+      touchStartY = event.touches[0].clientY;
+      touchStartHeight = Math.round(document.querySelector('main').getBoundingClientRect().height);
+      document.body.classList.add('is-resizing');
+    }, { passive: false });
+
+    resizeHandle.addEventListener('touchmove', event => {
+      if (event.touches.length !== 1) return;
+      event.preventDefault();
+      setWorkspaceHeight(touchStartHeight + event.touches[0].clientY - touchStartY, false);
+    }, { passive: false });
+
+    resizeHandle.addEventListener('touchend', () => {
+      document.body.classList.remove('is-resizing');
+      const height = Math.round(document.querySelector('main').getBoundingClientRect().height);
+      setWorkspaceHeight(height, true);
+    });
+    resizeHandle.addEventListener('keydown', event => {
+      if (!['ArrowUp', 'ArrowDown', 'Home', 'End'].includes(event.key)) return;
+      event.preventDefault();
+      const current = Math.round(document.querySelector('main').getBoundingClientRect().height);
+      const next = event.key === 'Home' ? MIN_WORKSPACE_HEIGHT
+        : event.key === 'End' ? MAX_WORKSPACE_HEIGHT
+        : current + (event.key === 'ArrowUp' ? -20 : 20);
+      setWorkspaceHeight(next, true);
+    });
+
+    // Wysokość początkowa pozostaje stała. Zmiana następuje wyłącznie ręcznie.
+    resizeHandle.setAttribute('aria-valuemin', String(MIN_WORKSPACE_HEIGHT));
+    resizeHandle.setAttribute('aria-valuemax', String(MAX_WORKSPACE_HEIGHT));
+    resizeHandle.setAttribute('aria-valuenow', String(MIN_WORKSPACE_HEIGHT));
+
+    compileBtn.addEventListener('click', compileLatex);
+    downloadBtn.addEventListener('click', downloadTex);
+    function getFormattedCreationDate() {
+      return new Intl.DateTimeFormat('pl-PL', {
+        year: 'numeric', month: '2-digit', day: '2-digit',
+        hour: '2-digit', minute: '2-digit'
+      }).format(new Date());
+    }
+
+    function appendPageFooter() {
+      preview.querySelector('.page-footer')?.remove();
+      if (currentPreviewMode === 'presentation') return;
+      const footer = document.createElement('div');
+      footer.className = 'page-footer';
+      footer.setAttribute('aria-hidden', 'true');
+      footer.textContent = `Dokument utworzono: ${getFormattedCreationDate()}`;
+      preview.appendChild(footer);
+    }
+
+    function updatePdfFooterDate() {
+      if (currentPreviewMode === 'presentation') return;
+      let footer = preview.querySelector('.page-footer');
+      if (!footer) {
+        appendPageFooter();
+        footer = preview.querySelector('.page-footer');
+      }
+      footer.textContent = `Dokument utworzono: ${getFormattedCreationDate()}`;
+    }
+
+    printBtn.addEventListener('click', () => {
+      updatePdfFooterDate();
+      window.print();
+    });
+
+    window.addEventListener('beforeprint', updatePdfFooterDate);
+    importBtn.addEventListener('click', () => fileInput.click());
+    fileInput.addEventListener('change', () => importFiles(fileInput.files));
+    newFileBtn.addEventListener('click', createNewFile);
+    renameFileBtn.addEventListener('click', renameActiveFile);
+    deleteFileBtn.addEventListener('click', deleteActiveFile);
+    saveProjectBtn.addEventListener('click', exportProject);
+
+    const savedExample = localStorage.getItem('latex-learning-example') || 'basic';
+    lessonSelect.value = savedExample;
+    updateLessonContext(savedExample);
+    input.value = project[activeFile];
+    renderFileList();
+    window.addEventListener('resize', fitPreviewToPanel);
+    new ResizeObserver(fitPreviewToPanel).observe(previewWrap);
+    window.addEventListener('load', compileLatex);
+
+    document.querySelectorAll('.collapsible-toggle').forEach((button) => {
+      button.addEventListener('click', () => {
+        const target = document.getElementById(button.getAttribute('aria-controls'));
+        const expanded = button.getAttribute('aria-expanded') === 'true';
+        button.setAttribute('aria-expanded', String(!expanded));
+        target.hidden = expanded;
+      });
+    });
+  </script>
+</body>
+</html>

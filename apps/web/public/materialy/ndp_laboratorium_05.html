@@ -4,7 +4,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="description" content="Laboratorium 5 z przedmiotu Narzędzia dla programistów: pakiety LaTeX, własne makra, konfiguracja podpisów, listy, wzory, kolory, listingi, metadane PDF, załączniki, bibliografia BibTeX i circuitikz.">
-  <title>Narzędzia dla programistów — Laboratorium 5</title>
+  <title>Narzędzia dla programistów: Laboratorium 5</title>
   <style>
     :root{
       --bg:#f4f7f9;
@@ -189,6 +189,7 @@
     <a href="#circuitikz">11. Circuitikz</a>
     <a href="#lista">12. Lista kontrolna</a>
     <a href="#zakonczenie">13. Zakończenie</a>
+    <a href="#online">14. Dodatkowe środowiska</a>
   </nav>
 
   <main>
@@ -232,6 +233,8 @@
         Nie kopiuj kodu LaTeX bezpośrednio z pliku PDF, jeżeli dostępny jest plik tekstowy z listingami. PDF może zawierać typograficzne cudzysłowy, ligatury lub niewidoczne znaki.
       </div>
     </section>
+
+
 
     <section id="standardy">
       <h2>3. Dostosowanie do krajowych standardów składu</h2>
@@ -478,7 +481,7 @@ pdflatex wprowadzenie</code></pre>
     </section>
 
     <section id="circuitikz">
-      <h2>11. Zadanie dodatkowe — circuitikz</h2>
+      <h2>11. Zadanie dodatkowe: circuitikz</h2>
       <p class="edu"><strong>Diagram jako kod.</strong> Obwód zapisany tekstowo jest skalowalny, łatwy do modyfikacji i może być wersjonowany razem z dokumentem.</p>
 
       <h3>11.1. Pakiet</h3>
@@ -558,11 +561,116 @@ pdflatex wprowadzenie</code></pre>
         Nie usuwaj projektu przed sprawdzeniem, czy kopia zapasowa zawiera również pliki bibliografii, kodu źródłowego i grafiki.
       </div>
     </section>
+
+    <section id="online">
+      <h2>14. Dodatkowe środowiska i sposoby pracy z LaTeX</h2>
+      <p class="edu"><strong>Dobór środowiska do zadania.</strong> Ten sam dokument LaTeX może być rozwijany w przeglądarce, w lokalnym edytorze, z pomocą AI albo w kontrolowanym procesie opartym na Git i automatycznej kompilacji. Wybór zależy od wymagań projektu, liczby współautorów, potrzeby pracy offline i oczekiwanej powtarzalności procesu budowania dokumentu.</p>
+
+      <div class="grid">
+        <div class="card">
+          <h3>Overleaf: edycja i współpraca w środowisku chmurowym</h3>
+          <p>Overleaf jest internetowym edytorem LaTeX oferującym edytor kodu i edytor wizualny, automatyczną kompilację, szablony oraz współpracę nad jednym projektem. Jest szczególnie przydatny podczas pracy zespołowej, konsultowania dokumentu z prowadzącym i szybkiego rozpoczęcia projektu bez lokalnej instalacji TeX.</p>
+          <p><strong>Typowy tok pracy:</strong></p>
+          <ol>
+            <li>Utwórz projekt albo wybierz szablon.</li>
+            <li>Prześlij pliki <code>.tex</code>, <code>.bib</code>, grafiki i listingi.</li>
+            <li>Wskaż główny plik dokumentu.</li>
+            <li>Skompiluj projekt i przeanalizuj dziennik błędów.</li>
+            <li>Udostępnij projekt współautorowi.</li>
+          </ol>
+          <p class="note">Materiały dydaktyczne: <a href="https://www.overleaf.com/learn" target="_blank" rel="noopener noreferrer">Overleaf Learn</a>.</p>
+        </div>
+
+        <div class="card">
+          <h3>OpenAI Prism: środowisko LaTeX wspomagane przez AI</h3>
+          <p>OpenAI Prism jest chmurową przestrzenią roboczą LaTeX do pisania naukowego, łączącą edycję, kompilację, współpracę i wsparcie sztucznej inteligencji uwzględniającą kontekst projektu. Może wspierać redakcję tekstu, analizę struktury dokumentu, pracę z równaniami, cytowaniami i literaturą.</p>
+          <p><strong>Przykładowe zastosowania:</strong></p>
+          <ul>
+            <li>wyjaśnianie błędów kompilacji i proponowanie poprawek,</li>
+            <li>porządkowanie rozdziałów i sekcji,</li>
+            <li>redakcja stylu naukowego z zachowaniem składni LaTeX,</li>
+            <li>tworzenie tabel, równań i fragmentów kodu LaTeX,</li>
+            <li>analiza cytowań i bibliografii w kontekście dokumentu.</li>
+          </ul>
+          <p class="note">Informacje o środowisku: <a href="https://openai.com/prism/" target="_blank" rel="noopener noreferrer">OpenAI Prism</a>.</p>
+        </div>
+
+        <div class="card">
+          <h3>Edytor lokalny: VS Code, TeXstudio lub VIM</h3>
+          <p>Praca lokalna polega na instalacji dystrybucji TeX, np. TeX Live albo MacTeX, oraz wybranego edytora. VS Code z rozszerzeniem LaTeX Workshop zapewnia podgląd PDF, diagnostykę i automatyczne budowanie. TeXstudio oferuje zintegrowany interfejs przeznaczony bezpośrednio do LaTeX, natomiast VIM pozwala pracować całkowicie z terminala.</p>
+          <p><strong>Zalety:</strong></p>
+          <ul>
+            <li>pełna kontrola nad wersją kompilatora i pakietów,</li>
+            <li>praca bez dostępu do internetu,</li>
+            <li>łatwa integracja z lokalnymi skryptami, Pythonem, Git i narzędziami systemowymi,</li>
+            <li>możliwość obsługi dużych projektów i niestandardowych pakietów.</li>
+          </ul>
+          <p><strong>Ograniczenie:</strong> środowisko trzeba samodzielnie zainstalować, skonfigurować i aktualizować.</p>
+        </div>
+
+        <div class="card">
+          <h3>Repozytorium Git z automatyczną kompilacją</h3>
+          <p>W tym modelu źródła dokumentu są przechowywane w repozytorium Git, a plik PDF jest budowany automatycznie przez system CI, np. GitHub Actions lub GitLab CI. Każda zmiana jest powiązana z commitem, a proces budowania może być wykonywany w identycznym, kontrolowanym środowisku.</p>
+          <p><strong>Typowy proces:</strong></p>
+          <ol>
+            <li>Autor edytuje dokument lokalnie na osobnej gałęzi.</li>
+            <li>Zmiany są zatwierdzane i wysyłane do repozytorium.</li>
+            <li>CI uruchamia <code>latexmk</code> lub odpowiednią sekwencję kompilacji.</li>
+            <li>System zapisuje PDF jako artefakt i zgłasza błędy.</li>
+            <li>Po przeglądzie zmian gałąź jest scalana z gałęzią główną.</li>
+          </ol>
+          <p><strong>Zaleta dydaktyczna:</strong> student uczy się jednocześnie LaTeX, kontroli wersji, przeglądu zmian i reprodukowalności procesu.</p>
+        </div>
+      </div>
+
+      <h3>14.1. Porównanie podejść</h3>
+      <table>
+        <thead>
+          <tr>
+            <th>Podejście</th>
+            <th>Najważniejsza zaleta</th>
+            <th>Najważniejsze ograniczenie</th>
+            <th>Zalecane zastosowanie</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Overleaf</td>
+            <td>Szybka współpraca w przeglądarce</td>
+            <td>Zależność od usługi i połączenia sieciowego</td>
+            <td>Prace grupowe, konsultacje i krótkie projekty</td>
+          </tr>
+          <tr>
+            <td>OpenAI Prism</td>
+            <td>Pomoc AI uwzględniająca kontekst dokumentu</td>
+            <td>Konieczność weryfikacji każdej wygenerowanej treści</td>
+            <td>Redakcja naukowa, diagnostyka i iteracyjne doskonalenie tekstu</td>
+          </tr>
+          <tr>
+            <td>Edytor lokalny</td>
+            <td>Pełna kontrola i możliwość pracy offline</td>
+            <td>Konieczność konfiguracji środowiska</td>
+            <td>Duże projekty, niestandardowe pakiety i praca techniczna</td>
+          </tr>
+          <tr>
+            <td>Git + CI</td>
+            <td>Powtarzalna kompilacja i pełny ślad zmian</td>
+            <td>Większy próg wejścia i konfiguracja automatyzacji</td>
+            <td>Publikacje zespołowe, dokumentacja projektowa i projekty długoterminowe</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <div class="callout warn">
+        Narzędzie wykorzystujące sztuczną inteligencję nie zastępuje autora dokumentu. Każdą zmianę należy przeanalizować, skompilować i zweryfikować merytorycznie. Szczególnej kontroli wymagają cytowania, dane bibliograficzne, równania, wyniki badań i twierdzenia naukowe.
+      </div>
+</section>
+
   </main>
 </div>
 
 <footer>
-  <p><strong>Narzędzia dla programistów — Laboratorium 5.</strong> Opracowanie dydaktyczne: dr inż. Mateusz Pomianek.</p>
+  <p><strong>Narzędzia dla programistów, laboratorium 5.</strong> Opracowanie dydaktyczne: dr inż. Mateusz Pomianek.</p>
   <p>Materiał przygotowano jako samodzielny plik HTML do publikacji w GitHub Pages.</p>
 </footer>
 
