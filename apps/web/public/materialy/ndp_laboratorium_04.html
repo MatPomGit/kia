@@ -530,6 +530,37 @@ To zdanie zawiera przypis dolny\footnote{Treść przypisu pojawia się u dołu s
 </footer>
 
 <script>
+  const collapsibleCodeStyle = document.createElement('style');
+  collapsibleCodeStyle.textContent = `
+    .code-solution { margin: 12px 0; }
+    .code-solution > summary {
+      cursor: pointer; font-weight: 700; color: #0f4c81;
+      background: #eef6ff; border: 1px solid #c9dff2;
+      border-radius: 10px; padding: 12px 14px;
+    }
+    .code-solution[open] > summary { border-radius: 10px 10px 0 0; }
+    .code-solution > pre { margin-top: 0; border-radius: 0 0 12px 12px; }
+  `;
+  document.head.appendChild(collapsibleCodeStyle);
+
+  document.querySelectorAll('pre').forEach((block, index) => {
+    if (block.closest('.code-solution')) return;
+
+    const details = document.createElement('details');
+    details.className = 'code-solution';
+
+    const summary = document.createElement('summary');
+    summary.textContent = `Pokaż rozwiązanie z kodem ${index + 1}`;
+
+    block.parentNode.insertBefore(details, block);
+    details.appendChild(summary);
+    details.appendChild(block);
+
+    details.addEventListener('toggle', () => {
+      summary.textContent = `${details.open ? 'Ukryj' : 'Pokaż'} rozwiązanie z kodem ${index + 1}`;
+    });
+  });
+
   document.querySelectorAll('.copy').forEach(btn => {
     btn.addEventListener('click', async () => {
       const code = btn.parentElement.querySelector('code').innerText;

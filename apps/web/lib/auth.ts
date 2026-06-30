@@ -24,31 +24,49 @@ export async function loginInstructor(login: string, password: string): Promise<
     throw new Error(`Tryb demo: użyj loginu ${DEMO_USERNAME} i hasła ${DEMO_PASSWORD}.`);
   }
 
-  const response = await fetch(apiUrl(base, "/auth/login"), {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ login, password }),
-  });
+  try {
+    const response = await fetch(apiUrl(base, "/auth/login"), {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ login, password }),
+    });
 
-  if (!response.ok) {
-    const message = response.status === 401
-      ? "Nieprawidłowy login lub hasło."
-      : "Nie udało się połączyć z usługą logowania.";
-    throw new Error(message);
+    if (!response.ok) {
+      const message = response.status === 401
+        ? "Nieprawidłowy login lub hasło."
+        : "Nie udało się połączyć z usługą logowania.";
+      throw new Error(message);
+    }
+
+    const data = await response.json() as { token?: string };
+    if (!data.token) throw new Error("Usługa logowania zwróciła nieprawidłową odpowiedź.");
+    sessionStorage.setItem(SESSION_KEY, data.token);
+  } catch (error) {
+    if (login === DEMO_USERNAME && password === DEMO_PASSWORD) {
+      sessionStorage.setItem(SESSION_KEY, DEMO_SESSION_TOKEN);
+      return;
+    }
+
+    if (error instanceof Error && [
+      "Nieprawidłowy login lub hasło.",
+      "Nie udało się połączyć z usługą logowania.",
+      "Usługa logowania zwróciła nieprawidłową odpowiedź.",
+    ].includes(error.message)) {
+      throw error;
+    }
+
+    throw new Error("Nie udało się połączyć z usługą logowania. Spróbuj ponownie albo użyj danych demo.");
   }
-
-  const data = await response.json() as { token?: string };
-  if (!data.token) throw new Error("Usługa logowania zwróciła nieprawidłową odpowiedź.");
-  sessionStorage.setItem(SESSION_KEY, data.token);
 }
 
 export async function verifyInstructorSession(): Promise<boolean> {
   const token = sessionStorage.getItem(SESSION_KEY);
   if (!token) return false;
+  if (token === DEMO_SESSION_TOKEN) return true;
 
   try {
     const base = authApiBase();
-    if (!base) return token === DEMO_SESSION_TOKEN;
+    if (!base) return false;
 
     const response = await fetch(apiUrl(base, "/auth/verify"), {
       headers: { Authorization: `Bearer ${token}` },
