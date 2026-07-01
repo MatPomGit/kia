@@ -4,9 +4,10 @@
 
 - `/` — strona startowa `kia`, zawiera wyłącznie wybór przedmiotu i wejście do panelu prowadzącego.
 - `/kia.ndp/` — przedmiot „Narzędzia dla programistów”.
+- `/kia.asid/` — przedmiot „Algorytmy i struktury danych”.
 - `/kia.dr/` — panel prowadzącego; w demonstratorze formularz logowania działa lokalnie.
 
-Pozostałe przedmioty są widoczne jako zablokowane. Odblokowanie wymaga ustawienia `available: true` i wskazania docelowej trasy w `apps/web/app/page.tsx`.
+Pozostałe niewdrożone przedmioty są widoczne jako zablokowane. Odblokowanie wymaga ustawienia `available: true` i wskazania docelowej trasy w `apps/web/app/page.tsx`.
 
 ## Wersja aplikacji
 
