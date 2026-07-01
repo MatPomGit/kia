@@ -7,7 +7,7 @@ import { DEMO_PASSWORD, DEMO_USERNAME, loginInstructor } from "@/lib/auth";
 
 const subjects = [
   { name: "Narzędzia dla programistów", href: "/kia.ndp", available: true },
-  { name: "Algorytmy i struktury danych", href: "#", available: false },
+  { name: "Algorytmy i struktury danych", href: "/kia.asid", available: true },
   { name: "Programowanie aplikacji mobilnych", href: "#", available: false },
   { name: "Programowanie gier komputerowych", href: "#", available: false },
   { name: "Informatyka afektywna", href: "#", available: false },
