@@ -83,7 +83,7 @@ export default function KiaHomePage() {
               kia porządkuje dostęp do kursów, instrukcji laboratoryjnych i krótkich testów kontrolnych,
               aby studenci mogli szybciej rozpocząć pracę, a prowadzący sprawniej monitorowali postępy.
             </p>
-            <div className="landing-actions" aria-label="Główne akcje">
+<div className="landing-actions" role="group" aria-label="Główne akcje">
               <a className="btn" href="#courses">Przejdź do przedmiotów</a>
               <a className="btn secondary" href="#platform-guide">Zobacz instrukcję</a>
             </div>
