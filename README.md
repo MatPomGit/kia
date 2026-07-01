@@ -66,6 +66,8 @@ npm run dev                  # frontend i API uruchomione równolegle
 npm run build:pages          # generowanie wersji i eksport statyczny frontendu
 npm run build                # build frontendu i API
 npm run lint                 # kontrola typów i lint w workspace'ach
+npm run prisma:generate      # generowanie klienta Prisma
+npm run prisma:migrate       # uruchomienie migracji deweloperskich bazy danych
 ```
 
 Wynik eksportu statycznego znajduje się w `apps/web/out`.
