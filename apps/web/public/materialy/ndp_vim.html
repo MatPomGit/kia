@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Profesjonalny symulator edytora Vim do ćwiczeń z przedmiotu Narzędzia dla programistów. Tryby pracy, polecenia, wyszukiwanie, zapisywanie i zadania praktyczne w jednym pliku HTML.">
+  <title>Symulator Vim — Narzędzia dla programistów</title>
+  <style>
+    :root{
+      --bg:#0b1020;--panel:#111827;--panel2:#172033;--editor:#06101f;--editor2:#0b1628;
+      --ink:#e5edf5;--muted:#9fb0c3;--subtle:#72839a;--line:#2b3a50;--line2:#1f2f45;
+      --accent:#a78bfa;--accent2:#38bdf8;--accent3:#2dd4bf;--danger:#fb7185;--warn:#facc15;--ok:#4ade80;
+      --shadow:0 18px 50px rgba(0,0,0,.36);--radius:16px;--max:1500px;--mono:ui-monospace,SFMono-Regular,Consolas,"Liberation Mono",monospace;
+    }
+    *{box-sizing:border-box} html,body{height:100%}
+    body{margin:0;background:radial-gradient(circle at top right,rgba(167,139,250,.14),transparent 30%),radial-gradient(circle at top left,rgba(56,189,248,.11),transparent 25%),var(--bg);color:var(--ink);font-family:Inter,ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}
+    a{color:var(--accent2)}
+    header{max-width:var(--max);margin:auto;padding:28px 24px 16px}.eyebrow{font-size:.78rem;text-transform:uppercase;letter-spacing:.12em;color:var(--accent3);font-weight:800}h1{margin:.25rem 0 .55rem;font-size:clamp(1.9rem,4vw,3.45rem)}.lead{max-width:980px;color:var(--muted);line-height:1.58}
+    .layout{max-width:var(--max);margin:auto;padding:16px 24px 42px;display:grid;grid-template-columns:minmax(0,1fr) 390px;gap:20px}.card{background:rgba(17,24,39,.95);border:1px solid var(--line);border-radius:var(--radius);box-shadow:var(--shadow);overflow:hidden}.toolbar{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:12px 14px;background:#0f172a;border-bottom:1px solid var(--line)}.dots{display:flex;gap:7px}.dot{width:12px;height:12px;border-radius:50%}.r{background:#fb7185}.y{background:#facc15}.g{background:#4ade80}.title{font-family:var(--mono);color:#c9d7e5;font-size:.92rem}.actions{display:flex;flex-wrap:wrap;gap:8px}
+    button,.select{border:1px solid #384f6f;background:#18263a;color:var(--ink);border-radius:9px;padding:7px 10px;cursor:pointer;font:inherit;font-size:.85rem}button:hover,.select:hover{background:#21324a}button.primary{border-color:#6d28d9;background:#4c1d95}button.good{border-color:#0f766e;background:#0f4f4a}button.danger{border-color:#7f1d1d;background:#3f1d24}button:focus-visible,.select:focus-visible,[tabindex]:focus-visible{outline:3px solid rgba(56,189,248,.65);outline-offset:2px}
+    .vim{height:690px;background:var(--editor);display:grid;grid-template-rows:auto 1fr auto auto;font-family:var(--mono);font-size:15px;line-height:1.45}.filebar{display:flex;justify-content:space-between;gap:10px;padding:8px 12px;background:#071426;border-bottom:1px solid var(--line2);color:var(--muted)}.mode-pill{font-weight:800;color:#08111f;background:var(--accent3);border-radius:999px;padding:2px 9px}.mode-pill.insert{background:var(--ok)}.mode-pill.visual{background:var(--warn)}.mode-pill.command{background:var(--accent2)}
+    #screen{margin:0;overflow:auto;padding:10px 0;background:linear-gradient(rgba(255,255,255,.018) 1px,transparent 1px),var(--editor);background-size:100% 24px;outline:none}.row{display:grid;grid-template-columns:4ch 1fr;min-height:22px}.ln{color:#57708c;text-align:right;padding-right:12px;user-select:none}.txt{white-space:pre-wrap;word-break:break-word;padding-right:14px;min-height:22px}.cursor{display:inline-block;min-width:9px;background:#dbeafe;color:#06101f}.cursor.insert{width:2px;min-width:2px;height:1.1em;vertical-align:-.15em;background:#f8fafc;color:transparent}.visual-sel{background:rgba(250,204,21,.32)}
+    .status{display:flex;justify-content:space-between;gap:10px;padding:5px 10px;background:#1d2b43;color:#eef6ff}.cmdline{display:flex;min-height:35px;align-items:center;gap:8px;padding:7px 10px;background:#071426;border-top:1px solid var(--line2);color:#eaf3ff}.cmdprefix{color:var(--accent3);font-weight:800}.cmdinput{flex:1;min-width:0;outline:none;white-space:pre-wrap}.message{color:var(--warn)}
+    .side{display:grid;gap:16px;align-content:start}.side-card{padding:16px}.side-card h2{margin:0 0 10px;font-size:1.08rem}.side-card p,.side-card li{color:var(--muted);line-height:1.5}.kbd{font-family:var(--mono);border:1px solid #425772;background:#0b1628;border-radius:6px;padding:1px 6px;color:#eaf3ff}.grid{display:grid;grid-template-columns:1fr 1fr;gap:8px}.task{border:1px solid var(--line);border-radius:12px;padding:10px;margin:8px 0;background:#0d1829}.task.done{border-color:#166534;background:rgba(22,101,52,.18)}.task strong{display:block;margin-bottom:3px}.progress{height:9px;background:#0a1424;border:1px solid var(--line);border-radius:999px;overflow:hidden}.progress span{display:block;height:100%;background:linear-gradient(90deg,var(--accent),var(--accent3));width:0}.cheats{display:grid;gap:7px}.cheat{display:grid;grid-template-columns:92px 1fr;gap:8px;border-bottom:1px solid rgba(159,176,195,.13);padding-bottom:6px}.cheat code{color:#f8fafc}.sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0}
+    @media (max-width:1050px){.layout{grid-template-columns:1fr}.vim{height:620px}.side{grid-template-columns:repeat(2,minmax(0,1fr))}}@media (max-width:720px){header,.layout{padding-left:14px;padding-right:14px}.toolbar,.filebar,.status{align-items:flex-start;flex-direction:column}.side{grid-template-columns:1fr}.vim{font-size:14px;height:590px}.cheat{grid-template-columns:78px 1fr}}
+  </style>
+</head>
+<body>
+  <header>
+    <div class="eyebrow">Narzędzia dla programistów</div>
+    <h1>Profesjonalny symulator Vim</h1>
+    <p class="lead">Ćwicz najważniejsze tryby i polecenia edytora Vim bez instalacji dodatkowych narzędzi. Symulator działa lokalnie w przeglądarce, zawiera bufor tekstu, pasek statusu, pole komend, wyszukiwanie, cofanie zmian, zapis do pamięci przeglądarki oraz zadania kontrolne.</p>
+  </header>
+
+  <main class="layout">
+    <section class="card" aria-labelledby="editor-title">
+      <div class="toolbar">
+        <div class="dots" aria-hidden="true"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span></div>
+        <div class="title" id="editor-title">vim ~/ndp/notatki.md</div>
+        <div class="actions">
+          <button class="primary" id="focusBtn">Przejdź do edytora</button>
+          <button id="loadExercise">Załaduj ćwiczenie</button>
+          <button class="danger" id="resetBtn">Reset</button>
+        </div>
+      </div>
+      <div class="vim" aria-label="Symulator edytora Vim">
+        <div class="filebar"><span><span id="modePill" class="mode-pill">NORMAL</span> <span id="filename">notatki.md</span></span><span id="dirty">zmiany niezapisane</span></div>
+        <pre id="screen" tabindex="0" role="textbox" aria-multiline="true" aria-label="Obszar edycji Vim"></pre>
+        <div class="status"><span id="statusLeft">"notatki.md" 12L, 420B</span><span id="statusRight">Ln 1, Col 1</span></div>
+        <div class="cmdline" aria-live="polite"><span class="cmdprefix" id="cmdPrefix"></span><span class="cmdinput" id="cmdInput"></span><span class="message" id="message">Naciśnij i, aby wejść w tryb INSERT.</span></div>
+      </div>
+    </section>
+
+    <aside class="side" aria-label="Pomoc i zadania">
+      <section class="side-card">
+        <h2>Tryby pracy</h2>
+        <p><span class="kbd">NORMAL</span> poruszanie i polecenia, <span class="kbd">INSERT</span> wpisywanie tekstu, <span class="kbd">VISUAL</span> zaznaczanie, <span class="kbd">:</span> komendy ex, <span class="kbd">/</span> wyszukiwanie.</p>
+        <div class="grid"><button data-demo="insert">Demo: wstawianie</button><button data-demo="move">Demo: ruch</button><button data-demo="delete">Demo: usuwanie</button><button data-demo="save">Demo: zapis</button></div>
+      </section>
+      <section class="side-card">
+        <h2>Zadania praktyczne</h2>
+        <div class="progress" aria-label="Postęp"><span id="progressBar"></span></div>
+        <div id="tasks"></div>
+      </section>
+      <section class="side-card">
+        <h2>Ściąga poleceń</h2>
+        <div class="cheats" id="cheats"></div>
+      </section>
+      <section class="side-card">
+        <h2>Obsługa</h2>
+        <ul>
+          <li>Kliknij obszar edytora i używaj klawiatury jak w Vimie.</li>
+          <li>Komendy obsługiwane: <span class="kbd">:w</span>, <span class="kbd">:q</span>, <span class="kbd">:wq</span>, <span class="kbd">:set number</span>, <span class="kbd">:e</span>, <span class="kbd">:help</span>.</li>
+          <li>Stan zapisuje się w pamięci lokalnej przeglądarki po komendzie <span class="kbd">:w</span>.</li>
+        </ul>
+      </section>
+    </aside>
+  </main>
+
+  <script>
+    const initialText = `# Notatki z NDP\n\nVim jest modalnym edytorem tekstu.\nTryb NORMAL służy do nawigacji i poleceń.\nTryb INSERT służy do wprowadzania tekstu.\n\nPlan laboratorium:\n- otworzyć plik\n- dopisać wniosek\n- zapisać zmiany\n\nTODO: zamień ten wiersz na własną notatkę.`;
+    const exerciseText = `# Ćwiczenie Vim\n\nCel: utrwalić podstawy pracy modalnej.\n\n1. Przejdź do końca dokumentu klawiszem G.\n2. Dopisz nowy wiersz z tekstem: Wniosek: Vim przyspiesza edycję.\n3. Wyszukaj słowo modalnej.\n4. Usuń wiersz oznaczony jako DO USUNIECIA.\n5. Zapisz plik poleceniem :w.\n\nDO USUNIECIA`;
+    const cheats = [['h j k l','ruch kursora'],['i / a','wstaw przed / po'],['o / O','nowy wiersz niżej / wyżej'],['Esc','powrót do NORMAL'],['dd','usuń wiersz'],['yy / p','kopiuj wiersz / wklej'],['u','cofnij zmianę'],['G / gg','koniec / początek'],['w / b','następne / poprzednie słowo'],['/tekst','wyszukaj tekst'],['n','następny wynik'],[':w','zapisz'],[':q','zamknij symulację']];
+    const tasks = [
+      {id:'insert', text:'Wejdź w tryb INSERT i dopisz dowolny tekst.'},
+      {id:'search', text:'Użyj wyszukiwania przez /tekst.'},
+      {id:'delete', text:'Usuń przynajmniej jeden wiersz poleceniem dd.'},
+      {id:'save', text:'Zapisz zmiany poleceniem :w.'}
+    ];
+    const state = {lines:initialText.split('\n'), row:0, col:0, mode:'normal', command:'', prefix:'', message:'', dirty:true, filename:'notatki.md', undo:[], yank:'', showNumbers:true, done:new Set(), visualStart:null, lastSearch:''};
+    const screen=document.getElementById('screen'), modePill=document.getElementById('modePill'), cmdPrefix=document.getElementById('cmdPrefix'), cmdInput=document.getElementById('cmdInput'), message=document.getElementById('message');
+    function clamp(){state.row=Math.max(0,Math.min(state.row,state.lines.length-1));state.col=Math.max(0,Math.min(state.col,state.lines[state.row].length));}
+    function saveUndo(){state.undo.push(JSON.stringify({lines:state.lines,row:state.row,col:state.col}));if(state.undo.length>80)state.undo.shift();}
+    function mark(id){state.done.add(id);renderTasks();}
+    function render(){clamp();modePill.textContent=state.mode.toUpperCase();modePill.className='mode-pill '+(state.mode==='insert'?'insert':state.mode==='visual'?'visual':state.mode==='command'||state.mode==='search'?'command':'');document.getElementById('dirty').textContent=state.dirty?'zmiany niezapisane':'zapisano';document.getElementById('statusLeft').textContent=`"${state.filename}" ${state.lines.length}L, ${state.lines.join('\n').length}B`;document.getElementById('statusRight').textContent=`Ln ${state.row+1}, Col ${state.col+1}`;cmdPrefix.textContent=state.prefix;cmdInput.textContent=state.command;message.textContent=state.message||'';screen.innerHTML=state.lines.map((line,i)=>`<div class="row"><span class="ln">${state.showNumbers?i+1:''}</span><span class="txt">${renderLine(line,i)}</span></div>`).join('');}
+    function esc(s){return s.replace(/[&<>]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;'}[c]));}
+function renderLine(line,i){let html='';const isVisual=state.mode==='visual'&&state.visualStart;let minR,minC,maxR,maxC;if(isVisual){const r1=state.visualStart.row,c1=state.visualStart.col;const r2=state.row,c2=state.col;const isBefore=(r1<r2)||(r1===r2&&c1<=c2);minR=isBefore?r1:r2;minC=isBefore?c1:c2;maxR=isBefore?r2:r1;maxC=isBefore?c2:c1}for(let j=0;j<line.length;j++){const ch=line[j];const isCursor=(i===state.row&&j===state.col);let isSel=false;if(isVisual){if(i>minR&&i<maxR)isSel=true;else if(i===minR&&i===maxR)isSel=(j>=minC&&j<=maxC);else if(i===minR&&i<maxR)isSel=(j>=minC);else if(i===maxR&&i>minR)isSel=(j<=maxC)}let renderedCh=esc(ch);if(isCursor){renderedCh='<span class="cursor '+(state.mode==='insert'?'insert':'')+'">'+renderedCh+'</span>'}else if(isSel){renderedCh='<span class="visual-sel">'+renderedCh+'</span>'}html+=renderedCh}if(i===state.row&&state.col===line.length){html+='<span class="cursor '+(state.mode==='insert'?'insert':'')+'"> </span>'}return html||' '}
+    function renderTasks(){const box=document.getElementById('tasks');box.innerHTML=tasks.map(t=>`<div class="task ${state.done.has(t.id)?'done':''}"><strong>${state.done.has(t.id)?'Wykonano':'Do wykonania'}</strong>${t.text}</div>`).join('');document.getElementById('progressBar').style.width=(state.done.size/tasks.length*100)+'%';}
+    function setText(text,name){saveUndo();state.lines=text.split('\n');state.row=0;state.col=0;state.filename=name;state.dirty=true;state.message='Załadowano bufor ćwiczeniowy.';render();}
+    function insertText(t){saveUndo();const line=state.lines[state.row];state.lines[state.row]=line.slice(0,state.col)+t+line.slice(state.col);state.col+=t.length;state.dirty=true;mark('insert');}
+    function newline(){saveUndo();const line=state.lines[state.row];state.lines.splice(state.row,1,line.slice(0,state.col),line.slice(state.col));state.row++;state.col=0;state.dirty=true;mark('insert');}
+    function backspace(){if(state.col>0){saveUndo();const l=state.lines[state.row];state.lines[state.row]=l.slice(0,state.col-1)+l.slice(state.col);state.col--;state.dirty=true}else if(state.row>0){saveUndo();const prev=state.lines[state.row-1].length;state.lines[state.row-1]+=state.lines[state.row];state.lines.splice(state.row,1);state.row--;state.col=prev;state.dirty=true}}
+    function normalKey(e){const k=e.key;if(k==='i'){state.mode='insert';state.message='-- INSERT --'}else if(k==='a'){state.col++;state.mode='insert'}else if(k==='o'){saveUndo();state.lines.splice(state.row+1,0,'');state.row++;state.col=0;state.mode='insert';state.dirty=true}else if(k==='O'){saveUndo();state.lines.splice(state.row,0,'');state.col=0;state.mode='insert';state.dirty=true}else if(k==='h'||k==='ArrowLeft')state.col--;else if(k==='l'||k==='ArrowRight')state.col++;else if(k==='j'||k==='ArrowDown')state.row++;else if(k==='k'||k==='ArrowUp')state.row--;else if(k==='G')state.row=state.lines.length-1;else if(k==='g')state.command=state.command==='g'?(state.row=0,''):'g';else if(k==='w')nextWord();else if(k==='b')prevWord();else if(k==='u')undo();else if(k==='x'){saveUndo();const l=state.lines[state.row];state.lines[state.row]=l.slice(0,state.col)+l.slice(state.col+1);state.dirty=true}else if(k==='d')state.command=state.command==='d'?(deleteLine(),''):'d';else if(k==='y')state.command=state.command==='y'?(state.yank=state.lines[state.row],state.message='Skopiowano wiersz.', ''):'y';else if(k==='p'){saveUndo();state.lines.splice(state.row+1,0,state.yank||'');state.row++;state.dirty=true}else if(k==='v'){state.mode='visual';state.visualStart={row:state.row,col:state.col}}else if(k===':'){state.mode='command';state.prefix=':';state.command=''}else if(k==='/'){state.mode='search';state.prefix='/';state.command=''}else if(k==='n')search(state.lastSearch,true);else state.command='';}
+    function deleteLine(){saveUndo();state.yank=state.lines[state.row];state.lines.splice(state.row,1);if(!state.lines.length)state.lines=[''];state.dirty=true;mark('delete');state.message='Usunięto wiersz.'}
+    function undo(){const last=state.undo.pop();if(last){const u=JSON.parse(last);state.lines=u.lines;state.row=u.row;state.col=u.col;state.dirty=true;state.message='Cofnięto ostatnią zmianę.'}}
+function nextWord(){const text=state.lines[state.row];const suffix=text.slice(state.col);const m=suffix.match(/^\w+\W+/)||suffix.match(/^\W+/);if(m){state.col+=m[0].length}else if(state.row<state.lines.length-1){state.row++;state.col=0}}
+    function prevWord(){const left=state.lines[state.row].slice(0,state.col).match(/\w+\W*$/);if(left)state.col=Math.max(0,state.col-left[0].length);else if(state.row>0){state.row--;state.col=0}}
+function search(q,next){if(!q)return;state.lastSearch=q;const qLower=q.toLowerCase();const totalLines=state.lines.length;const startCol=state.col+(next?1:0);for(let i=0;i<=totalLines;i++){const r=(state.row+i)%totalLines;const line=state.lines[r].toLowerCase();const fromIdx=(i===0)?startCol:0;const c=line.indexOf(qLower,fromIdx);if(c>=0&&(i<totalLines||c<state.col)){state.row=r;state.col=c;state.message='Znaleziono: '+q;mark('search');return}}state.message='Brak wyników: '+q}
+    function ex(cmd){const c=cmd.trim();if(c==='w'){localStorage.setItem('ndp-vim-buffer',state.lines.join('\n'));state.dirty=false;state.message='Zapisano bufor w localStorage.';mark('save')}else if(c==='q'){state.message=state.dirty?'Są niezapisane zmiany. Użyj :w albo :q!':'Zamknięcie zasymulowane.'}else if(c==='q!'){state.message='Zamknięcie bez zapisu zasymulowane.'}else if(c==='wq'){localStorage.setItem('ndp-vim-buffer',state.lines.join('\n'));state.dirty=false;state.message='Zapisano i zamknięto symulację.';mark('save')}else if(c==='set number'){state.showNumbers=true;state.message='Włączono numerację.'}else if(c==='set nonumber'){state.showNumbers=false;state.message='Wyłączono numerację.'}else if(c==='e'){const saved=localStorage.getItem('ndp-vim-buffer');if(saved)setText(saved,state.filename);else state.message='Brak zapisanego bufora.'}else if(c==='help'){state.message='Pomoc: i, Esc, h/j/k/l, dd, yy, p, /tekst, :w, :q.'}else state.message=`Nieznana komenda: ${c}`}
+    screen.addEventListener('keydown',e=>{if(e.ctrlKey||e.altKey||e.metaKey||/^F\d+$/.test(e.key))return;e.preventDefault();if(e.key==='Escape'){state.mode='normal';state.prefix='';state.command='';state.message='-- NORMAL --';render();return}if(state.mode==='insert'){if(e.key==='Backspace')backspace();else if(e.key==='Enter')newline();else if(e.key.length===1)insertText(e.key)}else if(state.mode==='command'||state.mode==='search'){if(e.key==='Backspace')state.command=state.command.slice(0,-1);else if(e.key==='Enter'){const q=state.command;const wasSearch=state.mode==='search';state.mode='normal';state.prefix='';state.command='';state.message='';if(wasSearch)search(q,false);else ex(q)}else if(e.key.length===1)state.command+=e.key}else if(state.mode==='visual'){if(['h','j','k','l','ArrowLeft','ArrowRight','ArrowUp','ArrowDown'].includes(e.key))normalKey(e);else if(e.key==='d'){deleteLine();state.mode='normal'}else state.mode='normal'}else normalKey(e);clamp();render();});
+    document.getElementById('focusBtn').onclick=()=>screen.focus();document.getElementById('loadExercise').onclick=()=>setText(exerciseText,'cwiczenie-vim.md');document.getElementById('resetBtn').onclick=()=>{state.lines=initialText.split('\n');state.row=0;state.col=0;state.mode='normal';state.dirty=true;state.done.clear();state.message='Przywrócono stan początkowy.';renderTasks();render();};
+    document.querySelectorAll('[data-demo]').forEach(b=>b.addEventListener('click',()=>{const d=b.dataset.demo;if(d==='insert')state.message='Naciśnij i, wpisz tekst, a potem Esc.';if(d==='move')state.message='Użyj h j k l, gg oraz G do nawigacji.';if(d==='delete')state.message='Ustaw kursor na wierszu i naciśnij d dwa razy.';if(d==='save')state.message='Naciśnij :, wpisz w i zatwierdź Enter.';screen.focus();render();}));
+    document.getElementById('cheats').innerHTML=cheats.map(c=>`<div class="cheat"><code>${c[0]}</code><span>${c[1]}</span></div>`).join('');renderTasks();render();
+  </script>
+</body>
+</html>
