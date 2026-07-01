@@ -1487,6 +1487,7 @@
 <a href="#supervisor">Kontakt z promotorem</a>
 <a href="#review">Recenzja pracy</a>
 <a href="#defense">Obrona pracy</a>
+<a href="#defense-checklist">Przed obroną</a>
 <a href="#checklist">Lista kontrolna</a>
 <button aria-label="Zmień motyw" aria-pressed="false" class="theme-toggle" id="themeToggle" type="button">
 <svg aria-hidden="true" class="theme-icon" fill="none" stroke="currentColor" stroke-width="1.8" viewbox="0 0 24 24">
@@ -2971,10 +2972,46 @@
 </div>
 </div>
 </section>
+<section id="defense-checklist">
+<div class="container">
+<div class="section-head">
+<h2>11. Lista kontrolna przed obroną</h2>
+<p>Sprawdź najważniejsze elementy organizacyjne, techniczne i merytoryczne przed egzaminem dyplomowym. Stan listy jest zapisywany lokalnie w przeglądarce.</p>
+</div>
+<div class="grid-2">
+<div class="card">
+<h3>Formalności i logistyka</h3>
+<div class="checklist" id="defenseChecklistBox" data-storage-key="defenseChecklist">
+<label class="check"><input type="checkbox"/><span>Status pracy w APD, recenzje oraz komunikaty dziekanatu zostały sprawdzone.</span></label>
+<label class="check"><input type="checkbox"/><span>Termin, sala, skład komisji i wymagany tryb stawienia się na obronę są potwierdzone.</span></label>
+<label class="check"><input type="checkbox"/><span>Elektroniczna karta obiegowa oraz wymagane oświadczenia nie blokują dopuszczenia do egzaminu.</span></label>
+<label class="check"><input type="checkbox"/><span>Prezentacja jest zapisana w formacie PDF oraz w formacie źródłowym.</span></label>
+<label class="check"><input type="checkbox"/><span>Kopia prezentacji znajduje się na nośniku lokalnym i w bezpiecznej kopii zapasowej.</span></label>
+<label class="check"><input type="checkbox"/><span>Sprzęt, adaptery, konto użytkownika i sposób uruchomienia demonstracji zostały sprawdzone.</span></label>
+</div>
+</div>
+<div class="card">
+<h3>Treść wystąpienia i odpowiedzi</h3>
+<div class="checklist" data-storage-key="defenseContentChecklist">
+<label class="check"><input type="checkbox"/><span>Prezentacja mieści się w limicie czasu i została przećwiczona z zegarem.</span></label>
+<label class="check"><input type="checkbox"/><span>Pierwszy slajd jasno przedstawia temat, autora, promotora, cel i kontekst pracy.</span></label>
+<label class="check"><input type="checkbox"/><span>Wkład własny jest widoczny w części z metodą, wynikami i demonstracją.</span></label>
+<label class="check"><input type="checkbox"/><span>Wnioski odpowiadają na cel pracy i uwzględniają ograniczenia rozwiązania.</span></label>
+<label class="check"><input type="checkbox"/><span>Przygotowano krótkie odpowiedzi na pytania o wybór metod, technologii, danych i miar.</span></label>
+<label class="check"><input type="checkbox"/><span>Przećwiczono odpowiedzi na pytania o błędy, ryzyka, alternatywy i dalszy rozwój pracy.</span></label>
+</div>
+</div>
+</div>
+<div class="advice-box">
+<h3>Ostatnia próba</h3>
+<p>Dzień przed obroną wykonaj pełną próbę od wejścia na salę do zakończenia odpowiedzi. Nie ucz się prezentacji słowo w słowo; zapamiętaj kolejność argumentów, najważniejsze liczby, uzasadnienie decyzji i granice wniosków.</p>
+</div>
+</div>
+</section>
 <section id="checklist">
 <div class="container">
 <div class="section-head">
-<h2>11. Lista kontrolna przed oddaniem</h2>
+<h2>12. Lista kontrolna przed oddaniem</h2>
 <p>Zaznacz elementy, które są już gotowe. Stan listy jest zapisywany lokalnie w przeglądarce.</p>
 </div>
 <div class="checklist" id="checklistBox">
@@ -3036,13 +3073,18 @@
       });
     });
 
-    const checks = [...document.querySelectorAll('#checklistBox input[type="checkbox"]')];
-    const savedChecks = JSON.parse(localStorage.getItem('thesisChecklist') || '[]');
+    const checklistGroups = document.querySelectorAll('[data-storage-key], #checklistBox');
 
-    checks.forEach((box, index) => {
-      box.checked = Boolean(savedChecks[index]);
-      box.addEventListener('change', () => {
-        localStorage.setItem('thesisChecklist', JSON.stringify(checks.map(item => item.checked)));
+    checklistGroups.forEach(group => {
+      const storageKey = group.dataset.storageKey || 'thesisChecklist';
+      const checks = [...group.querySelectorAll('input[type="checkbox"]')];
+      const savedChecks = JSON.parse(localStorage.getItem(storageKey) || '[]');
+
+      checks.forEach((box, index) => {
+        box.checked = Boolean(savedChecks[index]);
+        box.addEventListener('change', () => {
+          localStorage.setItem(storageKey, JSON.stringify(checks.map(item => item.checked)));
+        });
       });
     });
 
