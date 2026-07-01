@@ -88,7 +88,7 @@ export default function KiaHomePage() {
               <a className="btn secondary" href="#platform-guide">Zobacz instrukcję</a>
             </div>
           </div>
-          <div className="landing-hero-card" aria-label="Najważniejsze funkcje platformy">
+<div className="landing-hero-card" role="group" aria-label="Najważniejsze funkcje platformy">
             <strong>Start zajęć bez chaosu</strong>
             <ul>
               <li>kursy dostępne z jednej strony startowej,</li>
