@@ -126,7 +126,7 @@ export default function KiaHomePage() {
             <h2 id="guide-heading">Od wyboru kursu do podglądu wyników</h2>
             <p>Platforma prowadzi użytkownika przez najważniejsze etapy pracy na zajęciach.</p>
           </div>
-          <ol className="platform-steps">
+<ol className="platform-steps" role="list">
             {steps.map((step, index) => (
               <li className="platform-step" key={step.title}>
                 <span aria-hidden="true">{index + 1}</span>
