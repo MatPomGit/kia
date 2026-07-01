@@ -1,6 +1,12 @@
 import Link from "next/link";
 
-export function Header({ active = "dashboard", title = "kia.ndp" }: { active?: string; title?: string }) {
+type HeaderProps = {
+  active?: string;
+  courseHref?: string;
+  title?: string;
+};
+
+export function Header({ active = "dashboard", title = "kia.ndp", courseHref = `/${title}` }: HeaderProps) {
   return (
     <header className="topbar">
       <Link href="/" className="brand">
@@ -8,7 +14,8 @@ export function Header({ active = "dashboard", title = "kia.ndp" }: { active?: s
         <span>{title}</span>
       </Link>
       <nav className="topnav" aria-label="Główna nawigacja">
-        <Link className={active === "dashboard" ? "active" : ""} href="/kia.ndp">Przedmiot</Link>
+        <Link className={active === "dashboard" ? "active" : ""} href={courseHref}>Przedmiot</Link>
+        <Link className={active === "courses" ? "active" : ""} href="/">Kursy</Link>
         <Link className={active === "materials" ? "active" : ""} href="/materialy">Materiały</Link>
         <Link className={active === "results" ? "active" : ""} href="/wyniki">Wyniki</Link>
         <Link className={active === "guide" ? "active" : ""} href="/instrukcja">Instrukcja</Link>

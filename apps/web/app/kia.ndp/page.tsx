@@ -12,7 +12,7 @@ export default function NdPPage() {
 
   return (
     <div className="shell">
-      <Header active="dashboard" title="kia.ndp" />
+      <Header active="dashboard" courseHref="/kia.ndp" title="kia.ndp" />
       <main id="main" className="container">
         <section className="page-intro">
           <span className="eyebrow">Narzędzia dla programistów</span>

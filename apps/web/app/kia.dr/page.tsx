@@ -30,7 +30,7 @@ export default function InstructorPage() {
 
   return (
     <div className="shell">
-      <Header active="instructor" title="kia.dr" />
+      <Header active="instructor" courseHref="/kia.dr" title="kia.dr" />
       <main id="main" className="container">
         <div className="section-head">
           <div><span className="eyebrow">Panel prowadzącego</span><h1>kia.dr</h1><p>Zestawienie prób, wyników i podstawowej telemetrii.</p></div>
