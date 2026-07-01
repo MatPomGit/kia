@@ -12,7 +12,7 @@ const subjects = [
   { name: "Programowanie gier komputerowych", href: "#", available: false },
   { name: "Informatyka afektywna", href: "#", available: false },
   { name: "Robotyka afektywna", href: "#", available: false },
-  { name: "Seminarium dyplomowe", href: "#", available: false },
+  { name: "Seminarium dyplomowe", href: "/kia.sd", available: true },
 ];
 
 export default function KiaHomePage() {
