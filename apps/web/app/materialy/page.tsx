@@ -8,7 +8,8 @@ export default function MaterialsPage() {
     { number: "4", title: "Tworzenie dokumentów LaTeX", scope: "Struktura i skład dokumentu, wzory, odwołania, spisy oraz grafika TikZ.", href: "ndp_laboratorium_04.html" },
     { number: "5", title: "Pakiety LaTeX i własne makra", scope: "Makra, listingi, metadane PDF, bibliografia BibTeX i schematy circuitikz.", href: "ndp_laboratorium_05.html" },
     { number: "6", title: "System kontroli wersji Git", scope: "Repozytoria, historia zmian, synchronizacja, konflikty, gałęzie i praca zespołowa.", href: "ndp_laboratorium_06.html" },
-    { number: "Ćwiczenia własne", title: "Interaktywny terminal Bash", scope: "Samodzielne ćwiczenie podstawowych poleceń w wirtualnym terminalu Bash.", href: "ndp_terminal.html" }
+    { number: "Ćwiczenia własne", title: "Interaktywny terminal Bash", scope: "Samodzielne ćwiczenie podstawowych poleceń w wirtualnym terminalu Bash.", href: "ndp_terminal.html" },
+    { number: "Ćwiczenia własne", title: "Symulator Vim", scope: "Interaktywne ćwiczenie trybów, nawigacji, edycji, wyszukiwania i zapisu w edytorze Vim.", href: "ndp_vim.html" }
   ];
 
   return (
