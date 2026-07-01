@@ -9,9 +9,9 @@ const subjects = [
   { name: "Narzędzia dla programistów", href: "/kia.ndp", available: true },
   { name: "Algorytmy i struktury danych", href: "#", available: false },
   { name: "Programowanie aplikacji mobilnych", href: "#", available: false },
+  { name: "Programowanie gier komputerowych", href: "#", available: false },
   { name: "Informatyka afektywna", href: "#", available: false },
   { name: "Robotyka afektywna", href: "#", available: false },
-  { name: "Programowanie gier komputerowych", href: "#", available: false },
   { name: "Seminarium dyplomowe", href: "#", available: false },
 ];
 
