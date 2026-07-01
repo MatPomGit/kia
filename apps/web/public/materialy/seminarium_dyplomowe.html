@@ -1,0 +1,3102 @@
+<!DOCTYPE html>
+
+<html lang="pl">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<meta content="Interaktywny przewodnik naukowy po pisaniu pracy dyplomowej i prowadzeniu badań." name="description"/>
+<title>Seminarium dyplomowe : praca dyplomowa i proces badawczy</title>
+<style>
+
+    :root{
+      color-scheme:light;
+      --bg:#f5f7fa;
+      --bg-top:#fbfcfe;
+      --surface:#ffffff;
+      --surface-2:#f0f4f8;
+      --surface-3:#e8eef5;
+      --text:#172033;
+      --muted:#5d6878;
+      --line:#d7e0ea;
+      --line-strong:#bcc9d7;
+      --accent:#145f8f;
+      --accent-2:#2782b8;
+      --accent-soft:#e5f1f8;
+      --accent-contrast:#ffffff;
+      --good:#256f52;
+      --warn:#965b10;
+      --shadow-sm:0 6px 18px rgba(24,43,67,.06);
+      --shadow:0 18px 46px rgba(24,43,67,.10);
+      --radius-sm:12px;
+      --radius:18px;
+      --radius-lg:26px;
+    }
+    html[data-theme="dark"]{
+      color-scheme:dark;
+      --bg:#0f141b;
+      --bg-top:#151c25;
+      --surface:#171f29;
+      --surface-2:#1e2834;
+      --surface-3:#263241;
+      --text:#edf3f8;
+      --muted:#aeb9c6;
+      --line:#334252;
+      --line-strong:#46586b;
+      --accent:#70bce8;
+      --accent-2:#93d2f2;
+      --accent-soft:#17384c;
+      --accent-contrast:#07131d;
+      --good:#73c99d;
+      --warn:#e1a95d;
+      --shadow-sm:0 8px 20px rgba(0,0,0,.18);
+      --shadow:0 22px 56px rgba(0,0,0,.28);
+    }
+    *{box-sizing:border-box}
+    html{scroll-behavior:smooth;scroll-padding-top:84px}
+    body{
+      margin:0;
+      font-family:Inter,ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
+      background:
+        radial-gradient(circle at 88% -10%, color-mix(in srgb,var(--accent) 12%,transparent), transparent 30%),
+        linear-gradient(180deg,var(--bg-top) 0%,var(--bg) 34%,var(--bg) 100%);
+      color:var(--text);
+      line-height:1.62;
+      transition:background-color .25s ease,color .25s ease;
+    }
+    button,input{font:inherit}
+    a{color:inherit}
+    p{margin:0 0 1rem}
+    p:last-child{margin-bottom:0}
+    h1,h2,h3,h4{letter-spacing:-.025em}
+    .container{width:min(1180px,calc(100% - 32px));margin-inline:auto}
+    .hero{
+      position:relative;
+      overflow:hidden;
+      padding:84px 0 58px;
+      border-bottom:1px solid var(--line);
+    }
+    .hero::after{
+      content:"";
+      position:absolute;
+      inset:auto -8% -150px auto;
+      width:430px;height:430px;border-radius:50%;
+      background:color-mix(in srgb,var(--accent) 9%,transparent);
+      filter:blur(2px);
+      pointer-events:none;
+    }
+    .eyebrow{
+      display:inline-flex;align-items:center;gap:8px;
+      padding:7px 12px;border:1px solid var(--line-strong);border-radius:999px;
+      background:color-mix(in srgb,var(--surface) 82%,transparent);
+      font-size:.78rem;font-weight:800;letter-spacing:.09em;text-transform:uppercase;color:var(--accent)
+    }
+    h1{font-size:clamp(2.35rem,5vw,4.65rem);line-height:1.02;margin:22px 0 18px;max-width:920px}
+    .lead{font-size:clamp(1.04rem,1.6vw,1.27rem);color:var(--muted);max-width:850px}
+    .hero-grid{display:grid;grid-template-columns:1.55fr .75fr;gap:34px;align-items:end}
+    .hero-card{
+      position:relative;z-index:1;
+      background:color-mix(in srgb,var(--surface) 90%,transparent);
+      border:1px solid var(--line);backdrop-filter:blur(12px);
+      border-radius:var(--radius-lg);padding:24px;box-shadow:var(--shadow)
+    }
+    .metric{display:grid;grid-template-columns:46px 1fr;gap:14px;align-items:start;padding:3px 0 18px}
+    .metric:last-child{padding-bottom:0}
+    .metric b{display:block;margin-bottom:2px}
+    .icon{
+      width:46px;height:46px;border-radius:14px;background:var(--accent-soft);
+      display:grid;place-items:center;color:var(--accent);font-weight:850;border:1px solid color-mix(in srgb,var(--accent) 18%,transparent)
+    }
+    nav.sticky{
+      position:sticky;top:0;z-index:50;
+      background:color-mix(in srgb,var(--bg-top) 90%,transparent);
+      backdrop-filter:blur(14px);
+      border-bottom:1px solid var(--line)
+    }
+    .nav-inner{display:flex;align-items:center;gap:6px;overflow:auto;padding:10px 0}
+    .nav-inner a{
+      text-decoration:none;white-space:nowrap;padding:9px 12px;border-radius:10px;
+      color:var(--muted);font-weight:720;font-size:.9rem
+    }
+    .nav-inner a:hover{background:var(--surface-2);color:var(--text)}
+    .theme-toggle{
+      margin-left:auto;flex:0 0 auto;display:inline-flex;align-items:center;gap:8px;
+      border:1px solid var(--line);background:var(--surface);color:var(--text);
+      border-radius:12px;padding:9px 12px;cursor:pointer;box-shadow:var(--shadow-sm)
+    }
+    .theme-toggle:hover{border-color:var(--line-strong)}
+    .theme-toggle svg{width:18px;height:18px}
+    section{padding:66px 0}
+    section:nth-of-type(even){background:color-mix(in srgb,var(--surface-2) 38%,transparent)}
+    .section-head{display:flex;justify-content:space-between;gap:34px;align-items:end;margin-bottom:28px}
+    .section-head h2{font-size:clamp(1.85rem,3vw,2.75rem);line-height:1.12;margin:0}
+    .section-head p{max-width:690px;color:var(--muted);margin:0}
+    .grid-3{display:grid;grid-template-columns:repeat(3,1fr);gap:18px}
+    .grid-2{display:grid;grid-template-columns:repeat(2,1fr);gap:18px}
+    .card{
+      background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);
+      padding:24px;box-shadow:var(--shadow-sm)
+    }
+    .card h3{margin:0 0 10px;font-size:1.13rem}
+    .card p{color:var(--muted)}
+    .tag{
+      display:inline-block;font-size:.75rem;font-weight:820;letter-spacing:.04em;text-transform:uppercase;
+      color:var(--accent);background:var(--accent-soft);padding:5px 9px;border-radius:999px;margin-bottom:12px
+    }
+    .principle{display:grid;grid-template-columns:auto 1fr;gap:16px;padding:18px 0;border-bottom:1px solid var(--line)}
+    .principle:last-child{border-bottom:0}
+    .principle .n{font:800 .96rem/1 ui-monospace,monospace;color:var(--accent);padding-top:5px}
+    .principle h3{margin:0 0 5px}
+    .principle p{margin:0;color:var(--muted)}
+    .tabs-wrap{background:var(--surface);border:1px solid var(--line);border-radius:24px;box-shadow:var(--shadow);overflow:hidden}
+    .tabs{display:grid;grid-template-columns:repeat(4,1fr);background:var(--surface-2);border-bottom:1px solid var(--line)}
+    .tab-btn{
+      border:0;background:transparent;padding:18px 14px;cursor:pointer;font-weight:780;color:var(--muted);
+      transition:.2s ease;border-right:1px solid var(--line)
+    }
+    .tab-btn:last-child{border-right:0}
+    .tab-btn:hover{background:color-mix(in srgb,var(--surface) 55%,transparent);color:var(--text)}
+    .tab-btn.active{background:var(--surface);color:var(--accent);box-shadow:inset 0 -3px 0 var(--accent)}
+    .tab-panel{display:none;padding:30px}
+    .tab-panel.active{display:block}
+    .discipline-intro{display:grid;grid-template-columns:1.2fr .8fr;gap:20px;margin-bottom:22px}
+    .discipline-intro h3{font-size:1.45rem;margin:0 0 7px}
+    .discipline-intro p{color:var(--muted)}
+    .focus-box{background:var(--accent-soft);border:1px solid color-mix(in srgb,var(--accent) 23%,transparent);border-radius:16px;padding:18px}
+    .focus-box strong{color:var(--accent)}
+    details{border:1px solid var(--line);border-radius:15px;margin:12px 0;background:var(--surface);overflow:hidden}
+    details[open]{border-color:color-mix(in srgb,var(--accent) 36%,var(--line));box-shadow:var(--shadow-sm)}
+    summary{cursor:pointer;list-style:none;padding:18px 20px;font-weight:780;display:flex;align-items:center;gap:14px}
+    summary::-webkit-details-marker{display:none}
+    summary::before{
+      content:"+";width:28px;height:28px;border-radius:9px;background:var(--accent-soft);color:var(--accent);
+      display:grid;place-items:center;font-weight:900;flex:0 0 auto
+    }
+    details[open] summary::before{content:"−"}
+    .details-body{padding:0 20px 20px 62px;color:var(--muted)}
+    .details-body h4{color:var(--text);margin:18px 0 8px}
+    .details-body ul{padding-left:20px}
+    .details-body li{margin:6px 0}
+    .micro-example{background:var(--surface-2);border-left:4px solid var(--accent-2);padding:14px 16px;border-radius:8px;margin-top:12px;color:var(--text)}
+    .comparison{width:100%;border-collapse:separate;border-spacing:0;background:var(--surface);border-radius:16px;overflow:hidden;border:1px solid var(--line)}
+    .comparison th,.comparison td{padding:15px 16px;text-align:left;border-bottom:1px solid var(--line);vertical-align:top}
+    .comparison th{background:var(--surface-2);font-size:.88rem;color:var(--text)}
+    .comparison td{color:var(--muted)}
+    .comparison tr:last-child td{border-bottom:0}
+    .checklist{display:grid;grid-template-columns:repeat(2,1fr);gap:12px}
+    .check{display:flex;gap:12px;align-items:flex-start;background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:15px}
+    .check:hover{border-color:var(--line-strong)}
+    .check input{margin-top:5px;accent-color:var(--accent)}
+    .check span{color:var(--muted)}
+    .callout{
+      position:relative;overflow:hidden;
+      background:linear-gradient(135deg,color-mix(in srgb,var(--accent) 78%,#0c2639),var(--accent));
+      color:#fff;border-radius:24px;padding:30px;box-shadow:var(--shadow)
+    }
+    .callout::after{content:"";position:absolute;width:260px;height:260px;border-radius:50%;right:-100px;top:-120px;background:rgba(255,255,255,.08)}
+    .callout p{color:#e4f1f8;max-width:850px}
+    .small{font-size:.9rem;color:var(--muted)}
+    .chapter-map{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-top:20px}
+    .chapter-part{background:var(--surface);border:1px solid var(--line);border-radius:15px;padding:17px;box-shadow:var(--shadow-sm)}
+    .chapter-part .pct{font-size:1.45rem;font-weight:850;color:var(--accent);line-height:1}
+    .bar{height:8px;background:var(--surface-3);border-radius:999px;overflow:hidden;margin:12px 0}
+    .bar span{display:block;height:100%;background:linear-gradient(90deg,var(--accent),var(--accent-2));border-radius:999px}
+    .workflow{counter-reset:step;display:grid;gap:12px}
+    .workflow-step{display:grid;grid-template-columns:46px 1fr;gap:14px;align-items:start;background:var(--surface);border:1px solid var(--line);border-radius:15px;padding:16px}
+    .workflow-step::before{counter-increment:step;content:counter(step);width:38px;height:38px;display:grid;place-items:center;border-radius:11px;background:var(--accent-soft);color:var(--accent);font-weight:850}
+    .workflow-step h3{margin:0 0 4px;font-size:1rem}
+    .workflow-step p{margin:0;color:var(--muted)}
+    .resource-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}
+    .resource-card{background:var(--surface);border:1px solid var(--line);border-radius:15px;padding:18px;box-shadow:var(--shadow-sm)}
+    .resource-card h3{margin:0 0 8px;font-size:1rem}
+    .resource-card p{margin:0;color:var(--muted);font-size:.92rem}
+    .rule-list{display:grid;grid-template-columns:repeat(2,1fr);gap:12px}
+    .rule-item{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:16px;color:var(--muted)}
+    .rule-item b{display:block;margin-bottom:5px;color:var(--text)}
+
+    .thesis-flow{
+      display:grid;
+      grid-template-columns:1fr auto 1fr auto 1fr auto 1fr auto 1fr;
+      gap:12px;
+      align-items:stretch;
+    }
+    .flow-card{
+      position:relative;
+      background:var(--surface);
+      border:1px solid color-mix(in srgb,var(--card-accent) 24%,var(--line));
+      border-top:5px solid var(--card-accent);
+      border-radius:18px;
+      padding:20px;
+      box-shadow:var(--shadow-sm);
+      min-height:220px;
+      display:flex;
+      flex-direction:column;
+    }
+    .flow-card.main{
+      border-color:color-mix(in srgb,var(--accent) 38%,var(--line));
+      background:linear-gradient(180deg,color-mix(in srgb,var(--accent-soft) 55%,var(--surface)),var(--surface));
+    }
+    .flow-index{
+      position:absolute;
+      top:14px;
+      right:14px;
+      font:800 .78rem/1 ui-monospace,monospace;
+      color:var(--muted);
+    }
+    .flow-icon{
+      width:46px;height:46px;border-radius:14px;
+      display:grid;place-items:center;
+      background:var(--accent-soft);
+      color:var(--accent);
+      font-weight:850;
+      margin-bottom:18px;
+    }
+    .flow-card h3{margin:0 0 8px;font-size:1.08rem}
+    .flow-card p{color:var(--muted);font-size:.92rem}
+    .flow-note{
+      margin-top:auto;
+      padding-top:14px;
+      font-size:.78rem;
+      font-weight:800;
+      color:var(--accent);
+      border-top:1px solid var(--line);
+    }
+    .flow-arrow{
+      align-self:center;
+      color:var(--accent);
+      font-size:1.55rem;
+      font-weight:800;
+    }
+    .support-strip{
+      display:grid;
+      grid-template-columns:repeat(3,1fr);
+      gap:12px;
+      margin-top:16px;
+    }
+    .support-strip div{
+      background:var(--surface-2);
+      border:1px solid var(--line);
+      border-radius:14px;
+      padding:16px;
+    }
+    .support-strip b{display:block;margin-bottom:5px}
+    .support-strip span{color:var(--muted);font-size:.9rem}
+    .research-cycle{
+      display:grid;
+      grid-template-columns:repeat(6,1fr);
+      gap:12px;
+    }
+    .cycle-step{
+      position:relative;
+      background:var(--surface);
+      border:1px solid var(--line);
+      border-radius:16px;
+      padding:18px;
+      box-shadow:var(--shadow-sm);
+    }
+    .cycle-step span{
+      display:grid;
+      place-items:center;
+      width:32px;height:32px;
+      border-radius:10px;
+      background:var(--accent-soft);
+      color:var(--accent);
+      font-weight:850;
+      margin-bottom:14px;
+    }
+    .cycle-step h3{margin:0 0 7px;font-size:1rem}
+    .cycle-step p{margin:0;color:var(--muted);font-size:.88rem}
+    @media (max-width:1100px){
+      .thesis-flow{grid-template-columns:1fr 1fr}
+      .flow-arrow{display:none}
+      .research-cycle{grid-template-columns:repeat(3,1fr)}
+    }
+    @media (max-width:700px){
+      .thesis-flow,.support-strip,.research-cycle{grid-template-columns:1fr}
+      .flow-card{min-height:auto}
+    }
+
+
+    .tabs-wrap{
+      --discipline:#145f8f;
+      --discipline-soft:#e5f1f8;
+    }
+    .tab-btn[data-tab="it"]{--tab:#2563eb;--tab-soft:#e8efff}
+    .tab-btn[data-tab="systems"]{--tab:#7c3aed;--tab-soft:#f0e9ff}
+    .tab-btn[data-tab="robotics"]{--tab:#d97706;--tab-soft:#fff2dc}
+    .tab-btn[data-tab="humanities"]{--tab:#0f8a6b;--tab-soft:#e3f6f0}
+    .tab-btn{
+      position:relative;
+      color:var(--muted);
+    }
+    .tab-btn::before{
+      content:"";
+      position:absolute;
+      left:16px;
+      right:16px;
+      bottom:8px;
+      height:4px;
+      border-radius:999px;
+      background:var(--tab);
+      opacity:.26;
+    }
+    .tab-btn.active{
+      color:var(--tab);
+      box-shadow:inset 0 -3px 0 var(--tab);
+    }
+    .tab-btn.active::before{opacity:1}
+    .tab-panel[data-discipline="it"]{--discipline:#2563eb;--discipline-soft:#e8efff}
+    .tab-panel[data-discipline="systems"]{--discipline:#7c3aed;--discipline-soft:#f0e9ff}
+    .tab-panel[data-discipline="robotics"]{--discipline:#d97706;--discipline-soft:#fff2dc}
+    .tab-panel[data-discipline="humanities"]{--discipline:#0f8a6b;--discipline-soft:#e3f6f0}
+    html[data-theme="dark"] .tab-panel[data-discipline="it"]{--discipline-soft:#172748}
+    html[data-theme="dark"] .tab-panel[data-discipline="systems"]{--discipline-soft:#2b1d46}
+    html[data-theme="dark"] .tab-panel[data-discipline="robotics"]{--discipline-soft:#432d14}
+    html[data-theme="dark"] .tab-panel[data-discipline="humanities"]{--discipline-soft:#123c33}
+    .tab-panel .discipline-intro{
+      border-top:5px solid var(--discipline);
+      padding-top:18px;
+    }
+    .tab-panel .focus-box{
+      background:var(--discipline-soft);
+      border-color:color-mix(in srgb,var(--discipline) 30%,var(--line));
+    }
+    .tab-panel .focus-box strong,
+    .tab-panel .micro-example b{color:var(--discipline)}
+    .tab-panel details[open]{
+      border-color:color-mix(in srgb,var(--discipline) 42%,var(--line));
+    }
+    .tab-panel summary::before{
+      background:var(--discipline-soft);
+      color:var(--discipline);
+    }
+    .tab-panel .micro-example{
+      border-left-color:var(--discipline);
+    }
+
+    .database-grid{
+      display:grid;
+      grid-template-columns:repeat(5,1fr);
+      gap:14px;
+    }
+    .database-card{
+      position:relative;
+      overflow:hidden;
+      min-height:190px;
+      background:var(--surface);
+      border:1px solid var(--line);
+      border-radius:18px;
+      padding:18px;
+      box-shadow:var(--shadow-sm);
+    }
+    .database-card::after{
+      content:"";
+      position:absolute;
+      width:110px;height:110px;
+      right:-35px;top:-35px;
+      border-radius:50%;
+      background:color-mix(in srgb,var(--db-color) 16%,transparent);
+    }
+    .database-icon{
+      width:48px;height:48px;
+      border-radius:14px;
+      display:grid;place-items:center;
+      background:color-mix(in srgb,var(--db-color) 14%,var(--surface));
+      color:var(--db-color);
+      font-weight:900;
+      margin-bottom:16px;
+      border:1px solid color-mix(in srgb,var(--db-color) 25%,var(--line));
+    }
+    .database-card h3{margin:0 0 8px;font-size:1rem}
+    .database-card p{margin:0;color:var(--muted);font-size:.9rem}
+    .database-card .db-role{
+      display:inline-block;
+      margin-top:14px;
+      font-size:.74rem;
+      font-weight:800;
+      text-transform:uppercase;
+      letter-spacing:.04em;
+      color:var(--db-color);
+    }
+    .database-card.scholar{--db-color:#2563eb}
+    .database-card.scopus{--db-color:#f59e0b}
+    .database-card.wos{--db-color:#7c3aed}
+    .database-card.sciencedirect{--db-color:#d97706}
+    .database-card.pubmed{--db-color:#0f8a6b}
+    @media (max-width:1100px){.database-grid{grid-template-columns:repeat(3,1fr)}}
+    @media (max-width:700px){.database-grid{grid-template-columns:1fr}}
+
+
+    .error-panel{
+      margin-top:20px;
+      background:color-mix(in srgb,#b45309 8%,var(--surface));
+      border:1px solid color-mix(in srgb,#b45309 28%,var(--line));
+      border-radius:18px;
+      padding:20px;
+    }
+    .error-panel h3{
+      display:flex;
+      align-items:center;
+      gap:10px;
+      margin:0 0 14px;
+      color:var(--text);
+    }
+    .error-badge{
+      width:32px;height:32px;
+      display:grid;place-items:center;
+      border-radius:10px;
+      background:color-mix(in srgb,#b45309 16%,var(--surface));
+      color:#b45309;
+      font-weight:900;
+      flex:0 0 auto;
+    }
+    .error-grid{
+      display:grid;
+      grid-template-columns:repeat(2,1fr);
+      gap:12px;
+    }
+    .error-item{
+      background:var(--surface);
+      border:1px solid var(--line);
+      border-radius:14px;
+      padding:15px;
+    }
+    .error-item b{display:block;margin-bottom:5px}
+    .error-item p{margin:0;color:var(--muted);font-size:.92rem}
+
+    .method-flow{
+      display:grid;
+      grid-template-columns:repeat(4,1fr);
+      gap:14px;
+      margin-bottom:20px;
+    }
+    .method-step{
+      --card-accent:var(--accent);
+      position:relative;
+      background:var(--surface);
+      border:1px solid var(--line);
+      border-radius:18px;
+      padding:20px;
+      box-shadow:var(--shadow-sm);
+      min-height:210px;
+    }
+    .method-step::after{
+      content:"";
+      position:absolute;
+      top:50%;
+      right:-11px;
+      width:22px;
+      height:2px;
+      background:var(--accent);
+    }
+    .method-step:nth-child(4n)::after,
+    .method-step:last-child::after{display:none}
+    .method-step .step-no{
+      width:38px;height:38px;
+      display:grid;place-items:center;
+      border-radius:11px;
+      background:var(--accent-soft);
+      color:var(--accent);
+      font-weight:850;
+      margin-bottom:15px;
+    }
+    .method-step h3{margin:0 0 8px;font-size:1rem}
+    .method-step p{margin:0;color:var(--muted);font-size:.9rem}
+    .method-grid{
+      display:grid;
+      grid-template-columns:repeat(2,1fr);
+      gap:18px;
+    }
+    .method-check{
+      display:grid;
+      gap:10px;
+      margin-top:12px;
+    }
+    .method-check div{
+      display:grid;
+      grid-template-columns:24px 1fr;
+      gap:10px;
+      align-items:start;
+      color:var(--muted);
+    }
+    .method-check span{
+      width:22px;height:22px;
+      display:grid;place-items:center;
+      border-radius:7px;
+      background:var(--accent-soft);
+      color:var(--accent);
+      font-size:.75rem;
+      font-weight:900;
+    }
+    @media (max-width:1000px){
+      .method-flow{grid-template-columns:repeat(2,1fr)}
+      .method-step:nth-child(2n)::after{display:none}
+    }
+    @media (max-width:700px){
+      .error-grid,.method-flow,.method-grid{grid-template-columns:1fr}
+      .method-step::after{display:none}
+    }
+
+
+    .context-links{
+      display:flex;
+      flex-wrap:wrap;
+      gap:10px;
+      margin-top:18px;
+    }
+    .context-link{
+      display:inline-flex;
+      align-items:center;
+      gap:8px;
+      padding:9px 12px;
+      border:1px solid var(--line);
+      border-radius:11px;
+      background:var(--surface);
+      color:var(--accent);
+      text-decoration:none;
+      font-size:.86rem;
+      font-weight:760;
+      box-shadow:var(--shadow-sm);
+      transition:transform .16s ease,border-color .16s ease,background .16s ease;
+    }
+    .context-link:hover{
+      transform:translateY(-1px);
+      border-color:color-mix(in srgb,var(--accent) 45%,var(--line));
+      background:var(--accent-soft);
+    }
+    .context-link::after{
+      content:"↗";
+      font-size:.9rem;
+    }
+    .institution-strip{
+      display:grid;
+      grid-template-columns:repeat(3,1fr);
+      gap:12px;
+      margin-top:20px;
+    }
+    .institution-link{
+      display:block;
+      text-decoration:none;
+      background:var(--surface);
+      border:1px solid var(--line);
+      border-radius:16px;
+      padding:17px;
+      box-shadow:var(--shadow-sm);
+    }
+    .institution-link:hover{
+      border-color:color-mix(in srgb,var(--accent) 45%,var(--line));
+      transform:translateY(-1px);
+    }
+    .institution-link b{display:block;margin-bottom:5px}
+    .institution-link span{color:var(--muted);font-size:.9rem}
+    .database-card{
+      text-decoration:none;
+      color:inherit;
+      transition:transform .16s ease,border-color .16s ease;
+    }
+    .database-card:hover{
+      transform:translateY(-3px);
+      border-color:color-mix(in srgb,var(--db-color) 48%,var(--line));
+    }
+    .database-card .db-open{
+      display:inline-flex;
+      align-items:center;
+      gap:6px;
+      margin-top:10px;
+      color:var(--db-color);
+      font-size:.78rem;
+      font-weight:800;
+    }
+    .database-card .db-open::after{content:"↗"}
+    @media (max-width:800px){.institution-strip{grid-template-columns:1fr}}
+
+
+    .three-column{
+      display:grid;
+      grid-template-columns:repeat(3,1fr);
+      gap:16px;
+    }
+    .info-tile{
+      background:var(--surface);
+      border:1px solid var(--line);
+      border-radius:17px;
+      padding:19px;
+      box-shadow:var(--shadow-sm);
+    }
+    .info-tile .tile-no{
+      width:36px;height:36px;
+      display:grid;place-items:center;
+      border-radius:11px;
+      background:var(--accent-soft);
+      color:var(--accent);
+      font-weight:850;
+      margin-bottom:14px;
+    }
+    .info-tile h3{margin:0 0 7px;font-size:1.03rem}
+    .info-tile p{margin:0;color:var(--muted);font-size:.92rem}
+    .timeline{
+      position:relative;
+      display:grid;
+      gap:12px;
+      margin-top:18px;
+    }
+    .timeline::before{
+      content:"";
+      position:absolute;
+      left:20px;top:20px;bottom:20px;
+      width:2px;background:var(--line);
+    }
+    .timeline-item{
+      position:relative;
+      display:grid;
+      grid-template-columns:42px 1fr;
+      gap:14px;
+      align-items:start;
+    }
+    .timeline-dot{
+      position:relative;z-index:1;
+      width:42px;height:42px;
+      display:grid;place-items:center;
+      border-radius:13px;
+      background:var(--accent);
+      color:var(--accent-contrast);
+      font-weight:850;
+    }
+    .timeline-content{
+      background:var(--surface);
+      border:1px solid var(--line);
+      border-radius:15px;
+      padding:16px;
+      box-shadow:var(--shadow-sm);
+    }
+    .timeline-content h3{margin:0 0 6px;font-size:1rem}
+    .timeline-content p{margin:0;color:var(--muted)}
+    .role-compare{
+      display:grid;
+      grid-template-columns:1fr 1fr;
+      gap:18px;
+    }
+    .role-card{
+      background:var(--surface);
+      border:1px solid var(--line);
+      border-radius:18px;
+      overflow:hidden;
+      box-shadow:var(--shadow-sm);
+    }
+    .role-card header{
+      padding:19px;
+      background:var(--surface-2);
+      border-bottom:1px solid var(--line);
+    }
+    .role-card header h3{margin:0 0 5px}
+    .role-card header p{margin:0;color:var(--muted)}
+    .role-card .role-body{padding:19px}
+    .role-card ul{margin:0;padding-left:20px;color:var(--muted)}
+    .role-card li{margin:7px 0}
+    .presentation-plan{
+      display:grid;
+      grid-template-columns:repeat(6,1fr);
+      gap:10px;
+      margin:18px 0;
+    }
+    .presentation-part{
+      position:relative;
+      background:var(--surface);
+      border:1px solid var(--line);
+      border-radius:15px;
+      padding:15px;
+      min-height:150px;
+    }
+    .presentation-part .time{
+      display:inline-block;
+      padding:4px 8px;
+      border-radius:999px;
+      background:var(--accent-soft);
+      color:var(--accent);
+      font-size:.74rem;
+      font-weight:850;
+      margin-bottom:12px;
+    }
+    .presentation-part h3{margin:0 0 6px;font-size:.95rem}
+    .presentation-part p{margin:0;color:var(--muted);font-size:.84rem}
+    .link-strip{
+      display:flex;
+      flex-wrap:wrap;
+      gap:10px;
+      margin-top:18px;
+    }
+    .link-strip a{
+      display:inline-flex;
+      align-items:center;
+      gap:7px;
+      padding:9px 12px;
+      border:1px solid var(--line);
+      border-radius:11px;
+      background:var(--surface);
+      color:var(--accent);
+      text-decoration:none;
+      font-size:.86rem;
+      font-weight:760;
+    }
+    .link-strip a:hover{border-color:var(--accent);background:var(--accent-soft)}
+    .advice-box{
+      margin-top:18px;
+      padding:18px;
+      background:color-mix(in srgb,var(--accent) 7%,var(--surface));
+      border:1px solid color-mix(in srgb,var(--accent) 25%,var(--line));
+      border-radius:16px;
+    }
+    .advice-box h3{margin:0 0 8px}
+    .advice-box p{margin:0;color:var(--muted)}
+    @media (max-width:1050px){
+      .three-column{grid-template-columns:1fr 1fr}
+      .presentation-plan{grid-template-columns:repeat(3,1fr)}
+    }
+    @media (max-width:700px){
+      .three-column,.role-compare,.presentation-plan{grid-template-columns:1fr}
+    }
+
+
+    .fair-grid{
+      display:grid;
+      grid-template-columns:repeat(4,1fr);
+      gap:14px;
+      margin:20px 0;
+    }
+    .fair-card{
+      position:relative;
+      overflow:hidden;
+      background:var(--surface);
+      border:1px solid var(--line);
+      border-radius:18px;
+      padding:20px;
+      box-shadow:var(--shadow-sm);
+      min-height:190px;
+    }
+    .fair-letter{
+      width:48px;height:48px;
+      display:grid;place-items:center;
+      border-radius:14px;
+      background:var(--accent-soft);
+      color:var(--accent);
+      font-size:1.35rem;
+      font-weight:900;
+      margin-bottom:15px;
+    }
+    .fair-card h3{margin:0 0 7px}
+    .fair-card p{margin:0;color:var(--muted);font-size:.9rem}
+    .open-output-grid{
+      display:grid;
+      grid-template-columns:repeat(3,1fr);
+      gap:14px;
+    }
+    .open-output{
+      background:var(--surface);
+      border:1px solid var(--line);
+      border-radius:17px;
+      padding:18px;
+      box-shadow:var(--shadow-sm);
+    }
+    .open-output .output-icon{
+      width:42px;height:42px;
+      display:grid;place-items:center;
+      border-radius:12px;
+      background:var(--accent-soft);
+      color:var(--accent);
+      font-weight:850;
+      margin-bottom:13px;
+    }
+    .open-output h3{margin:0 0 7px;font-size:1rem}
+    .open-output p{margin:0;color:var(--muted);font-size:.9rem}
+    .repo-table{
+      width:100%;
+      border-collapse:separate;
+      border-spacing:0;
+      border:1px solid var(--line);
+      border-radius:16px;
+      overflow:hidden;
+      background:var(--surface);
+    }
+    .repo-table th,.repo-table td{
+      padding:14px 15px;
+      text-align:left;
+      vertical-align:top;
+      border-bottom:1px solid var(--line);
+    }
+    .repo-table th{
+      background:var(--surface-2);
+      font-size:.86rem;
+    }
+    .repo-table td{color:var(--muted);font-size:.9rem}
+    .repo-table tr:last-child td{border-bottom:0}
+    .repo-table a{color:var(--accent);font-weight:750;text-decoration:none}
+    .repo-table a:hover{text-decoration:underline}
+    .decision-grid{
+      display:grid;
+      grid-template-columns:repeat(3,1fr);
+      gap:14px;
+    }
+    .decision-card{
+      border-radius:17px;
+      padding:18px;
+      border:1px solid var(--line);
+      background:var(--surface);
+    }
+    .decision-card.open{border-top:5px solid #15803d}
+    .decision-card.restricted{border-top:5px solid #b45309}
+    .decision-card.closed{border-top:5px solid #b91c1c}
+    .decision-card h3{margin:0 0 7px}
+    .decision-card p{margin:0;color:var(--muted);font-size:.9rem}
+    .file-tree{
+      font-family:ui-monospace,SFMono-Regular,Consolas,monospace;
+      background:var(--surface-2);
+      border:1px solid var(--line);
+      border-radius:15px;
+      padding:17px;
+      color:var(--muted);
+      line-height:1.75;
+      overflow:auto;
+      white-space:pre;
+    }
+    @media (max-width:1000px){
+      .fair-grid{grid-template-columns:repeat(2,1fr)}
+      .open-output-grid,.decision-grid{grid-template-columns:1fr 1fr}
+    }
+    @media (max-width:700px){
+      .fair-grid,.open-output-grid,.decision-grid{grid-template-columns:1fr}
+    }
+
+
+    .ai-disclosure{
+      margin-top:20px;
+      background:linear-gradient(
+        180deg,
+        color-mix(in srgb,#7c3aed 7%,var(--surface)),
+        var(--surface)
+      );
+      border:1px solid color-mix(in srgb,#7c3aed 28%,var(--line));
+      border-radius:19px;
+      padding:20px;
+    }
+    .ai-disclosure h3{margin:0 0 10px}
+    .ai-disclosure > p{color:var(--muted)}
+    .ai-fields{
+      display:grid;
+      grid-template-columns:repeat(2,1fr);
+      gap:12px;
+      margin-top:16px;
+    }
+    .ai-field{
+      background:var(--surface);
+      border:1px solid var(--line);
+      border-radius:14px;
+      padding:15px;
+    }
+    .ai-field b{display:block;margin-bottom:5px}
+    .ai-field p{margin:0;color:var(--muted);font-size:.9rem}
+    .ai-use-grid{
+      display:grid;
+      grid-template-columns:repeat(3,1fr);
+      gap:13px;
+      margin-top:16px;
+    }
+    .ai-use-card{
+      background:var(--surface);
+      border:1px solid var(--line);
+      border-radius:15px;
+      padding:16px;
+    }
+    .ai-use-card.allowed{border-top:5px solid #15803d}
+    .ai-use-card.conditional{border-top:5px solid #b45309}
+    .ai-use-card.prohibited{border-top:5px solid #b91c1c}
+    .ai-use-card h4{margin:0 0 7px}
+    .ai-use-card p{margin:0;color:var(--muted);font-size:.9rem}
+    .declaration-template{
+      margin-top:16px;
+      background:var(--surface-2);
+      border:1px solid var(--line);
+      border-radius:15px;
+      padding:17px;
+    }
+    .declaration-template h4{margin:0 0 10px}
+    .declaration-template p{margin:0;color:var(--muted)}
+    @media (max-width:850px){
+      .ai-fields,.ai-use-grid{grid-template-columns:1fr}
+    }
+
+
+    .discipline-comparison-block{
+      margin-top:28px;
+      padding-top:28px;
+      border-top:1px solid var(--line);
+    }
+    .discipline-comparison-block .container{
+      width:100%;
+      margin:0;
+    }
+
+
+    .comparison-details{
+      margin-top:28px;
+      border:1px solid var(--line);
+      border-radius:18px;
+      background:var(--surface);
+      overflow:hidden;
+      box-shadow:var(--shadow-sm);
+    }
+    .comparison-details > summary{
+      padding:20px 22px;
+      font-size:1.08rem;
+      background:
+        linear-gradient(
+          90deg,
+          color-mix(in srgb,#2563eb 10%,var(--surface)),
+          color-mix(in srgb,#7c3aed 10%,var(--surface)),
+          color-mix(in srgb,#d97706 10%,var(--surface)),
+          color-mix(in srgb,#0f8a6b 10%,var(--surface))
+        );
+    }
+    .comparison-details .comparison-body{
+      padding:20px;
+    }
+
+    .hover-reveal-grid{
+      display:grid;
+      grid-template-columns:repeat(3,1fr);
+      gap:14px;
+    }
+    .hover-reveal-card{
+      --card-accent:var(--accent);
+      position:relative;
+      min-height:78px;
+      max-height:78px;
+      overflow:hidden;
+      background:
+        linear-gradient(
+          180deg,
+          color-mix(in srgb,var(--card-accent) 12%,var(--surface)),
+          var(--surface)
+        );
+      border:1px solid color-mix(in srgb,var(--card-accent) 25%,var(--line));
+      border-radius:17px;
+      padding:17px;
+      box-shadow:var(--shadow-sm);
+      transition:
+        max-height .28s ease,
+        transform .22s ease,
+        box-shadow .22s ease,
+        border-color .22s ease;
+      outline:none;
+      cursor:default;
+    }
+    .hover-reveal-card:hover,
+    .hover-reveal-card:focus-within,
+    .hover-reveal-card:focus{
+      max-height:280px;
+      transform:translateY(-2px);
+      box-shadow:var(--shadow);
+      border-color:var(--card-accent);
+    }
+    .hover-reveal-card h3{
+      margin:0;
+      font-size:1rem;
+      color:var(--text);
+      padding-right:28px;
+    }
+    .hover-reveal-card .reveal-content{
+      opacity:0;
+      transform:translateY(8px);
+      margin-top:12px;
+      transition:opacity .2s ease,transform .2s ease;
+      color:var(--muted);
+      font-size:.9rem;
+    }
+    .hover-reveal-card:hover .reveal-content,
+    .hover-reveal-card:focus-within .reveal-content,
+    .hover-reveal-card:focus .reveal-content{
+      opacity:1;
+      transform:translateY(0);
+    }
+    .hover-reveal-card::after{
+      content:"+";
+      position:absolute;
+      right:14px;
+      top:14px;
+      width:24px;height:24px;
+      display:grid;place-items:center;
+      border-radius:8px;
+      background:color-mix(in srgb,var(--card-accent) 16%,var(--surface));
+      color:var(--card-accent);
+      font-weight:900;
+    }
+    .hover-reveal-card:hover::after,
+    .hover-reveal-card:focus::after,
+    .hover-reveal-card:focus-within::after{
+      content:"−";
+    }
+
+    .accent-blue{--card-accent:#2563eb}
+    .accent-cyan{--card-accent:#0891b2}
+    .accent-violet{--card-accent:#7c3aed}
+    .accent-pink{--card-accent:#db2777}
+    .accent-orange{--card-accent:#d97706}
+    .accent-red{--card-accent:#dc2626}
+    .accent-green{--card-accent:#0f8a6b}
+    .accent-lime{--card-accent:#65a30d}
+    .accent-slate{--card-accent:#475569}
+
+    @media (max-width:900px){
+      .hover-reveal-grid{grid-template-columns:repeat(2,1fr)}
+    }
+    @media (max-width:620px){
+      .hover-reveal-grid{grid-template-columns:1fr}
+      .hover-reveal-card{
+        max-height:none;
+      }
+      .hover-reveal-card .reveal-content{
+        opacity:1;
+        transform:none;
+      }
+      .hover-reveal-card::after{display:none}
+    }
+
+
+    details > summary > span{display:block}
+    details > summary small{line-height:1.45}
+
+
+    .formula-grid{
+      display:grid;
+      grid-template-columns:repeat(2,1fr);
+      gap:14px;
+      margin-top:16px;
+    }
+    .formula-card{
+      background:var(--surface);
+      border:1px solid var(--line);
+      border-radius:16px;
+      padding:18px;
+      box-shadow:var(--shadow-sm);
+    }
+    .formula-card h3{margin:0 0 8px;font-size:1rem}
+    .formula{
+      display:block;
+      margin:12px 0;
+      padding:12px 14px;
+      background:var(--surface-2);
+      border:1px solid var(--line);
+      border-radius:12px;
+      font-family:"Cambria Math","STIX Two Math",serif;
+      font-size:1.08rem;
+      color:var(--text);
+      overflow:auto;
+      white-space:nowrap;
+    }
+    .formula-card p{margin:0;color:var(--muted);font-size:.9rem}
+    .symbol-list{
+      margin:10px 0 0;
+      padding-left:18px;
+      color:var(--muted);
+      font-size:.9rem;
+    }
+    .symbol-list li{margin:4px 0}
+    @media (max-width:800px){
+      .formula-grid{grid-template-columns:1fr}
+    }
+
+
+    .hover-reveal-card{
+      min-height:124px;
+      max-height:124px;
+    }
+    .hover-reveal-card .card-lead{
+      display:block;
+      margin-top:8px;
+      padding-right:24px;
+      color:var(--muted);
+      font-size:.84rem;
+      line-height:1.42;
+    }
+    .hover-reveal-card .reveal-content{
+      margin-top:10px;
+    }
+    .hover-reveal-card:hover,
+    .hover-reveal-card:focus-within,
+    .hover-reveal-card:focus{
+      max-height:360px;
+    }
+    .citation-example{
+      margin-top:10px;
+      padding:12px 14px;
+      background:var(--surface-2);
+      border:1px solid var(--line);
+      border-radius:12px;
+      color:var(--muted);
+      font-size:.9rem;
+      overflow-wrap:anywhere;
+    }
+    .identifier-example{
+      display:grid;
+      grid-template-columns:74px 1fr;
+      gap:12px;
+      align-items:start;
+      margin-top:12px;
+      padding:13px 14px;
+      background:var(--surface-2);
+      border:1px solid var(--line);
+      border-radius:12px;
+    }
+    .identifier-example code{
+      color:var(--accent);
+      font-weight:760;
+      overflow-wrap:anywhere;
+    }
+    .identifier-example p{margin:5px 0 0}
+    .access-note{
+      margin-top:14px;
+      padding:15px;
+      border-left:4px solid var(--accent);
+      background:var(--surface-2);
+      border-radius:10px;
+      color:var(--muted);
+    }
+    .access-note a{
+      color:var(--accent);
+      font-weight:750;
+      text-decoration:none;
+    }
+    .access-note a:hover{text-decoration:underline}
+    @media (max-width:620px){
+      .identifier-example{grid-template-columns:1fr}
+    }
+
+    footer{padding:34px 0 46px;color:var(--muted);font-size:.9rem;border-top:1px solid var(--line)}
+    @media (max-width:900px){
+      .hero-grid,.discipline-intro,.grid-3,.grid-2{grid-template-columns:1fr}
+      .tabs{grid-template-columns:repeat(2,1fr)}
+      .section-head{display:block}.section-head p{margin-top:10px}
+      .chapter-map,.resource-grid{grid-template-columns:repeat(2,1fr)}
+    }
+    @media (max-width:700px){
+      .theme-label{display:none}
+      .theme-toggle{padding:9px}
+    }
+    @media (max-width:620px){
+      .container{width:min(100% - 20px,1180px)}
+      section{padding:46px 0}
+      .hero{padding:64px 0 44px}
+      .tabs{grid-template-columns:1fr}
+      .tab-btn{border-right:0;border-bottom:1px solid var(--line)}
+      .tab-panel{padding:18px}
+      .details-body{padding-left:20px}
+      .checklist,.chapter-map,.resource-grid,.rule-list{grid-template-columns:1fr}
+      h1{font-size:2.25rem}
+    }
+
+  
+    /* Ujednolicony system większych paneli */
+    details{
+      border:1px solid var(--line);
+      border-radius:16px;
+      background:var(--surface);
+      box-shadow:var(--shadow-sm);
+      overflow:hidden;
+      margin:14px 0;
+    }
+    details[open]{
+      border-color:color-mix(in srgb,var(--accent) 34%,var(--line));
+      box-shadow:var(--shadow);
+    }
+    details > summary{
+      min-height:92px;
+      padding:18px 20px;
+      align-items:flex-start;
+      background:linear-gradient(
+        180deg,
+        color-mix(in srgb,var(--accent) 5%,var(--surface)),
+        var(--surface)
+      );
+    }
+    details > summary:hover{
+      background:color-mix(in srgb,var(--accent) 9%,var(--surface));
+    }
+    .summary-copy{
+      display:block;
+      min-width:0;
+      padding-right:12px;
+    }
+    .summary-title{
+      display:block;
+      color:var(--text);
+      font-size:1rem;
+      font-weight:780;
+      line-height:1.35;
+    }
+    .panel-summary{
+      display:block;
+      margin-top:6px;
+      color:var(--muted);
+      font-size:.95rem;
+      font-weight:400;
+      line-height:1.55;
+    }
+    .details-body{
+      padding:4px 20px 22px 62px;
+      color:var(--muted);
+      font-size:.95rem;
+      line-height:1.6;
+    }
+    .details-body p,
+    .details-body li,
+    .details-body .small,
+    .details-body .card p{
+      font-size:.95rem;
+      line-height:1.6;
+    }
+
+    /* Ujednolicony system małych kafelków */
+    .motion-tile{
+      --mouse-x:50%;
+      --mouse-y:50%;
+      --rotate-x:0deg;
+      --rotate-y:0deg;
+      position:relative;
+      transform:
+        perspective(850px)
+        rotateX(var(--rotate-x))
+        rotateY(var(--rotate-y))
+        translateY(0);
+      transform-style:preserve-3d;
+      transition:
+        transform .18s ease,
+        box-shadow .18s ease,
+        border-color .18s ease,
+        max-height .28s ease;
+      will-change:transform;
+    }
+    .motion-tile::before{
+      content:"";
+      position:absolute;
+      inset:0;
+      pointer-events:none;
+      border-radius:inherit;
+      opacity:0;
+      background:radial-gradient(
+        circle at var(--mouse-x) var(--mouse-y),
+        color-mix(in srgb,var(--card-accent,var(--accent)) 18%,transparent),
+        transparent 46%
+      );
+      transition:opacity .18s ease;
+    }
+    .motion-tile:hover::before,
+    .motion-tile:focus-within::before{
+      opacity:1;
+    }
+    .motion-tile:hover,
+    .motion-tile:focus-within{
+      box-shadow:var(--shadow);
+      border-color:color-mix(in srgb,var(--card-accent,var(--accent)) 45%,var(--line));
+    }
+    .hover-reveal-card{
+      min-height:124px;
+      max-height:124px;
+    }
+    .hover-reveal-card .card-lead{
+      display:block;
+      margin-top:8px;
+      color:var(--muted);
+      font-size:.95rem;
+      line-height:1.55;
+    }
+    .hover-reveal-card .reveal-content{
+      margin-top:12px;
+      color:var(--muted);
+      font-size:.95rem;
+      line-height:1.55;
+    }
+    .hover-reveal-card:hover,
+    .hover-reveal-card:focus-within,
+    .hover-reveal-card:focus{
+      max-height:380px;
+    }
+    @media (prefers-reduced-motion:reduce){
+      .motion-tile{
+        transform:none !important;
+        transition:none !important;
+      }
+    }
+
+    .literature-stage-card{
+      display:flex;
+      flex-direction:column;
+      gap:18px;
+    }
+    .literature-block-head h3{
+      margin:0 0 8px;
+      font-size:1.16rem;
+    }
+    .literature-block-head p{
+      margin:0;
+      color:var(--muted);
+      font-size:.95rem;
+      line-height:1.6;
+    }
+    .literature-tile-grid{
+      display:grid;
+      grid-template-columns:repeat(2,minmax(0,1fr));
+      gap:12px;
+    }
+    .literature-tile-grid .hover-reveal-card{
+      min-height:145px;
+      max-height:145px;
+    }
+    .literature-tile-grid .hover-reveal-card:hover,
+    .literature-tile-grid .hover-reveal-card:focus,
+    .literature-tile-grid .hover-reveal-card:focus-within{
+      max-height:470px;
+    }
+    .literature-tile-grid .micro-example{
+      margin-top:12px;
+      font-size:.9rem;
+      line-height:1.55;
+    }
+    @media (max-width:1050px){
+      .literature-tile-grid{
+        grid-template-columns:1fr;
+      }
+    }
+    @media (max-width:620px){
+      .literature-tile-grid .hover-reveal-card{
+        max-height:none;
+      }
+    }
+
+    .stats-formula-section{
+      margin-top:20px;
+    }
+    .stats-formula-section > h3{
+      margin:0 0 8px;
+      color:var(--text);
+      font-size:1.08rem;
+    }
+    .stats-formula-intro{
+      margin:0 0 14px;
+      color:var(--muted);
+      font-size:.95rem;
+      line-height:1.6;
+    }
+    .stats-formula-grid{
+      display:grid;
+      grid-template-columns:repeat(2,minmax(0,1fr));
+      gap:14px;
+    }
+    .stats-formula-card{
+      --formula-accent:var(--accent);
+      background:var(--surface);
+      border:1px solid color-mix(in srgb,var(--formula-accent) 25%,var(--line));
+      border-top:5px solid var(--formula-accent);
+      border-radius:16px;
+      padding:17px;
+      box-shadow:var(--shadow-sm);
+    }
+    .stats-formula-card:nth-child(6n+1){--formula-accent:#2563eb}
+    .stats-formula-card:nth-child(6n+2){--formula-accent:#0891b2}
+    .stats-formula-card:nth-child(6n+3){--formula-accent:#7c3aed}
+    .stats-formula-card:nth-child(6n+4){--formula-accent:#d97706}
+    .stats-formula-card:nth-child(6n+5){--formula-accent:#0f8a6b}
+    .stats-formula-card:nth-child(6n+6){--formula-accent:#db2777}
+    .stats-formula-card h4{
+      margin:0 0 10px;
+      color:var(--text);
+      font-size:1rem;
+    }
+    .equation{
+      display:block;
+      margin:10px 0 12px;
+      padding:13px 14px;
+      background:var(--surface-2);
+      border:1px solid var(--line);
+      border-radius:12px;
+      color:var(--text);
+      font-family:"Cambria Math","STIX Two Math","Times New Roman",serif;
+      font-size:1.12rem;
+      line-height:1.65;
+      text-align:center;
+      overflow:auto;
+      white-space:nowrap;
+    }
+    .stats-formula-card p{
+      margin:0;
+      color:var(--muted);
+      font-size:.95rem;
+      line-height:1.6;
+    }
+    .symbol-definitions{
+      margin:10px 0 0;
+      padding-left:20px;
+      color:var(--muted);
+      font-size:.9rem;
+      line-height:1.55;
+    }
+    .symbol-definitions li{margin:4px 0}
+    .formula-warning{
+      margin-top:14px;
+      padding:14px 16px;
+      border-left:4px solid var(--warn);
+      border-radius:10px;
+      background:color-mix(in srgb,var(--warn) 8%,var(--surface));
+      color:var(--muted);
+      font-size:.95rem;
+      line-height:1.6;
+    }
+    @media (max-width:820px){
+      .stats-formula-grid{grid-template-columns:1fr}
+    }
+</style>
+</head>
+<body>
+<header class="hero">
+<div class="container hero-grid">
+<div>
+<span class="eyebrow">Seminarium dyplomowe</span>
+<h1>Seminarium dyplomowe: jak zaplanować i napisać wartościową pracę</h1>
+<p class="lead">
+          Praca dyplomowa dokumentuje rozwiązanie jasno określonego problemu naukowego, projektowego, analitycznego lub interpretacyjnego. Opis musi umożliwiać ocenę poprawności rozumowania, odtworzenie metody i krytyczną weryfikację wniosków.
+        </p>
+<div aria-label="Najważniejsze strony uczelni" class="context-links">
+<a class="context-link" href="https://weii.prz.edu.pl/studenci/praca-dyplomowa/informacje-ogolne--procedury-i-instrukcje" rel="noopener" target="_blank">Procedury dyplomowe WEiI</a>
+<a class="context-link" href="https://apd.prz.edu.pl/" rel="noopener" target="_blank">Archiwum Prac Dyplomowych</a>
+<a class="context-link" href="https://kia.prz.edu.pl/" rel="noopener" target="_blank">Katedra Informatyki i Automatyki</a>
+</div>
+</div>
+<aside aria-label="Najważniejsze filary pracy" class="hero-card">
+<div class="metric"><div class="icon">1</div><div><b>Problem</b><span class="small">Co dokładnie ma zostać wyjaśnione, zaprojektowane lub zweryfikowane?</span></div></div>
+<div class="metric"><div class="icon">2</div><div><b>Metoda</b><span class="small">W jaki sposób uzyskasz wiarygodne dane lub dowody?</span></div></div>
+<div class="metric"><div class="icon">3</div><div><b>Wniosek</b><span class="small">Co wynika z rezultatów i jakie są granice tych wniosków?</span></div></div>
+</aside>
+</div>
+</header>
+<nav class="sticky">
+<div class="container nav-inner">
+<a href="#idea">Sens pracy</a>
+<a href="#structure">Układ pracy</a>
+<a href="#process">Proces pisania</a>
+<a href="#literature">Przegląd literatury</a>
+<a href="#research">Metodyka i eksperymenty</a>
+<a href="#results-analysis">Analiza wyników</a>
+<a href="#open-science">Otwarta nauka</a>
+<a href="#supervisor">Kontakt z promotorem</a>
+<a href="#review">Recenzja pracy</a>
+<a href="#defense">Obrona pracy</a>
+<a href="#checklist">Lista kontrolna</a>
+<button aria-label="Zmień motyw" aria-pressed="false" class="theme-toggle" id="themeToggle" type="button">
+<svg aria-hidden="true" class="theme-icon" fill="none" stroke="currentColor" stroke-width="1.8" viewbox="0 0 24 24">
+<path d="M12 3a9 9 0 1 0 9 9c0-.5-.04-1-.12-1.48A7 7 0 0 1 12 3Z"></path>
+</svg>
+<span class="theme-label">Motyw ciemny</span>
+</button>
+</div>
+</nav>
+<main>
+<section id="idea">
+<div class="container">
+<div class="section-head">
+<h2>1. Jaki jest sens pracy dyplomowej?</h2>
+<p>
+            Praca dyplomowa ma wykazać, że student potrafi samodzielnie rozwiązać ograniczony problem
+            z użyciem wiedzy, metod i narzędzi właściwych dla danej dyscypliny.
+          </p>
+</div>
+<div class="grid-3">
+<article class="card">
+<span class="tag">Problem</span>
+<h3>Jasno określony cel</h3>
+<p>Praca powinna odpowiadać na jednoznaczne pytanie albo prowadzić do rozwiązania, którego poprawność można sprawdzić.</p>
+</article>
+<article class="card">
+<span class="tag">Metoda</span>
+<h3>Samodzielna realizacja</h3>
+<p>Student dobiera literaturę, dane, narzędzia i procedury adekwatne do celu pracy.</p>
+</article>
+<article class="card">
+<span class="tag">Dowód</span>
+<h3>Uzasadnione wnioski</h3>
+<p>Każdy wniosek musi wynikać z analizy, eksperymentu, projektu lub interpretacji materiału źródłowego.</p>
+</article>
+</div>
+<div class="institution-strip">
+<a class="institution-link" href="https://weii.prz.edu.pl/studenci/praca-dyplomowa/informacje-ogolne--procedury-i-instrukcje" rel="noopener" target="_blank">
+<b>WEiI: procedury i instrukcje</b>
+<span>Aktualne zasady składania pracy, egzaminu dyplomowego i obsługi APD.</span>
+</a>
+<a class="institution-link" href="https://mpomianek.v.prz.edu.pl/prace-dyplomowe/wytyczne" rel="noopener" target="_blank">
+<b>Wytyczne dla dyplomantów</b>
+<span>Praktyczne zasady przygotowania struktury, treści i redakcji pracy.</span>
+</a>
+<a class="institution-link" href="https://kia.prz.edu.pl/badania/" rel="noopener" target="_blank">
+<b>Badania w KIiA</b>
+<span>Obszary badawcze katedry pomocne przy wyborze tematu i kontekstu pracy.</span>
+</a>
+</div>
+<div class="grid-2" style="margin-top:18px">
+<div class="card">
+<h3>Co praca powinna zawierać?</h3>
+<div class="principle"><div class="n">A</div><div><h3>Spójny problem</h3><p>Cel, pytania badawcze, hipotezy i wnioski muszą dotyczyć tego samego problemu.</p></div></div>
+<div class="principle"><div class="n">B</div><div><h3>Wkład własny</h3><p>Czytelnik powinien łatwo odróżnić wiedzę zaczerpniętą ze źródeł od pracy wykonanej przez autora.</p></div></div>
+<div class="principle"><div class="n">C</div><div><h3>Odtwarzalną metodę</h3><p>Opis powinien umożliwiać powtórzenie badania, analizy lub uruchomienie systemu.</p></div></div>
+</div>
+<div class="card">
+<details>
+<summary><span class="summary-copy"><span class="summary-title">Zasady formalne i redakcyjne</span><span class="panel-summary">Praca musi spełniać wymagania dotyczące źródeł, struktury, języka, odtwarzalności i etyki. Szczegółowe zasady należy stosować konsekwentnie w całym dokumencie.</span></span></summary>
+<div class="details-body">
+<div class="principle"><div class="n">D</div><div><h3>Rzetelne źródła</h3><p>Twierdzenia wymagające uzasadnienia powinny wynikać z literatury, danych lub przeprowadzonej analizy.</p></div></div>
+<div class="principle"><div class="n">E</div><div><h3>Jednolita forma</h3><p>Stosuj spójny styl cytowań, numerację rysunków i tabel, jednolite nazewnictwo oraz wymagany układ dokumentu.</p></div></div>
+<div class="principle"><div class="n">F</div><div><h3>Odtwarzalność</h3><p>Podaj dane, sprzęt, oprogramowanie, parametry i procedury potrzebne do powtórzenia pracy.</p></div></div>
+<div class="principle"><div class="n">G</div><div><h3>Etyka i odpowiedzialność</h3><p>Opisz sposób pozyskania danych, ochronę uczestników, ryzyka, ograniczenia oraz zakres użycia narzędzi AI. Użycie genAI musi być jawne i nie może zastępować samodzielnego wkładu autora.</p></div></div>
+<div class="principle"><div class="n">H</div><div><h3>Poprawny język</h3><p>Pisz precyzyjnie, unikaj kolokwializmów, rozwijaj skróty przy pierwszym użyciu i stosuj terminologię właściwą dla dyscypliny.</p></div></div>
+<div class="context-links">
+<a class="context-link" href="https://weii.prz.edu.pl/studenci/praca-dyplomowa/informacje-ogolne--procedury-i-instrukcje" rel="noopener" target="_blank">Oficjalne procedury WEiI</a>
+<a class="context-link" href="https://apd.prz.edu.pl/documents/page/instrukcja/" rel="noopener" target="_blank">Instrukcje systemu APD</a>
+<a class="context-link" href="https://biblio.prz.edu.pl/studenci/jak-sporzadzic-bibliografie" rel="noopener" target="_blank">Bibliografia według CIB PRz</a>
+</div>
+</div>
+</details>
+</div>
+</div>
+</div>
+</section>
+<section id="structure">
+<div class="container">
+<div class="section-head">
+<h2>2. Zalecany układ pracy dyplomowej</h2>
+<p>
+            Struktura pracy powinna prowadzić czytelnika od problemu, przez metodę i wyniki,
+            do interpretacji oraz końcowych wniosków.
+          </p>
+</div>
+<div class="thesis-flow">
+<article class="flow-card">
+<div class="flow-index">01</div>
+<div class="flow-icon">W</div>
+<h3>Wstęp</h3>
+<p>Geneza tematu, problem, cel, zakres, pytania badawcze i krótki opis struktury pracy.</p>
+<span class="flow-note">Najlepiej napisać na końcu</span>
+</article>
+<div aria-hidden="true" class="flow-arrow">→</div>
+<article class="flow-card main">
+<div class="flow-index">02</div>
+<div class="flow-icon">L</div>
+<h3>Analiza literatury</h3>
+<p>Definicje, stan wiedzy, stosowane metody, problemy, wyniki i luka badawcza.</p>
+<span class="flow-note">Do około 40%</span>
+</article>
+<div aria-hidden="true" class="flow-arrow">→</div>
+<article class="flow-card">
+<div class="flow-index">03</div>
+<div class="flow-icon">M</div>
+<h3>Materiały i metody</h3>
+<p>Hipotezy, dane, narzędzia, procedura, stanowisko badawcze i kryteria oceny.</p>
+<span class="flow-note">Około 10%</span>
+</article>
+<div aria-hidden="true" class="flow-arrow">→</div>
+<article class="flow-card main">
+<div class="flow-index">04</div>
+<div class="flow-icon">R</div>
+<h3>Wyniki</h3>
+<p>Przebieg badań, dane, pomiary, tabele, wykresy i rezultaty bez nadmiernej interpretacji.</p>
+<span class="flow-note">Około 30%</span>
+</article>
+<div aria-hidden="true" class="flow-arrow">→</div>
+<article class="flow-card">
+<div class="flow-index">05</div>
+<div class="flow-icon">D</div>
+<h3>Dyskusja i wnioski</h3>
+<p>Interpretacja wyników, porównanie z literaturą, ograniczenia i odpowiedzi na pytania badawcze.</p>
+<span class="flow-note">Około 20%</span>
+</article>
+</div>
+<div class="support-strip">
+<div><b>Elementy wstępne</b><span>Spis treści, wykaz skrótów, streszczenie.</span></div>
+<div><b>Elementy końcowe</b><span>Bibliografia, spisy rysunków i tabel, załączniki.</span></div>
+<div><b>Zasada spójności</b><span>Każdy rozdział powinien realizować jasno określoną funkcję.</span></div>
+</div>
+<div class="context-links">
+<a class="context-link" href="https://mpomianek.v.prz.edu.pl/prace-dyplomowe/wytyczne" rel="noopener" target="_blank">Rozszerzone wytyczne do układu pracy</a>
+<a class="context-link" href="https://weii.prz.edu.pl/studenci/praca-dyplomowa/informacje-ogolne--procedury-i-instrukcje" rel="noopener" target="_blank">Dokumenty WEiI</a>
+</div>
+</div>
+</section>
+<section id="process">
+<div class="container">
+<div class="section-head">
+<h2>3. Proces pisania pracy w czterech wariantach</h2>
+<p>Wybierz dyscyplinę. Każdy wariant wskazuje właściwy rodzaj dowodu, metodę oceny i typowy wkład własny.</p>
+</div>
+<div class="tabs-wrap">
+<div aria-label="Warianty dyscyplinarne" class="tabs" role="tablist">
+<button aria-selected="true" class="tab-btn active" data-tab="it" role="tab">Informatyka</button>
+<button aria-selected="false" class="tab-btn" data-tab="systems" role="tab">Inżynieria systemów</button>
+<button aria-selected="false" class="tab-btn" data-tab="robotics" role="tab">Robotyka</button>
+<button aria-selected="false" class="tab-btn" data-tab="humanities" role="tab">Nauki humanistyczne i psychologia</button>
+</div>
+<div class="tab-panel active" data-discipline="it" id="it">
+<div class="discipline-intro">
+<div><h3>Informatyka</h3><p>Nacisk pada na formalizację problemu, poprawność rozwiązania, jakość implementacji oraz porównywalną ewaluację.</p></div>
+<div class="focus-box"><strong>Najważniejszy dowód:</strong><br/>pokazanie, że rozwiązanie działa lepiej, szybciej, dokładniej, stabilniej lub bardziej użytecznie niż sensowna metoda odniesienia.</div>
+</div>
+<details><summary><span class="summary-copy"><span class="summary-title">1. Analiza literatury i rozpoznanie stanu techniki</span><span class="panel-summary">Celem etapu jest uporządkowanie stanu wiedzy, porównanie metod i wskazanie luki. Należy korzystać z wiarygodnych źródeł i budować syntezę, a nie listę streszczeń.</span></span></summary><div class="details-body"><h4>Po co?</h4><p>Aby nie tworzyć rozwiązania, które już istnieje, oraz zrozumieć stosowane modele, zbiory danych, miary i ograniczenia.</p><h4>Co zrobić?</h4><ul><li>Zidentyfikować główne klasy metod i ich założenia.</li><li>Porównać architektury, dane wejściowe i miary oceny.</li><li>Wskazać, w jakich warunkach istniejące rozwiązania zawodzą.</li></ul><div class="micro-example"><b>Przykład:</b> porównanie metod detekcji obiektów pod kątem dokładności, czasu inferencji i wymagań sprzętowych.</div><div class="micro-example practical-example"><b>Przykład praktyczny: </b>porównaj trzy klasy metod, ich dane wejściowe, miary, ograniczenia i warunki zastosowania w jednej tabeli.</div></div></details>
+<details><summary><span class="summary-copy"><span class="summary-title">2. Identyfikacja luki i pytania badawczego</span><span class="panel-summary">Luka może dotyczyć braku danych, słabej generalizacji, wysokiego kosztu obliczeniowego, braku porównania albo niedostatecznej użyteczności.</span></span></summary><div class="details-body"><p>Luka może dotyczyć braku danych, słabej generalizacji, wysokiego kosztu obliczeniowego, braku porównania albo niedostatecznej użyteczności.</p><div class="micro-example"><b>Pytanie:</b> Czy kompresja modelu pozwala skrócić czas inferencji bez istotnej utraty jakości?</div></div></details>
+<details><summary><span class="summary-copy"><span class="summary-title">3. Hipoteza lub założenie projektowe</span><span class="panel-summary">Hipoteza lub założenie projektowe powinny być jednoznaczne i możliwe do sprawdzenia. Trzeba wskazać zmienne oraz kryterium potwierdzenia.</span></span></summary><div class="details-body"><p>Hipoteza powinna przewidywać mierzalny efekt. W pracy projektowej można sformułować kryteria, które system ma spełnić.</p><div class="micro-example"><b>Hipoteza:</b> kwantyzacja 8-bitowa skróci czas inferencji o co najmniej 30%, przy spadku F1 mniejszym niż 2 punkty procentowe.</div><div class="micro-example practical-example"><b>Przykład praktyczny: </b>zastosowanie kwantyzacji 8-bitowej skróci czas inferencji o co najmniej 25%, przy spadku F1 nie większym niż 2 punkty procentowe.</div></div></details>
+<details><summary><span class="summary-copy"><span class="summary-title">4. Metodyka i plan eksperymentu</span><span class="panel-summary">Metodyka opisuje dane, narzędzia, procedurę i kryteria oceny. Jej szczegółowość powinna umożliwiać odtworzenie badania.</span></span></summary><div class="details-body"><ul><li>Dobierz zbiory danych i podział train/validation/test.</li><li>Ustal modele bazowe i warianty eksperymentalne.</li><li>Zdefiniuj metryki, środowisko sprzętowe i procedurę strojenia.</li><li>Zaplanuj analizę błędów oraz testy powtarzalności.</li></ul><div class="micro-example practical-example"><b>Przykład praktyczny: </b>wykonaj po 30 prób dla każdego wariantu, losuj ich kolejność i zapisuj również próby zakończone niepowodzeniem.</div></div></details>
+<details><summary><span class="summary-copy"><span class="summary-title">5. Implementacja</span><span class="panel-summary">Opis implementacji powinien wyjaśniać architekturę, decyzje techniczne i wkład własny. Sam kod nie zastępuje uzasadnienia projektu.</span></span></summary><div class="details-body"><p>Opis powinna obejmować architekturę systemu, moduły, przepływ danych, zależności i decyzje techniczne. Kod jest środkiem do zbadania problemu, nie celem samym w sobie.</p></div></details>
+<details><summary><span class="summary-copy"><span class="summary-title">6. Ewaluacja i analiza wyników</span><span class="panel-summary">Ewaluacja sprawdza rozwiązanie według wcześniej ustalonych kryteriów. Wyniki należy porównać z właściwym punktem odniesienia.</span></span></summary><div class="details-body"><p>Wyniki należy porównać z bazą odniesienia. Warto pokazać rozrzut, przedziały ufności, testy statystyczne oraz analizę przypadków błędnych.</p></div></details>
+<details><summary><span class="summary-copy"><span class="summary-title">7. Dyskusja, ograniczenia i wnioski</span><span class="panel-summary">Dyskusja łączy wyniki z literaturą, hipotezami i ograniczeniami. Nie powinna powtarzać tabel, lecz wyjaśniać ich znaczenie.</span></span></summary><div class="details-body"><p>Wyjaśnij, dlaczego rozwiązanie osiągnęło określony wynik, gdzie może być zastosowane i czego nie da się na podstawie badania stwierdzić.</p></div></details>
+</div>
+<div class="tab-panel" data-discipline="systems" id="systems">
+<div class="discipline-intro">
+<div><h3>Inżynieria systemów komputerowych</h3><p>Nacisk pada na architekturę, integrację komponentów, niezawodność, bezpieczeństwo, skalowalność i spełnienie wymagań.</p></div>
+<div class="focus-box"><strong>Najważniejszy dowód:</strong><br/>wykazanie, że system spełnia zdefiniowane wymagania funkcjonalne i niefunkcjonalne w realistycznych warunkach.</div>
+</div>
+<details><summary><span class="summary-copy"><span class="summary-title">1. Analiza potrzeb i interesariuszy</span><span class="panel-summary">Najpierw należy rozpoznać użytkowników, interesariuszy, ograniczenia i rzeczywiste potrzeby. Rozwiązanie techniczne dobiera się dopiero później.</span></span></summary><div class="details-body"><p>Zidentyfikuj użytkowników, administratorów, systemy zewnętrzne i ograniczenia organizacyjne. Oddziel potrzeby od proponowanych rozwiązań.</p></div></details>
+<details><summary><span class="summary-copy"><span class="summary-title">2. Specyfikacja wymagań</span><span class="panel-summary">Wymagania funkcjonalne i niefunkcjonalne muszą być jednoznaczne oraz mierzalne. Każde wymaganie powinno mieć kryterium akceptacji.</span></span></summary><div class="details-body"><ul><li>Wymagania funkcjonalne: co system ma robić.</li><li>Wymagania niefunkcjonalne: wydajność, bezpieczeństwo, dostępność, skalowalność, utrzymywalność.</li><li>Kryteria akceptacji: jak rozpoznać, że wymaganie zostało spełnione.</li></ul><div class="micro-example practical-example"><b>Przykład praktyczny: </b>system powinien obsłużyć co najmniej 100 żądań na sekundę, a 95. percentyl czasu odpowiedzi nie powinien przekroczyć 200 ms.</div></div></details>
+<details><summary><span class="summary-copy"><span class="summary-title">3. Analiza istniejących rozwiązań i luka projektowa</span><span class="panel-summary">Luka określa, czego nie wyjaśniają dotychczasowe badania lub czego nie rozwiązują istniejące systemy. Musi wynikać z analizy źródeł, a nie wyłącznie z intuicji autora.</span></span></summary><div class="details-body"><p>Porównaj dostępne platformy, architektury i technologie. Luka może polegać na braku integracji, niewystarczającej odporności lub nieadekwatnych kosztach.</p><div class="micro-example practical-example"><b>Przykład praktyczny: </b>istniejące modele osiągają wysoką dokładność laboratoryjną, ale brakuje oceny na urządzeniu brzegowym i przy ograniczonej mocy obliczeniowej.</div></div></details>
+<details><summary><span class="summary-copy"><span class="summary-title">4. Architektura systemu</span><span class="panel-summary">Architektura przedstawia komponenty, interfejsy, odpowiedzialności i przepływy danych. Każda istotna decyzja wymaga uzasadnienia.</span></span></summary><div class="details-body"><p>Przedstaw komponenty, interfejsy, przepływy danych, granice odpowiedzialności oraz uzasadnienie wyboru wzorców i technologii.</p><div class="micro-example"><b>Przydatne artefakty:</b> diagram C4, diagram wdrożenia, model zagrożeń, kontrakty API.</div><div class="micro-example practical-example"><b>Przykład praktyczny: </b>diagram C4 może pokazać użytkownika, aplikację, usługę analityczną, bazę danych i interfejs do systemu zewnętrznego.</div></div></details>
+<details><summary><span class="summary-copy"><span class="summary-title">5. Implementacja i integracja</span><span class="panel-summary">Opis implementacji powinien wyjaśniać architekturę, decyzje techniczne i wkład własny. Sam kod nie zastępuje uzasadnienia projektu.</span></span></summary><div class="details-body"><p>Udokumentuj najważniejsze decyzje, mechanizmy obsługi błędów, wersjonowanie, konfigurację i sposób uruchomienia systemu.</p></div></details>
+<details><summary><span class="summary-copy"><span class="summary-title">6. Weryfikacja i walidacja</span><span class="panel-summary">Weryfikacja sprawdza zgodność z wymaganiami, a walidacja przydatność rozwiązania w docelowym zastosowaniu. Oba procesy wymagają mierzalnych kryteriów.</span></span></summary><div class="details-body"><ul><li>Testy jednostkowe i integracyjne.</li><li>Testy obciążeniowe, awaryjne i bezpieczeństwa.</li><li>Walidacja z użytkownikiem lub scenariuszem operacyjnym.</li></ul></div></details>
+<details><summary><span class="summary-copy"><span class="summary-title">7. Ocena ryzyka i utrzymania</span><span class="panel-summary">Należy wskazać punkty awarii, zależności, zagrożenia i koszty utrzymania. Ryzyko powinno być powiązane z działaniami ograniczającymi.</span></span></summary><div class="details-body"><p>Omów punkty krytyczne, zależności zewnętrzne, możliwość rozbudowy, monitoring i koszty utrzymania.</p></div></details>
+</div>
+<div class="tab-panel" data-discipline="robotics" id="robotics">
+<div class="discipline-intro">
+<div><h3>Robotyka</h3><p>Nacisk pada na integrację percepcji, sterowania i działania fizycznego, z uwzględnieniem dynamiki, niepewności oraz bezpieczeństwa.</p></div>
+<div class="focus-box"><strong>Najważniejszy dowód:</strong><br/>wykazanie, że robot realizuje zadanie skutecznie, powtarzalnie i bezpiecznie w zadanych warunkach.</div>
+</div>
+<details><summary><span class="summary-copy"><span class="summary-title">1. Definicja zadania i środowiska</span><span class="panel-summary">Trzeba jednoznacznie opisać zadanie robota, środowisko, obiekty, sensory i kryteria sukcesu. Zakres musi odpowiadać warunkom eksperymentu.</span></span></summary><div class="details-body"><p>Opisz przestrzeń roboczą, obiekty, ludzi, ograniczenia ruchu, dostępne sensory oraz kryteria sukcesu misji.</p></div></details>
+<details><summary><span class="summary-copy"><span class="summary-title">2. Analiza stanu wiedzy</span><span class="panel-summary">Przeanalizuj metody percepcji, lokalizacji, planowania, sterowania, manipulacji i HRI, ale tylko w zakresie potrzebnym do problemu.</span></span></summary><div class="details-body"><p>Przeanalizuj metody percepcji, lokalizacji, planowania, sterowania, manipulacji i HRI, ale tylko w zakresie potrzebnym do problemu.</p></div></details>
+<details><summary><span class="summary-copy"><span class="summary-title">3. Luka badawcza lub inżynierska</span><span class="panel-summary">Luka określa, czego nie wyjaśniają dotychczasowe badania lub czego nie rozwiązują istniejące systemy. Musi wynikać z analizy źródeł, a nie wyłącznie z intuicji autora.</span></span></summary><div class="details-body"><p>Luka może dotyczyć działania w dynamicznym środowisku, odporności na błędy sensorów, generalizacji, bezpieczeństwa lub czasu reakcji.</p><div class="micro-example practical-example"><b>Przykład praktyczny: </b>istniejące modele osiągają wysoką dokładność laboratoryjną, ale brakuje oceny na urządzeniu brzegowym i przy ograniczonej mocy obliczeniowej.</div></div></details>
+<details><summary><span class="summary-copy"><span class="summary-title">4. Hipoteza i kryteria techniczne</span><span class="panel-summary">Hipoteza lub założenie projektowe powinny być jednoznaczne i możliwe do sprawdzenia. Trzeba wskazać zmienne oraz kryterium potwierdzenia.</span></span></summary><div class="details-body"><div class="micro-example"><b>Hipoteza:</b> fuzja danych z kamery RGB-D i IMU zmniejszy średni błąd lokalizacji względem samej kamery o co najmniej 20%.</div><div class="micro-example practical-example"><b>Przykład praktyczny: </b>zastosowanie kwantyzacji 8-bitowej skróci czas inferencji o co najmniej 25%, przy spadku F1 nie większym niż 2 punkty procentowe.</div></div></details>
+<details><summary><span class="summary-copy"><span class="summary-title">5. Architektura sprzętowo-programowa</span><span class="panel-summary">Architektura przedstawia komponenty, interfejsy, odpowiedzialności i przepływy danych. Każda istotna decyzja wymaga uzasadnienia.</span></span></summary><div class="details-body"><p>Przedstaw sensory, aktuatory, jednostki obliczeniowe, topologię komunikacji, częstotliwości pracy i mechanizmy bezpieczeństwa.</p><div class="micro-example practical-example"><b>Przykład praktyczny: </b>diagram C4 może pokazać użytkownika, aplikację, usługę analityczną, bazę danych i interfejs do systemu zewnętrznego.</div></div></details>
+<details><summary><span class="summary-copy"><span class="summary-title">6. Plan eksperymentów</span><span class="panel-summary">Plan powinien określać scenariusze, zmienne, warunki, powtórzenia i miary. Należy uwzględnić również sytuacje niekorzystne i awarie.</span></span></summary><div class="details-body"><ul><li>Zdefiniuj scenariusze nominalne i trudne.</li><li>Kontroluj warunki i zmieniaj jeden czynnik naraz, gdy to możliwe.</li><li>Mierz skuteczność, czas wykonania, błąd, powtarzalność i liczbę interwencji.</li><li>Uwzględnij procedurę zatrzymania awaryjnego.</li></ul><div class="micro-example practical-example"><b>Przykład praktyczny: </b>wykonaj po 30 prób dla każdego wariantu, losuj ich kolejność i zapisuj również próby zakończone niepowodzeniem.</div></div></details>
+<details><summary><span class="summary-copy"><span class="summary-title">7. Testy i analiza awarii</span><span class="panel-summary">Nie wystarczy prezentować udanych prób. Trzeba analizować niepowodzenia, ich przyczyny i wpływ na bezpieczeństwo oraz niezawodność.</span></span></summary><div class="details-body"><p>Nie analizuj wyłącznie udanych prób. Kluczowe są przypadki utraty lokalizacji, błędnej detekcji, kolizji lub niestabilnego sterowania.</p></div></details>
+<details><summary><span class="summary-copy"><span class="summary-title">8. Wnioski i zakres stosowalności</span><span class="panel-summary">Wnioski powinny bezpośrednio odpowiadać na cel i pytania pracy. Nie mogą wykraczać poza uzyskane dane i warunki badania.</span></span></summary><div class="details-body"><p>Określ, w jakich warunkach system działa poprawnie i jakie zmiany są potrzebne przed wdrożeniem poza laboratorium.</p></div></details>
+</div>
+<div class="tab-panel" data-discipline="humanities" id="humanities">
+<div class="discipline-intro">
+<div><h3>Nauki humanistyczne i psychologia</h3><p>Nacisk pada na poprawność konceptualizacji, jakość operacjonalizacji, dobór próby, etykę oraz ostrożną interpretację.</p></div>
+<div class="focus-box"><strong>Najważniejszy dowód:</strong><br/>pokazanie, że wnioski wynikają z danych lub tekstów źródłowych, a nie z intuicji autora.</div>
+</div>
+<details><summary><span class="summary-copy"><span class="summary-title">1. Analiza literatury i pojęć</span><span class="panel-summary">Celem etapu jest uporządkowanie stanu wiedzy, porównanie metod i wskazanie luki. Należy korzystać z wiarygodnych źródeł i budować syntezę, a nie listę streszczeń.</span></span></summary><div class="details-body"><p>Zdefiniuj kluczowe konstrukty, pokaż różnice między teoriami i sprawdź, jak pojęcia były mierzone lub interpretowane w dotychczasowych pracach.</p><div class="micro-example practical-example"><b>Przykład praktyczny: </b>porównaj trzy klasy metod, ich dane wejściowe, miary, ograniczenia i warunki zastosowania w jednej tabeli.</div></div></details>
+<details><summary><span class="summary-copy"><span class="summary-title">2. Luka badawcza</span><span class="panel-summary">Luka określa, czego nie wyjaśniają dotychczasowe badania lub czego nie rozwiązują istniejące systemy. Musi wynikać z analizy źródeł, a nie wyłącznie z intuicji autora.</span></span></summary><div class="details-body"><p>Luka może dotyczyć określonej populacji, kontekstu kulturowego, sprzecznych wyników, brakującego mechanizmu lub niedostatecznej interpretacji źródeł.</p><div class="micro-example practical-example"><b>Przykład praktyczny: </b>istniejące modele osiągają wysoką dokładność laboratoryjną, ale brakuje oceny na urządzeniu brzegowym i przy ograniczonej mocy obliczeniowej.</div></div></details>
+<details><summary><span class="summary-copy"><span class="summary-title">3. Pytania badawcze i hipotezy</span><span class="panel-summary">Hipoteza lub założenie projektowe powinny być jednoznaczne i możliwe do sprawdzenia. Trzeba wskazać zmienne oraz kryterium potwierdzenia.</span></span></summary><div class="details-body"><p>W badaniach ilościowych hipoteza powinna wskazywać przewidywaną relację. W jakościowych pytanie powinno otwierać przestrzeń do systematycznej interpretacji.</p><div class="micro-example practical-example"><b>Przykład praktyczny: </b>zastosowanie kwantyzacji 8-bitowej skróci czas inferencji o co najmniej 25%, przy spadku F1 nie większym niż 2 punkty procentowe.</div></div></details>
+<details><summary><span class="summary-copy"><span class="summary-title">4. Operacjonalizacja</span><span class="panel-summary">Operacjonalizacja określa, jak pojęcie teoretyczne zostanie zmierzone lub rozpoznane w danych. Wymaga uzasadnienia trafności przyjętych wskaźników.</span></span></summary><div class="details-body"><p>Wyjaśnij, jak abstrakcyjne pojęcie zostanie rozpoznane w danych. W psychologii wskaż narzędzia, ich trafność i rzetelność. W humanistyce określ kryteria interpretacji korpusu.</p><div class="micro-example practical-example"><b>Przykład praktyczny: </b>stres można operacjonalizować jako wynik zwalidowanej skali, zmienność rytmu serca albo kombinację kilku wskaźników.</div></div></details>
+<details><summary><span class="summary-copy"><span class="summary-title">5. Dobór próby lub materiału</span><span class="panel-summary">Dobór próby lub materiału musi odpowiadać pytaniu badawczemu. Należy uzasadnić liczebność, kryteria i ograniczenia reprezentatywności.</span></span></summary><div class="details-body"><p>Uzasadnij liczebność i charakter próby, kryteria doboru uczestników albo wybór tekstów, dokumentów i innych źródeł.</p></div></details>
+<details><summary><span class="summary-copy"><span class="summary-title">6. Procedura i etyka</span><span class="panel-summary">Procedura musi chronić uczestników, dane i prawo do rezygnacji. Należy opisać zgodę, ryzyka i zabezpieczenia.</span></span></summary><div class="details-body"><ul><li>Świadoma zgoda i prawo do rezygnacji.</li><li>Minimalizacja ryzyka i ochrona danych.</li><li>Neutralny sposób prowadzenia badania.</li><li>Jawność decyzji interpretacyjnych.</li></ul></div></details>
+<details><summary><span class="summary-copy"><span class="summary-title">7. Analiza danych lub materiału</span><span class="panel-summary">Sposób analizy powinien zostać ustalony przed poznaniem wyników. Trzeba uzasadnić dobór testów, modeli lub procedury kodowania.</span></span></summary><div class="details-body"><p>W badaniach ilościowych należy dobrać odpowiedni model statystyczny. W jakościowych trzeba opisać procedurę kodowania, kategorie i kontrolę arbitralności interpretacji.</p></div></details>
+<details><summary><span class="summary-copy"><span class="summary-title">8. Dyskusja i ograniczenia</span><span class="panel-summary">Dyskusja łączy wyniki z literaturą, hipotezami i ograniczeniami. Nie powinna powtarzać tabel, lecz wyjaśniać ich znaczenie.</span></span></summary><div class="details-body"><p>Porównaj wyniki z teorią, rozważ alternatywne wyjaśnienia i unikaj uogólniania poza badaną próbę lub analizowany korpus.</p></div></details>
+</div>
+</div>
+<details class="comparison-details">
+<summary><span class="summary-copy"><span class="summary-title">Porównanie czterech typów prac</span><span class="panel-summary">Wkład własny, rodzaj dowodu i sposób oceny zależą od dyscypliny. Tabela pokazuje najważniejsze różnice między informatyką, inżynierią systemów, robotyką oraz naukami humanistycznymi i psychologią.</span></span></summary>
+<div class="comparison-body">
+<div class="section-head">
+<h2 style="font-size:clamp(1.55rem,2.4vw,2.2rem)">Porównanie czterech typów prac</h2>
+<p>W każdej dyscyplinie wynik jest oceniany według innych kryteriów.</p>
+</div>
+<div style="overflow:auto">
+<table class="comparison">
+<thead><tr><th>Obszar</th><th>Główny przedmiot oceny</th><th>Typowy wkład własny</th><th>Najczęstszy błąd</th></tr></thead>
+<tbody>
+<tr><td>Informatyka</td><td>Algorytm, model, oprogramowanie</td><td>Nowa metoda, implementacja, porównawcza ewaluacja</td><td>Prezentowanie samego kodu bez rzetelnego eksperymentu</td></tr>
+<tr><td>Inżynieria systemów</td><td>Cały system i jego właściwości</td><td>Architektura, integracja, spełnienie wymagań</td><td>Brak mierzalnych kryteriów akceptacji</td></tr>
+<tr><td>Robotyka</td><td>Działanie systemu fizycznego</td><td>Integracja percepcji, planowania i sterowania</td><td>Ocena wyłącznie na podstawie kilku demonstracji</td></tr>
+<tr><td>Humanistyka / psychologia</td><td>Teoria, dane, zachowanie, tekst lub znaczenie</td><td>Analiza empiryczna, interpretacja, model wyjaśniający</td><td>Wnioski wykraczające poza dane lub dobór próby</td></tr>
+</tbody>
+</table>
+</div>
+</div>
+</details>
+</div>
+</section>
+<section id="literature">
+<div class="container">
+<div class="section-head">
+<h2>4. Systematyczny przegląd literatury</h2>
+<p>
+            Przegląd literatury ma uporządkować aktualną wiedzę, porównać metody, wskazać sprzeczności i uzasadnić lukę badawczą.
+          </p>
+</div>
+<div class="context-links" style="margin-top:-8px;margin-bottom:22px">
+<a class="context-link" href="https://mpomianek.v.prz.edu.pl/prace-dyplomowe/przeglad-literatury" rel="noopener" target="_blank">Instrukcja przeglądu literatury</a>
+<a class="context-link" href="https://biblio.prz.edu.pl/e-zrodla/zasady-korzystania" rel="noopener" target="_blank">Zasady korzystania z e-źródeł PRz</a>
+<a class="context-link" href="https://biblio.prz.edu.pl/studenci/jak-sporzadzic-bibliografie" rel="noopener" target="_blank">Jak sporządzić bibliografię</a>
+</div>
+<div class="grid-2">
+<div class="card literature-stage-card">
+<div class="literature-block-head">
+<span class="tag">Proces</span>
+<h3>Jak przeprowadzić przegląd literatury?</h3>
+<p>Przegląd powinien być zaplanowany, udokumentowany i możliwy do powtórzenia. Każdy etap ogranicza ryzyko przypadkowego lub wybiórczego doboru źródeł.</p>
+</div>
+<div class="literature-tile-grid">
+<article class="hover-reveal-card accent-blue motion-tile" tabindex="0">
+<h3>Zdefiniuj zakres</h3>
+<span class="card-lead">Określ temat, granice przeglądu i główne pytanie.</span>
+<div class="reveal-content">
+        Wskaż populację, technologię, kontekst, przedział czasu, język i typ publikacji.
+        <div class="micro-example"><b>Przykład praktyczny:</b> zamiast „sztuczna inteligencja w medycynie” przyjmij „modele głębokie do klasyfikacji zmian skórnych na obrazach dermatoskopowych opublikowane w latach 2020-2026”.</div>
+</div>
+</article>
+<article class="hover-reveal-card accent-cyan motion-tile" tabindex="0">
+<h3>Zbuduj słowa kluczowe</h3>
+<span class="card-lead">Przygotuj pojęcia główne, synonimy i odpowiedniki angielskie.</span>
+<div class="reveal-content">
+        Łącz słowa operatorami AND, OR i NOT. Uwzględnij terminologię starszą, skróty oraz nazwy alternatywne.
+        <div class="micro-example"><b>Przykład praktyczny:</b> ("emotion recognition" OR "affective computing") AND (robot OR humanoid) AND vision.</div>
+</div>
+</article>
+<article class="hover-reveal-card accent-violet motion-tile" tabindex="0">
+<h3>Wybierz bazy</h3>
+<span class="card-lead">Połącz źródła szerokie z bazami dziedzinowymi.</span>
+<div class="reveal-content">
+        Jedna baza nie zapewnia pełnego pokrycia. W informatyce warto łączyć Google Scholar, Scopus, Web of Science, IEEE Xplore i ACM Digital Library, a w psychologii również PubMed lub PsycINFO.
+        <div class="micro-example"><b>Przykład praktyczny:</b> sprawdź, czy kluczowa publikacja występuje w więcej niż jednej bazie i porównaj liczbę znalezionych rekordów.</div>
+</div>
+</article>
+<article class="hover-reveal-card accent-pink motion-tile" tabindex="0">
+<h3>Zapisz strategię wyszukiwania</h3>
+<span class="card-lead">Udokumentuj zapytania, daty i liczbę wyników.</span>
+<div class="reveal-content">
+        Zapisz dokładną składnię zapytań, zastosowane filtry, nazwy baz i datę wyszukiwania. Pozwala to odtworzyć proces i później go zaktualizować.
+        <div class="micro-example"><b>Przykład praktyczny:</b> Scopus, 12.06.2026, zapytanie TITLE-ABS-KEY(...), lata 2020-2026, 184 rekordy.</div>
+</div>
+</article>
+<article class="hover-reveal-card accent-orange motion-tile" tabindex="0">
+<h3>Ustal kryteria selekcji</h3>
+<span class="card-lead">Zdefiniuj, które publikacje włączasz i wykluczasz.</span>
+<div class="reveal-content">
+        Kryteria powinny dotyczyć tematu, typu badania, jakości źródła, dostępności pełnego tekstu, języka i zakresu dat.
+        <div class="micro-example"><b>Przykład praktyczny:</b> włącz badania empiryczne z pełnym opisem metody, wyklucz streszczenia konferencyjne bez wyników i publikacje niezwiązane z badaną populacją.</div>
+</div>
+</article>
+<article class="hover-reveal-card accent-green motion-tile" tabindex="0">
+<h3>Oceń jakość i zbuduj syntezę</h3>
+<span class="card-lead">Porównaj metody, dane, wyniki i ograniczenia.</span>
+<div class="reveal-content">
+        Oceń recenzowanie, liczebność próby, poprawność metody, kompletność raportowania, konflikty interesów i możliwość odtworzenia badania. Następnie pogrupuj publikacje według problemów i podejść.
+        <div class="micro-example"><b>Przykład praktyczny:</b> utwórz tabelę zawierającą dane wejściowe, model, zbiór testowy, metryki, wynik, ograniczenia i dostępność kodu.</div>
+</div>
+</article>
+</div>
+</div>
+<div class="card literature-stage-card">
+<div class="literature-block-head">
+<span class="tag">Rezultat</span>
+<h3>Co powinno wynikać z przeglądu?</h3>
+<p>Rezultatem nie jest lista streszczeń. Student powinien przedstawić uporządkowany obraz wiedzy, krytyczne porównanie metod i uzasadnienie własnego problemu badawczego.</p>
+</div>
+<div class="literature-tile-grid">
+<article class="hover-reveal-card accent-blue motion-tile" tabindex="0">
+<h3>Definicja badanego zjawiska</h3>
+<span class="card-lead">Wyjaśnij pojęcia i granice analizowanego problemu.</span>
+<div class="reveal-content">
+        Zestaw konkurencyjne definicje, wskaż przyjęte rozumienie pojęcia i uzasadnij jego wybór.
+        <div class="micro-example"><b>Przykład praktyczny:</b> rozróżnij emocję, nastrój i afekt, a następnie wskaż, które z tych pojęć jest mierzone w pracy.</div>
+</div>
+</article>
+<article class="hover-reveal-card accent-violet motion-tile" tabindex="0">
+<h3>Aktualny stan wiedzy</h3>
+<span class="card-lead">Pokaż dominujące podejścia i poziom ich rozwoju.</span>
+<div class="reveal-content">
+        Opisz główne nurty, stosowane dane, typowe architektury, zakres zastosowań i zgodność wyników między publikacjami.
+        <div class="micro-example"><b>Przykład praktyczny:</b> wskaż, które metody dominują w środowisku laboratoryjnym, a które zostały sprawdzone w warunkach rzeczywistych.</div>
+</div>
+</article>
+<article class="hover-reveal-card accent-orange motion-tile" tabindex="0">
+<h3>Miary i punkt odniesienia</h3>
+<span class="card-lead">Ustal, jak literatura ocenia skuteczność rozwiązań.</span>
+<div class="reveal-content">
+        Zidentyfikuj typowe metryki, metody bazowe, zbiory porównawcze i progi uznawane za istotne.
+        <div class="micro-example"><b>Przykład praktyczny:</b> dla klasyfikacji niezbalansowanej porównuj F1, precision, recall i macierz pomyłek, a nie wyłącznie accuracy.</div>
+</div>
+</article>
+<article class="hover-reveal-card accent-green motion-tile" tabindex="0">
+<h3>Luka badawcza</h3>
+<span class="card-lead">Wskaż problem, którego literatura nadal nie rozwiązuje.</span>
+<div class="reveal-content">
+        Luka może dotyczyć danych, populacji, warunków eksperymentu, generalizacji, kosztu obliczeniowego, odtwarzalności lub braku porównania.
+        <div class="micro-example"><b>Przykład praktyczny:</b> modele osiągają wysoką skuteczność na danych laboratoryjnych, lecz brakuje oceny na robocie działającym w dynamicznym środowisku.</div>
+</div>
+</article>
+</div>
+</div>
+</div>
+<h3 style="margin:30px 0 14px">Najważniejsze bazy literatury</h3>
+<div class="hover-reveal-grid">
+<article class="hover-reveal-card accent-blue motion-tile" tabindex="0">
+<h3>Google Scholar</h3>
+<span class="card-lead">Dobry punkt startowy do wyszukiwania artykułów i śledzenia cytowań.</span>
+<div class="reveal-content">Pozwala wyszukiwać publikacje, wersje autorskie i dokumenty powiązane. Wyniki wymagają oceny jakości, ponieważ zakres indeksowanych materiałów jest bardzo szeroki.</div>
+</article>
+<article class="hover-reveal-card accent-orange motion-tile" tabindex="0">
+<h3>Scopus</h3>
+<span class="card-lead">Baza recenzowanej literatury przydatna do filtrowania wyników i analiz cytowań.</span>
+<div class="reveal-content">Umożliwia analizę autorów, czasopism, afiliacji i sieci cytowań. Dostęp do pełnych funkcji może wymagać logowania przez sieć lub serwer proxy PRz.</div>
+</article>
+<article class="hover-reveal-card accent-violet motion-tile" tabindex="0">
+<h3>Web of Science</h3>
+<span class="card-lead">Selektywna baza bibliograficzna wykorzystywana do oceny dorobku i wpływu publikacji.</span>
+<div class="reveal-content">Pozwala śledzić cytowania, wyszukiwać prace powiązane i analizować rozwój tematu. Nie obejmuje całej literatury, dlatego warto łączyć ją z innymi bazami.</div>
+</article>
+<article class="hover-reveal-card accent-red motion-tile" tabindex="0">
+<h3>ScienceDirect</h3>
+<span class="card-lead">Platforma pełnotekstowa szczególnie użyteczna w naukach technicznych i ścisłych.</span>
+<div class="reveal-content">Zawiera książki i artykuły wydawane głównie przez Elsevier. Dostęp do części materiałów zależy od subskrypcji uczelni.</div>
+</article>
+<article class="hover-reveal-card accent-green motion-tile" tabindex="0">
+<h3>PubMed</h3>
+<span class="card-lead">Podstawowe narzędzie dla medycyny, neuronauki, biologii i części psychologii.</span>
+<div class="reveal-content">Indeksuje opisy bibliograficzne i abstrakty. Część pełnych tekstów jest dostępna legalnie w PubMed Central.</div>
+</article>
+</div>
+<h3 style="margin:30px 0 14px">Narzędzia wspierające pracę ze źródłami</h3>
+<div class="hover-reveal-grid">
+<article class="hover-reveal-card accent-cyan motion-tile" tabindex="0">
+<h3>Zotero, Mendeley i BibTeX</h3>
+<span class="card-lead">Służą do porządkowania publikacji, metadanych, plików PDF i cytowań.</span>
+<div class="reveal-content">Pozwalają automatycznie tworzyć bibliografię i zmieniać styl cytowań. Pobrane metadane trzeba sprawdzić, zwłaszcza numery stron, DOI, wielkość liter i nazwę czasopisma.</div>
+</article>
+<article class="hover-reveal-card accent-pink motion-tile" tabindex="0">
+<h3>Writefull</h3>
+<span class="card-lead">Wspiera redakcję akademickiego języka angielskiego.</span>
+<div class="reveal-content">Pomaga oceniać typowe konstrukcje językowe i proponuje korekty. Nie weryfikuje poprawności merytorycznej ani prawdziwości źródeł.</div>
+</article>
+<article class="hover-reveal-card accent-blue motion-tile" tabindex="0">
+<h3>Google Scholar Labs</h3>
+<span class="card-lead">Ułatwia eksplorację tematów i wyszukiwanie powiązanych publikacji.</span>
+<div class="reveal-content">Może pomóc w rozszerzeniu zestawu słów kluczowych i wykrywaniu nowych kierunków badań. Wyniki należy zweryfikować w oryginalnych publikacjach.</div>
+</article>
+<article class="hover-reveal-card accent-violet motion-tile" tabindex="0">
+<h3>SciSpace</h3>
+<span class="card-lead">Pomaga w orientacyjnym czytaniu, porównywaniu i porządkowaniu publikacji.</span>
+<div class="reveal-content">Odpowiedzi generowane przez AI mogą zawierać uproszczenia lub błędy. Każde twierdzenie i cytowanie trzeba sprawdzić w pełnym tekście publikacji.</div>
+</article>
+</div>
+<div class="grid-2" style="margin-top:18px">
+<div class="card">
+<h3>Identyfikatory publikacji</h3>
+<p><b>DOI</b> jest trwałym identyfikatorem obiektu cyfrowego, najczęściej artykułu naukowego. <b>ISBN</b> identyfikuje konkretne wydanie książki lub e-booka.</p>
+<div class="identifier-example">
+<b>DOI</b>
+<div>
+<code>10.1038/s41586-023-06747-5</code>
+<p class="small">Taki identyfikator można wkleić do wyszukiwarki na stronie czasopisma, wydawcy, Google Scholar albo w serwisie DOI.</p>
+</div>
+</div>
+<div class="identifier-example">
+<b>Adres DOI</b>
+<div>
+<code>https://doi.org/10.1038/s41586-023-06747-5</code>
+<p class="small">Dodanie prefiksu <code>https://doi.org/</code> tworzy trwały adres przekierowujący do aktualnej strony publikacji.</p>
+</div>
+</div>
+<div class="identifier-example">
+<b>ISBN</b>
+<div>
+<code>978-83-01-23000-0</code>
+<p class="small">Numer odnosi się do określonego wydania. Wersja drukowana i elektroniczna mogą mieć różne numery ISBN.</p>
+</div>
+</div>
+<div class="access-note">
+<b>Praktyczna procedura wyszukiwania artykułu po DOI</b><br/>
+              Skopiuj DOI bez dodatkowego tekstu. Najpierw otwórz adres w domenie
+              <a href="https://doi.org/" rel="noopener" target="_blank">doi.org</a>.
+              Gdy pełny tekst jest płatny, sprawdź dostęp przez Bibliotekę PRz, Google Scholar,
+              repozytorium instytucjonalne autora, PubMed Central, Unpaywall albo legalną kopię autorską.
+            </div>
+<div class="access-note">
+<b>Sci-Hub i debata o otwartym dostępie</b><br/>
+              Sci-Hub zwrócił uwagę na nierówności w dostępie do literatury i wysokie koszty subskrypcji.
+              Jednocześnie udostępnia materiały z pominięciem licencji wydawców i w wielu państwach działa
+              z naruszeniem prawa autorskiego. Poradnik nie zaleca korzystania z tego serwisu.
+              Problem, który ujawnił, wzmacnia znaczenie legalnego otwartego dostępu, repozytoriów
+              instytucjonalnych, publikacji preprintów i udostępniania wersji autorskich.
+            </div>
+</div>
+<div class="card">
+<details>
+<summary><span class="summary-copy"><span class="summary-title">Dobór stylu cytowań</span><span class="panel-summary">Styl cytowania należy dobrać do dyscypliny i wymagań jednostki. Najważniejsza jest konsekwencja zapisu w tekście i bibliografii.</span></span></summary>
+<div class="details-body">
+<h4>IEEE</h4>
+<p>Typowy dla informatyki, elektroniki i nauk technicznych. Cytowania są numerowane według kolejności wystąpienia.</p>
+<div class="citation-example">
+                  W tekście: Metodę opisano w [1].<br/>
+                  Bibliografia: [1] A. Kowalski, „Tytuł artykułu”, <i>Nazwa Czasopisma</i>, vol. 10, no. 2, pp. 15-24, 2025.
+                </div>
+<h4>APA 7</h4>
+<p>Dominujący w psychologii i naukach społecznych. W tekście podaje się autora i rok.</p>
+<div class="citation-example">
+                  W tekście: (Kowalski, 2025).<br/>
+                  Bibliografia: Kowalski, A. (2025). Tytuł artykułu. <i>Nazwa Czasopisma, 10</i>(2), 15-24.
+                </div>
+<h4>Chicago</h4>
+<p>Stosowany w humanistyce. Może korzystać z systemu autor-data albo przypisów dolnych.</p>
+<div class="citation-example">
+                  Autor-data: (Kowalski 2025, 18).<br/>
+                  Przypis: 1. Adam Kowalski, <i>Tytuł książki</i> (Warszawa: Wydawnictwo, 2025), 18.
+                </div>
+<h4>MLA</h4>
+<p>Popularny w literaturoznawstwie i językoznawstwie. Cytowanie zawiera nazwisko i numer strony.</p>
+<div class="citation-example">
+                  W tekście: (Kowalski 18).<br/>
+                  Bibliografia: Kowalski, Adam. <i>Tytuł książki</i>. Wydawnictwo, 2025.
+                </div>
+<h4>Vancouver</h4>
+<p>Stosowany w medycynie i naukach biomedycznych. Pozycje są numerowane według kolejności cytowania.</p>
+<div class="citation-example">
+                  W tekście: Wynik potwierdzono wcześniej (1).<br/>
+                  Bibliografia: 1. Kowalski A. Tytuł artykułu. Nazwa Czasopisma. 2025;10(2):15-24.
+                </div>
+<h4>AMA i NLM</h4>
+<p>Style zbliżone do Vancouver, używane w publikacjach medycznych. Różnią się szczegółami zapisu autorów, skrótów czasopism i numerów wydań.</p>
+<div class="advice-box">
+<h3>Zasada praktyczna</h3>
+<p>Korzystaj z menedżera bibliografii, ale kontroluj każdy rekord. Automatyczne metadane często zawierają błędną wielkość liter, brak DOI albo niepełny zakres stron.</p>
+</div>
+</div>
+</details>
+</div>
+</div>
+<div class="error-panel">
+<h3><span class="error-badge">!</span>Najczęstsze błędy w przeglądzie literatury</h3>
+<div class="error-grid">
+<div class="error-item"><b>Zbyt szeroki zakres</b><p>Temat obejmuje zbyt wiele pojęć, populacji lub technologii. Najpierw należy ustalić granice przeglądu.</p></div>
+<div class="error-item"><b>Opis publikacji jedna po drugiej</b><p>Przegląd powinien porównywać podejścia i wyniki, a nie tworzyć serię niezależnych streszczeń.</p></div>
+<div class="error-item"><b>Brak strategii wyszukiwania</b><p>Bez zapisanych zapytań, baz i kryteriów selekcji nie można ocenić kompletności przeglądu.</p></div>
+<div class="error-item"><b>Dobór tylko zgodnych źródeł</b><p>Należy uwzględniać także wyniki sprzeczne z przyjętą tezą i wyjaśniać ich znaczenie.</p></div>
+<div class="error-item"><b>Nadmierne użycie źródeł wtórnych</b><p>Najważniejsze twierdzenia powinny być oparte na publikacjach pierwotnych, a nie wyłącznie na przeglądach i podręcznikach.</p></div>
+<div class="error-item"><b>Nieaktualne źródła bez uzasadnienia</b><p>Prace klasyczne są potrzebne, ale aktualny stan wiedzy powinien opierać się również na nowszych publikacjach.</p></div>
+</div>
+</div>
+</div>
+</section>
+<section id="research">
+<div class="container">
+<div class="section-head">
+<h2>5. Metodyka badań i realizacja eksperymentów</h2>
+<p>
+            Badanie powinno tworzyć jeden spójny ciąg: od problemu i hipotezy, przez metodykę
+            i plan eksperymentu, do kontrolowanego zbierania danych. Każdy etap musi wynikać z poprzedniego.
+          </p>
+</div>
+<div class="research-cycle">
+<article class="cycle-step motion-tile" tabindex="0"><span>1</span><h3>Problem</h3><p>Zidentyfikuj brak wiedzy, sprzeczność, ograniczenie lub nieskuteczność istniejącego rozwiązania.</p></article>
+<article class="cycle-step motion-tile" tabindex="0"><span>2</span><h3>Pytanie</h3><p>Określ, co dokładnie ma zostać wyjaśnione, porównane lub zweryfikowane.</p></article>
+<article class="cycle-step motion-tile" tabindex="0"><span>3</span><h3>Hipoteza</h3><p>Sformułuj przewidywanie, model albo założenie projektowe możliwe do sprawdzenia.</p></article>
+<article class="cycle-step motion-tile" tabindex="0"><span>4</span><h3>Metodyka</h3><p>Dobierz zmienne, próbę, dane, narzędzia, miary i procedurę badawczą.</p></article>
+<article class="cycle-step motion-tile" tabindex="0"><span>5</span><h3>Eksperyment</h3><p>Zaplanuj i przeprowadź pomiary w kontrolowanych warunkach, zapisując pełne dane i odstępstwa.</p></article>
+<article class="cycle-step motion-tile" tabindex="0"><span>6</span><h3>Kontrola jakości</h3><p>Sprawdź poprawność pomiarów, kompletność danych, kalibrację i zgodność z przyjętym planem.</p></article>
+</div>
+<details>
+<summary><span class="summary-copy"><span class="summary-title">Metodyka badań</span><span class="panel-summary">Metodyka określa, jak uzyskać wiarygodną odpowiedź na pytanie badawcze. Obejmuje zmienne, próbę, narzędzia, miary, warunki porównania i plan analizy.</span></span></summary>
+<div class="details-body">
+<div class="method-flow">
+<article class="method-step accent-blue motion-tile" tabindex="0">
+<div class="step-no">1</div>
+<h3>Zdefiniuj problem i zmienne</h3>
+<p>Określ zmienne niezależne, zależne, kontrolowane oraz potencjalne czynniki zakłócające.</p>
+</article>
+<article class="method-step accent-cyan motion-tile" tabindex="0">
+<div class="step-no">2</div>
+<h3>Ustal hipotezy i kryteria</h3>
+<p>Wskaż oczekiwane zależności i warunki uznania wyniku za zgodny lub niezgodny z hipotezą.</p>
+</article>
+<article class="method-step accent-violet motion-tile" tabindex="0">
+<div class="step-no">3</div>
+<h3>Dobierz próbę i dane</h3>
+<p>Określ liczebność, sposób doboru, kryteria włączenia i wyłączenia oraz źródła danych.</p>
+</article>
+<article class="method-step accent-pink motion-tile" tabindex="0">
+<div class="step-no">4</div>
+<h3>Wybierz narzędzia i miary</h3>
+<p>Dobierz aparaturę, oprogramowanie, kwestionariusze, metryki i procedury pomiarowe.</p>
+</article>
+<article class="method-step accent-orange motion-tile" tabindex="0">
+<div class="step-no">5</div>
+<h3>Zaprojektuj warunki porównania</h3>
+<p>Ustal grupę kontrolną, metodę bazową, stan początkowy lub inny uzasadniony punkt odniesienia.</p>
+</article>
+<article class="method-step accent-red motion-tile" tabindex="0">
+<div class="step-no">6</div>
+<h3>Zaplanuj analizę przed badaniem</h3>
+<p>Wskaż sposób przygotowania danych, testy, miary błędu i reguły postępowania z brakami oraz wartościami odstającymi.</p>
+</article>
+</div>
+</div>
+</details>
+<details>
+<summary><span class="summary-copy"><span class="summary-title">Planowanie eksperymentu</span><span class="panel-summary">Plan eksperymentu musi wynikać z hipotez, zmiennych i kryteriów oceny. Przed badaniem należy ustalić procedurę, powtórzenia, randomizację, punkt odniesienia i reguły wykluczania danych.</span></span></summary>
+<div class="details-body">
+<div class="grid-2">
+<div class="card">
+<h3>Co trzeba ustalić przed rozpoczęciem?</h3>
+<div class="method-check">
+<div><span>1</span><p>Jakie pytanie badawcze ma zostać rozstrzygnięte?</p></div>
+<div><span>2</span><p>Jakie są zmienne niezależne, zależne i kontrolowane?</p></div>
+<div><span>3</span><p>Jaki wynik będzie uznany za istotny praktycznie lub naukowo?</p></div>
+<div><span>4</span><p>Jak ograniczyć wpływ kolejności, uczenia się, zmęczenia i oczekiwań badacza?</p></div>
+<div><span>5</span><p>Jak zostaną zapisane dane, metadane, błędy i odstępstwa od procedury?</p></div>
+</div>
+</div>
+<div class="card">
+<h3>Elementy dobrego planu</h3>
+<div class="principle"><div class="n">A</div><div><h3>Randomizacja</h3><p>Losuj kolejność lub przydział, gdy pozwala to ograniczyć systematyczne obciążenie.</p></div></div>
+<div class="principle"><div class="n">B</div><div><h3>Powtórzenia</h3><p>Ustal liczbę powtórzeń adekwatną do zmienności i oczekiwanej wielkości efektu.</p></div></div>
+<div class="principle"><div class="n">C</div><div><h3>Pilotaż</h3><p>Sprawdź procedurę na małej próbie i usuń błędy przed badaniem właściwym.</p></div></div>
+<div class="principle"><div class="n">D</div><div><h3>Kryteria przerwania</h3><p>Określ warunki przerwania próby, wykluczenia obserwacji lub powtórzenia pomiaru.</p></div></div>
+</div>
+</div>
+</div>
+</details>
+<details>
+<summary><span class="summary-copy"><span class="summary-title">Przeprowadzanie eksperymentu</span><span class="panel-summary">Eksperyment należy realizować zgodnie z wcześniej przyjętym planem. Każde odstępstwo, nieudana próba i zmiana warunków powinny zostać zapisane.</span></span></summary>
+<div class="details-body">
+<div class="method-flow">
+<article class="method-step accent-green motion-tile" tabindex="0">
+<div class="step-no">1</div>
+<h3>Przygotuj stanowisko</h3>
+<p>Sprawdź aparaturę, oprogramowanie, kalibrację, warunki środowiskowe i bezpieczeństwo.</p>
+</article>
+<article class="method-step accent-lime motion-tile" tabindex="0">
+<div class="step-no">2</div>
+<h3>Stosuj jednolitą procedurę</h3>
+<p>Realizuj wszystkie próby w ten sam sposób i z tymi samymi kryteriami oceny.</p>
+</article>
+<article class="method-step accent-cyan motion-tile" tabindex="0">
+<div class="step-no">3</div>
+<h3>Kontroluj zakłócenia</h3>
+<p>Monitoruj warunki, które mogą wpływać na wynik, w tym kolejność, temperaturę, zmęczenie i różnice sprzętowe.</p>
+</article>
+<article class="method-step accent-violet motion-tile" tabindex="0">
+<div class="step-no">4</div>
+<h3>Zapisuj pełne dane</h3>
+<p>Rejestruj próby udane i nieudane, błędy, braki danych, metadane i odstępstwa od planu.</p>
+</article>
+<article class="method-step accent-orange motion-tile" tabindex="0">
+<div class="step-no">5</div>
+<h3>Wykonuj kontrolę jakości</h3>
+<p>Sprawdzaj jednostki, zakresy wartości, synchronizację, kompletność i poprawność zapisu.</p>
+</article>
+<article class="method-step accent-red motion-tile" tabindex="0">
+<div class="step-no">6</div>
+<h3>Nie zmieniaj reguł po wyniku</h3>
+<p>Zmiany po obejrzeniu danych należy jawnie opisać jako odstępstwo lub analizę eksploracyjną.</p>
+</article>
+</div>
+</div>
+</details>
+<div class="error-panel">
+<h3><span class="error-badge">!</span>Najczęstsze błędy w projektowaniu i prowadzeniu badań</h3>
+<div class="error-grid">
+<div class="error-item"><b>Metoda niedopasowana do pytania</b><p>Narzędzie nie dostarcza danych potrzebnych do odpowiedzi na konkretny problem.</p></div>
+<div class="error-item"><b>Brak punktu odniesienia</b><p>Bez grupy kontrolnej, metody bazowej lub stanu początkowego nie można ocenić znaczenia efektu.</p></div>
+<div class="error-item"><b>Zbyt mała próba</b><p>Niewystarczająca liczba obserwacji zwiększa niepewność i utrudnia wykrycie efektu.</p></div>
+<div class="error-item"><b>Zmiana wielu czynników jednocześnie</b><p>Nie można wtedy ustalić, który czynnik odpowiada za wynik.</p></div>
+<div class="error-item"><b>Brak pilotażu</b><p>Błędy procedury i aparatury są wykrywane dopiero podczas badania właściwego.</p></div>
+<div class="error-item"><b>Pomijanie nieudanych prób</b><p>Usuwanie wyników bez wcześniej ustalonych kryteriów zniekształca rezultat.</p></div>
+</div>
+</div>
+</div>
+</section>
+<section id="results-analysis">
+<div class="container">
+<div class="section-head">
+<h2>6. Analiza i interpretacja uzyskanych wyników</h2>
+<p>
+            Analiza powinna realizować plan określony w metodyce. Jej celem jest opisanie danych,
+            ocena hipotez, oszacowanie niepewności i określenie znaczenia praktycznego wyniku.
+          </p>
+</div>
+<details>
+<summary><span class="summary-copy"><span class="summary-title">Ocena jakości i przygotowanie danych</span><span class="panel-summary">Przed analizą należy sprawdzić kompletność, jednostki, rozkład, wartości odstające i zgodność danych z planem badania. Sposób czyszczenia danych musi być jawny.</span></span></summary>
+<div class="details-body">
+<div class="grid-2">
+<div class="card">
+<h3>Kontrola jakości danych</h3>
+<div class="principle"><div class="n">1</div><div><h3>Braki danych</h3><p>Podaj ich liczbę, przyczynę i sposób postępowania.</p></div></div>
+<div class="principle"><div class="n">2</div><div><h3>Wartości odstające</h3><p>Stosuj wcześniej ustalone kryteria i raportuj każde wykluczenie.</p></div></div>
+<div class="principle"><div class="n">3</div><div><h3>Rozkład danych</h3><p>Sprawdź kształt rozkładu, asymetrię, zakres i potencjalne błędy pomiaru.</p></div></div>
+</div>
+<div class="card">
+<h3>Analiza opisowa</h3>
+<div class="principle"><div class="n">A</div><div><h3>Liczebność</h3><p>Podaj n dla całej próby i każdej grupy.</p></div></div>
+<div class="principle"><div class="n">B</div><div><h3>Tendencja centralna</h3><p>Dla danych symetrycznych podaj średnią, a dla silnie skośnych medianę.</p></div></div>
+<div class="principle"><div class="n">C</div><div><h3>Zróżnicowanie</h3><p>Ze średnią raportuj odchylenie standardowe, a z medianą kwartyle lub IQR.</p></div></div>
+</div>
+</div>
+
+<div class="stats-formula-section">
+<h3>Podstawowe wzory statystyki opisowej</h3>
+<p class="stats-formula-intro">
+    Statystyki opisowe należy obliczyć przed testami wnioskowania. Pozwalają ocenić położenie,
+    zróżnicowanie i niepewność danych.
+  </p>
+<div class="stats-formula-grid">
+<article class="stats-formula-card">
+<h4>Średnia arytmetyczna</h4>
+<span class="equation">x̄ = (1/n) · ∑<sub>i=1</sub><sup>n</sup> x<sub>i</sub></span>
+<p>Opisuje przeciętny poziom zmiennej. Jest wrażliwa na wartości odstające i silną asymetrię.</p>
+<ul class="symbol-definitions">
+<li>n: liczba obserwacji,</li>
+<li>x<sub>i</sub>: i-ta obserwacja.</li>
+</ul>
+</article>
+<article class="stats-formula-card">
+<h4>Wariancja próbki</h4>
+<span class="equation">s² = [1/(n - 1)] · ∑<sub>i=1</sub><sup>n</sup>(x<sub>i</sub> - x̄)²</span>
+<p>Opisuje przeciętny kwadrat odchylenia obserwacji od średniej. W mianowniku stosuje się n - 1.</p>
+</article>
+<article class="stats-formula-card">
+<h4>Odchylenie standardowe</h4>
+<span class="equation">s = √{[1/(n - 1)] · ∑(x<sub>i</sub> - x̄)²}</span>
+<p>Przedstawia zróżnicowanie w tej samej jednostce co analizowana zmienna.</p>
+</article>
+<article class="stats-formula-card">
+<h4>Błąd standardowy średniej</h4>
+<span class="equation">SE(x̄) = s / √n</span>
+<p>Opisuje niepewność oszacowania średniej. Nie jest miarą zróżnicowania pojedynczych obserwacji.</p>
+</article>
+<article class="stats-formula-card">
+<h4>Przedział ufności dla średniej</h4>
+<span class="equation">CI = x̄ ± t<sub>1-α/2, n-1</sub> · s/√n</span>
+<p>Wyznacza zakres wartości średniej populacji zgodnych z danymi przy przyjętym poziomie ufności.</p>
+</article>
+<article class="stats-formula-card">
+<h4>Współczynnik zmienności</h4>
+<span class="equation">CV = (s / |x̄|) · 100%</span>
+<p>Umożliwia porównanie względnego zróżnicowania zmiennych o różnych skalach. Nie należy go stosować, gdy średnia jest bliska zeru.</p>
+</article>
+</div>
+</div>
+</div>
+</details>
+<details>
+<summary><span class="summary-copy"><span class="summary-title">Dobór testu statystycznego</span><span class="panel-summary">Test dobiera się do celu analizy, skali pomiaru, liczby grup, zależności obserwacji i założeń rozkładowych. Nie należy wybierać testu dopiero po obejrzeniu oczekiwanego wyniku.</span></span></summary>
+<div class="details-body">
+<div style="overflow:auto">
+<table class="comparison">
+<thead>
+<tr>
+<th>Cel analizy</th>
+<th>Warunki</th>
+<th>Typowy test parametryczny</th>
+<th>Typowy test nieparametryczny</th>
+</tr>
+</thead>
+<tbody>
+<tr><td>Dwie niezależne grupy</td><td>Zmienna ilościowa, niezależne obserwacje</td><td>Test t dla prób niezależnych</td><td>Test U Manna-Whitneya</td></tr>
+<tr><td>Dwa pomiary zależne</td><td>Te same osoby lub obiekty mierzone dwukrotnie</td><td>Test t dla prób zależnych</td><td>Test rang Wilcoxona</td></tr>
+<tr><td>Więcej niż dwie niezależne grupy</td><td>Jedna zmienna ilościowa i czynnik grupujący</td><td>Jednoczynnikowa ANOVA</td><td>Test Kruskala-Wallisa</td></tr>
+<tr><td>Więcej niż dwa pomiary zależne</td><td>Powtarzane pomiary tych samych obiektów</td><td>ANOVA z powtarzanymi pomiarami</td><td>Test Friedmana</td></tr>
+<tr><td>Zależność dwóch zmiennych ilościowych</td><td>Zależność liniowa i odpowiedni rozkład</td><td>Korelacja Pearsona</td><td>Korelacja rang Spearmana</td></tr>
+<tr><td>Zależność zmiennych kategorialnych</td><td>Dane w tabeli liczebności</td><td>Test chi kwadrat</td><td>Dokładny test Fishera przy małych liczebnościach</td></tr>
+<tr><td>Predykcja zmiennej ilościowej</td><td>Jedna lub wiele zmiennych objaśniających</td><td>Regresja liniowa</td><td>Modele odporne lub metody rangowe</td></tr>
+<tr><td>Predykcja wyniku binarnego</td><td>Dwie klasy wyniku</td><td>Regresja logistyczna</td><td>Metody klasyfikacyjne z odpowiednimi metrykami</td></tr>
+</tbody>
+</table>
+</div>
+<div class="advice-box">
+<h3>Przed wyborem testu</h3>
+<p>Sprawdź skalę pomiaru, niezależność obserwacji, rozkład, jednorodność wariancji, liczebność grup i wartości odstające.</p>
+</div>
+<div class="micro-example practical-example"><b>Przykład praktyczny: </b>dla dwóch niezależnych grup i zmiennej ilościowej rozważ test t, a przy niespełnieniu założeń test U Manna-Whitneya.</div>
+<div class="stats-formula-section">
+<h3>Wzory najczęściej stosowanych testów</h3>
+<p class="stats-formula-intro">
+    Poniższe równania przedstawiają podstawową postać statystyk testowych. Przed użyciem testu
+    należy sprawdzić jego założenia oraz sposób obliczania stopni swobody.
+  </p>
+<div class="stats-formula-grid">
+<article class="stats-formula-card">
+<h4>Test t Welcha dla dwóch niezależnych grup</h4>
+<span class="equation">t = (x̄<sub>1</sub> - x̄<sub>2</sub>) / √(s<sub>1</sub>²/n<sub>1</sub> + s<sub>2</sub>²/n<sub>2</sub>)</span>
+<p>Porównuje średnie dwóch niezależnych grup i nie wymaga założenia równych wariancji.</p>
+</article>
+<article class="stats-formula-card">
+<h4>Test t dla prób zależnych</h4>
+<span class="equation">t = d̄ / (s<sub>d</sub>/√n)</span>
+<p>Analizuje średnią różnicę d między parami pomiarów, na przykład przed i po interwencji.</p>
+</article>
+<article class="stats-formula-card">
+<h4>Jednoczynnikowa ANOVA</h4>
+<span class="equation">F = MS<sub>between</sub> / MS<sub>within</sub></span>
+<p>Porównuje zróżnicowanie między grupami ze zróżnicowaniem wewnątrz grup.</p>
+<ul class="symbol-definitions">
+<li>MS<sub>between</sub> = SS<sub>between</sub>/(k - 1),</li>
+<li>MS<sub>within</sub> = SS<sub>within</sub>/(N - k).</li>
+</ul>
+</article>
+<article class="stats-formula-card">
+<h4>Test U Manna-Whitneya</h4>
+<span class="equation">U<sub>1</sub> = n<sub>1</sub>n<sub>2</sub> + n<sub>1</sub>(n<sub>1</sub> + 1)/2 - R<sub>1</sub></span>
+<p>Porównuje rozkłady dwóch niezależnych grup na podstawie rang.</p>
+<ul class="symbol-definitions">
+<li>R<sub>1</sub>: suma rang w pierwszej grupie,</li>
+<li>U = min(U<sub>1</sub>, U<sub>2</sub>).</li>
+</ul>
+</article>
+<article class="stats-formula-card">
+<h4>Test rang Wilcoxona</h4>
+<span class="equation">W = min(W<sup>+</sup>, W<sup>-</sup>)</span>
+<p>Porównuje dwa pomiary zależne. Statystyka opiera się na sumach rang dodatnich i ujemnych różnic.</p>
+</article>
+<article class="stats-formula-card">
+<h4>Test Kruskala-Wallisa</h4>
+<span class="equation">H = [12/(N(N + 1))] · ∑<sub>j=1</sub><sup>k</sup>(R<sub>j</sub>²/n<sub>j</sub>) - 3(N + 1)</span>
+<p>Nieparametrycznie porównuje więcej niż dwie niezależne grupy.</p>
+</article>
+<article class="stats-formula-card">
+<h4>Test Friedmana</h4>
+<span class="equation">Q = [12/(n·k(k + 1))] · ∑<sub>j=1</sub><sup>k</sup>R<sub>j</sub>² - 3n(k + 1)</span>
+<p>Porównuje więcej niż dwa pomiary zależne na podstawie rang przypisanych w każdym bloku.</p>
+</article>
+<article class="stats-formula-card">
+<h4>Korelacja Pearsona</h4>
+<span class="equation">r = ∑(x<sub>i</sub> - x̄)(y<sub>i</sub> - ȳ) / √[∑(x<sub>i</sub> - x̄)² · ∑(y<sub>i</sub> - ȳ)²]</span>
+<p>Mierzy siłę i kierunek liniowej zależności między dwiema zmiennymi ilościowymi.</p>
+</article>
+<article class="stats-formula-card">
+<h4>Korelacja rang Spearmana</h4>
+<span class="equation">ρ = 1 - [6∑d<sub>i</sub>² / (n(n² - 1))]</span>
+<p>Mierzy monotoniczną zależność między rangami. Podana postać zakłada brak rang wiązanych.</p>
+</article>
+<article class="stats-formula-card">
+<h4>Test chi kwadrat niezależności</h4>
+<span class="equation">χ² = ∑(O<sub>ij</sub> - E<sub>ij</sub>)² / E<sub>ij</sub></span>
+<p>Porównuje obserwowane liczebności O z liczebnościami oczekiwanymi E w tabeli kontyngencji.</p>
+</article>
+<article class="stats-formula-card">
+<h4>Dokładny test Fishera dla tabeli 2 × 2</h4>
+<span class="equation">p = [(a+b)!(c+d)!(a+c)!(b+d)!] / [a!b!c!d!n!]</span>
+<p>Wyznacza dokładne prawdopodobieństwo konfiguracji tabeli przy ustalonych sumach brzegowych.</p>
+</article>
+<article class="stats-formula-card">
+<h4>Regresja liniowa</h4>
+<span class="equation">ŷ = β<sub>0</sub> + β<sub>1</sub>x</span>
+<p>Opisuje oczekiwaną wartość zmiennej zależnej jako funkcję zmiennej objaśniającej.</p>
+<ul class="symbol-definitions">
+<li>β<sub>1</sub> = ∑(x<sub>i</sub>-x̄)(y<sub>i</sub>-ȳ) / ∑(x<sub>i</sub>-x̄)²,</li>
+<li>β<sub>0</sub> = ȳ - β<sub>1</sub>x̄.</li>
+</ul>
+</article>
+<article class="stats-formula-card">
+<h4>Regresja logistyczna</h4>
+<span class="equation">p(y=1|x) = 1 / [1 + e<sup>-(β₀ + β₁x₁ + ... + βₚxₚ)</sup>]</span>
+<p>Modeluje prawdopodobieństwo wyniku binarnego. Współczynniki interpretuje się często przez ilorazy szans.</p>
+</article>
+</div>
+<div class="formula-warning">
+    Wartość statystyki testowej sama nie wystarcza. Należy podać stopnie swobody, wartość p,
+    wielkość efektu, przedział ufności i informację o spełnieniu założeń.
+  </div>
+</div>
+</div>
+</details>
+<details>
+<summary><span class="summary-copy"><span class="summary-title">Istotność statystyczna, wielkość efektu i znaczenie praktyczne</span><span class="panel-summary">Wartość p nie opisuje siły ani użyteczności efektu. Należy raportować również wielkość efektu, przedział ufności i znaczenie praktyczne.</span></span></summary>
+<div class="details-body">
+<div class="grid-2">
+<div class="card">
+<h3>Kiedy wynik jest statystycznie istotny?</h3>
+<p>Przy przyjętym poziomie alfa, najczęściej 0,05, wartość p wskazuje, jak zgodne są dane z hipotezą zerową. Nie określa prawdopodobieństwa prawdziwości hipotezy badawczej.</p>
+<div class="principle"><div class="n">1</div><div><h3>Wartość p</h3><p>Informuje o zgodności danych z hipotezą zerową.</p></div></div>
+<div class="principle"><div class="n">2</div><div><h3>Wielkość efektu</h3><p>Opisuje siłę różnicy lub zależności.</p></div></div>
+<div class="principle"><div class="n">3</div><div><h3>Przedział ufności</h3><p>Pokazuje niepewność oszacowania i zakres wartości zgodnych z danymi.</p></div></div>
+</div>
+<div class="card">
+<h3>Kiedy wynik ma sens praktyczny?</h3>
+<p>Różnica powinna być nie tylko istotna statystycznie, ale też wystarczająco duża, aby wpływać na działanie systemu, decyzję, użytkownika lub zastosowanie.</p>
+<div class="principle"><div class="n">A</div><div><h3>Znaczenie inżynierskie</h3><p>Czy efekt poprawia wydajność, niezawodność, koszt lub bezpieczeństwo?</p></div></div>
+<div class="principle"><div class="n">B</div><div><h3>Znaczenie kliniczne lub użytkowe</h3><p>Czy zmiana jest zauważalna i użyteczna dla odbiorcy?</p></div></div>
+<div class="principle"><div class="n">C</div><div><h3>Zakres stosowalności</h3><p>Czy wynik obowiązuje tylko w badanych warunkach, czy może być ostrożnie uogólniony?</p></div></div>
+</div>
+</div>
+
+<div class="stats-formula-section">
+<h3>Wzory miar wielkości efektu</h3>
+<p class="stats-formula-intro">
+    Wielkość efektu opisuje skalę różnicy lub zależności. Powinna być interpretowana razem
+    z przedziałem ufności i znaczeniem praktycznym.
+  </p>
+<div class="stats-formula-grid">
+<article class="stats-formula-card">
+<h4>Cohen d dla dwóch grup</h4>
+<span class="equation">d = (x̄<sub>1</sub> - x̄<sub>2</sub>) / s<sub>p</sub></span>
+<p>Standaryzuje różnicę średnich przez łączne odchylenie standardowe.</p>
+<ul class="symbol-definitions">
+<li>s<sub>p</sub> = √{[(n<sub>1</sub>-1)s<sub>1</sub>² + (n<sub>2</sub>-1)s<sub>2</sub>²] / (n<sub>1</sub>+n<sub>2</sub>-2)}.</li>
+</ul>
+</article>
+<article class="stats-formula-card">
+<h4>Eta kwadrat dla ANOVA</h4>
+<span class="equation">η² = SS<sub>between</sub> / SS<sub>total</sub></span>
+<p>Określa część całkowitego zróżnicowania wyjaśnianą przez czynnik grupujący.</p>
+</article>
+<article class="stats-formula-card">
+<h4>Współczynnik determinacji</h4>
+<span class="equation">R² = 1 - [∑(y<sub>i</sub> - ŷ<sub>i</sub>)² / ∑(y<sub>i</sub> - ȳ)²]</span>
+<p>Opisuje część wariancji zmiennej zależnej wyjaśnianą przez model regresji.</p>
+</article>
+<article class="stats-formula-card">
+<h4>V Craméra</h4>
+<span class="equation">V = √[χ² / (n · min(r - 1, c - 1))]</span>
+<p>Opisuje siłę zależności między zmiennymi kategorialnymi w tabeli kontyngencji.</p>
+</article>
+<article class="stats-formula-card">
+<h4>Iloraz szans</h4>
+<span class="equation">OR = (a · d) / (b · c)</span>
+<p>Porównuje szanse wystąpienia zdarzenia w dwóch grupach w tabeli 2 × 2.</p>
+</article>
+<article class="stats-formula-card">
+<h4>Względna zmiana wyniku</h4>
+<span class="equation">Δ<sub>rel</sub> = [(x<sub>new</sub> - x<sub>base</sub>) / |x<sub>base</sub>|] · 100%</span>
+<p>Pokazuje procentową poprawę lub pogorszenie względem punktu odniesienia.</p>
+</article>
+</div>
+</div>
+</div>
+</details>
+<details>
+<summary><span class="summary-copy"><span class="summary-title">Raportowanie wyników w pracy</span><span class="panel-summary">Wynik powinien zawierać liczebność, miary opisowe, statystykę testową, wartość p, wielkość efektu i przedział ufności. Sposób raportowania musi odpowiadać rozkładowi danych.</span></span></summary>
+<div class="details-body">
+<div class="grid-2">
+<div class="card">
+<h3>Co raportować?</h3>
+<div class="principle"><div class="n">01</div><div><h3>Liczebność</h3><p>Podaj n dla całej próby i każdej grupy.</p></div></div>
+<div class="principle"><div class="n">02</div><div><h3>Średnia lub mediana</h3><p>Dobierz miarę do kształtu rozkładu.</p></div></div>
+<div class="principle"><div class="n">03</div><div><h3>SD lub IQR</h3><p>Ze średnią podaj odchylenie standardowe, z medianą rozstęp międzykwartylowy.</p></div></div>
+<div class="principle"><div class="n">04</div><div><h3>Przedział ufności</h3><p>Raportuj go dla kluczowych estymacji i różnic.</p></div></div>
+</div>
+<div class="card">
+<h3>Co podać przy teście?</h3>
+<div class="principle"><div class="n">A</div><div><h3>Nazwa testu</h3><p>Wskaż test i uzasadnij jego dobór.</p></div></div>
+<div class="principle"><div class="n">B</div><div><h3>Statystyka testowa</h3><p>Podaj jej wartość, stopnie swobody i dokładną wartość p.</p></div></div>
+<div class="principle"><div class="n">C</div><div><h3>Wielkość efektu</h3><p>Raportuj miarę odpowiednią dla testu.</p></div></div>
+<div class="principle"><div class="n">D</div><div><h3>Korekty</h3><p>Przy wielu porównaniach podaj zastosowaną korektę.</p></div></div>
+</div>
+</div>
+<div class="card" style="margin-top:20px">
+<h3>Przykładowy zapis</h3>
+<div class="micro-example"><b>Dane opisowe:</b> Średni czas wykonania zadania wyniósł 12,4 s (SD = 2,1; n = 30), a w wariancie bazowym 15,8 s (SD = 2,7; n = 30).</div>
+<div class="micro-example"><b>Wynik testu:</b> Różnica była istotna statystycznie, t(58) = -5,43, p &lt; 0,001, d = 1,40, 95% CI [0,82; 1,97].</div>
+<div class="micro-example"><b>Interpretacja:</b> Badany wariant skrócił czas o około 21,5%. Wielkość efektu była duża.</div>
+</div>
+<div class="micro-example practical-example"><b>Przykład praktyczny: </b>M = 12,4 s, SD = 2,1, n = 30; t(58) = -5,43, p &lt; 0,001, d = 1,40, 95% CI [0,82; 1,97].</div>
+<div class="stats-formula-section">
+<h3>Wzory korekt dla wielu porównań</h3>
+<div class="stats-formula-grid">
+<article class="stats-formula-card">
+<h4>Korekta Bonferroniego</h4>
+<span class="equation">α<sup>*</sup> = α / m</span>
+<p>Próg istotności dzieli się przez liczbę m wykonywanych porównań. Metoda jest prosta, ale może być konserwatywna.</p>
+</article>
+<article class="stats-formula-card">
+<h4>Procedura Holma</h4>
+<span class="equation">p<sub>(i)</sub> ≤ α / (m - i + 1)</span>
+<p>Uporządkowane wartości p porównuje się z kolejnymi progami. Procedura zwykle ma większą moc niż klasyczny Bonferroni.</p>
+</article>
+</div>
+</div>
+</div>
+</details>
+<details>
+<summary><span class="summary-copy"><span class="summary-title">Błędy pomiaru, estymacji i wnioskowania</span><span class="panel-summary">Każdy wynik zawiera niepewność. Trzeba odróżniać błędy systematyczne, losowe, estymacyjne oraz błędy decyzji statystycznej.</span></span></summary>
+<div class="details-body">
+<div class="formula-grid">
+<article class="formula-card">
+<h3>Błąd bezwzględny</h3>
+<span class="formula">Δx = |x<sub>pom</sub> - x<sub>ref</sub>|</span>
+<p>Określa bezwzględną różnicę między wartością zmierzoną a wartością odniesienia.</p>
+<ul class="symbol-list">
+<li>x<sub>pom</sub>: wartość zmierzona,</li>
+<li>x<sub>ref</sub>: wartość referencyjna.</li>
+</ul>
+</article>
+<article class="formula-card">
+<h3>Błąd względny</h3>
+<span class="formula">δ = (Δx / |x<sub>ref</sub>|) · 100%</span>
+<p>Pokazuje wielkość błędu w odniesieniu do wartości referencyjnej. Ułatwia porównywanie błędów dla różnych skal.</p>
+</article>
+<article class="formula-card">
+<h3>Błąd średni bezwzględny</h3>
+<span class="formula">MAE = (1/n) Σ |y<sub>i</sub> - ŷ<sub>i</sub>|</span>
+<p>Opisuje przeciętną wartość błędu bez uwzględniania jego znaku. Jest łatwy do interpretacji w jednostkach zmiennej.</p>
+</article>
+<article class="formula-card">
+<h3>Błąd średniokwadratowy</h3>
+<span class="formula">MSE = (1/n) Σ (y<sub>i</sub> - ŷ<sub>i</sub>)²</span>
+<p>Silniej karze duże błędy niż MAE, ponieważ różnice są podnoszone do kwadratu.</p>
+</article>
+<article class="formula-card">
+<h3>Pierwiastek błędu średniokwadratowego</h3>
+<span class="formula">RMSE = √[(1/n) Σ (y<sub>i</sub> - ŷ<sub>i</sub>)²]</span>
+<p>Ma tę samą jednostkę co analizowana zmienna i jest szczególnie wrażliwy na duże odchylenia.</p>
+</article>
+<article class="formula-card">
+<h3>Obciążenie estymatora</h3>
+<span class="formula">Bias(θ̂) = E(θ̂) - θ</span>
+<p>Opisuje systematyczne przesunięcie estymatora względem prawdziwej wartości parametru.</p>
+</article>
+<article class="formula-card">
+<h3>Wariancja estymatora</h3>
+<span class="formula">Var(θ̂) = E[(θ̂ - E(θ̂))²]</span>
+<p>Określa, jak silnie estymator zmienia się między powtórzeniami badania.</p>
+</article>
+<article class="formula-card">
+<h3>Błąd standardowy średniej</h3>
+<span class="formula">SE = s / √n</span>
+<p>Opisuje niepewność oszacowania średniej. Maleje wraz ze wzrostem liczebności próby.</p>
+</article>
+<article class="formula-card">
+<h3>Przedział ufności dla średniej</h3>
+<span class="formula">x̄ ± t<sub>α/2,n-1</sub> · s/√n</span>
+<p>Wyznacza zakres wartości zgodnych z danymi przy założonym poziomie ufności.</p>
+</article>
+<article class="formula-card">
+<h3>Błąd typu I</h3>
+<span class="formula">P(odrzucenie H₀ | H₀ prawdziwa) = α</span>
+<p>Fałszywie dodatni wynik. Hipoteza zerowa zostaje odrzucona mimo że jest prawdziwa.</p>
+</article>
+<article class="formula-card">
+<h3>Błąd typu II</h3>
+<span class="formula">P(brak odrzucenia H₀ | H₁ prawdziwa) = β</span>
+<p>Fałszywie ujemny wynik. Badanie nie wykrywa efektu, który rzeczywiście istnieje.</p>
+</article>
+<article class="formula-card">
+<h3>Moc testu</h3>
+<span class="formula">Power = 1 - β</span>
+<p>Określa prawdopodobieństwo wykrycia rzeczywistego efektu. Zależy między innymi od liczebności próby, zmienności i wielkości efektu.</p>
+</article>
+</div>
+<div class="grid-2" style="margin-top:18px">
+<div class="card">
+<h3>Błędy systematyczne</h3>
+<div class="principle"><div class="n">A</div><div><h3>Błąd kalibracji</h3><p>Wszystkie pomiary są przesunięte w podobnym kierunku.</p></div></div>
+<div class="principle"><div class="n">B</div><div><h3>Błąd doboru próby</h3><p>Próba nie reprezentuje populacji, do której odnoszone są wnioski.</p></div></div>
+<div class="principle"><div class="n">C</div><div><h3>Błąd procedury</h3><p>Sposób realizacji badania wpływa na wynik niezależnie od badanego efektu.</p></div></div>
+</div>
+<div class="card">
+<h3>Błędy losowe</h3>
+<div class="principle"><div class="n">1</div><div><h3>Szum pomiarowy</h3><p>Losowe fluktuacje aparatury lub środowiska zwiększają rozrzut wyników.</p></div></div>
+<div class="principle"><div class="n">2</div><div><h3>Zmienność uczestników lub obiektów</h3><p>Naturalne różnice zwiększają niepewność estymacji.</p></div></div>
+<div class="principle"><div class="n">3</div><div><h3>Losowa zmienność próby</h3><p>Różne próby z tej samej populacji prowadzą do nieco innych oszacowań.</p></div></div>
+</div>
+</div>
+<div class="advice-box">
+<h3>Jak ograniczać błędy?</h3>
+<p>
+                Kalibruj aparaturę, standaryzuj procedurę, stosuj randomizację, zwiększaj liczebność próby,
+                wykonuj powtórzenia, raportuj niepewność oraz oddzielaj błędy systematyczne od losowych.
+              </p>
+</div>
+<div class="micro-example practical-example"><b>Przykład praktyczny: </b>stałe zawyżanie temperatury o 0,8°C wskazuje na błąd systematyczny, a nieregularne wahania wokół wartości referencyjnej na błąd losowy.</div></div>
+</details>
+<details>
+<summary><span class="summary-copy"><span class="summary-title">Interpretacja i ograniczenia</span><span class="panel-summary">Wnioski muszą odpowiadać jakości danych, warunkom eksperymentu i zakresowi próby. Ograniczenia należy wskazać jawnie, bez osłabiania ich znaczenia.</span></span></summary>
+<div class="details-body">
+<div class="grid-2">
+<div class="card">
+<h3>Interpretacja</h3>
+<p>Powiąż wynik z hipotezą, literaturą i mechanizmem wyjaśniającym. Oddziel obserwację od interpretacji.</p>
+</div>
+<div class="card">
+<h3>Ograniczenia</h3>
+<p>Wskaż ograniczenia próby, aparatury, procedury, danych i możliwości uogólniania.</p>
+</div>
+</div>
+<div class="micro-example practical-example"><b>Przykład praktyczny: </b>wynik istotny statystycznie może nie mieć znaczenia praktycznego, jeśli skrócenie czasu wynosi tylko 2 ms i nie wpływa na użytkowanie systemu.</div></div>
+</details>
+<div class="error-panel">
+<h3><span class="error-badge">!</span>Najczęstsze błędy w analizie wyników</h3>
+<div class="error-grid">
+<div class="error-item"><b>Raportowanie tylko wartości p</b><p>Bez wielkości efektu i przedziału ufności nie wiadomo, jak silny jest wynik.</p></div>
+<div class="error-item"><b>Dobór testu po obejrzeniu wyniku</b><p>Zwiększa ryzyko przypadkowej istotności.</p></div>
+<div class="error-item"><b>Brak korekty wielokrotnych porównań</b><p>Wiele testów zwiększa ryzyko wyników fałszywie dodatnich.</p></div>
+<div class="error-item"><b>Mylenie braku istotności z brakiem efektu</b><p>Nieistotny wynik może wynikać z małej próby lub dużej niepewności.</p></div>
+<div class="error-item"><b>Nieadekwatna miara opisowa</b><p>Średnia może być myląca przy silnie skośnym rozkładzie.</p></div>
+<div class="error-item"><b>Nadmierne uogólnianie</b><p>Wnioski nie mogą wykraczać poza badaną próbę i warunki eksperymentu.</p></div>
+</div>
+</div>
+</div>
+</section>
+<section id="open-science">
+<div class="container">
+<div class="section-head">
+<h2>7. Otwarta nauka i udostępnianie wyników</h2>
+<p>
+            Otwarta nauka polega na takim dokumentowaniu i publikowaniu procesu badawczego,
+            aby inni mogli znaleźć wyniki, ocenić je, odtworzyć analizę i ponownie wykorzystać materiały.
+          </p>
+</div>
+<div class="fair-grid">
+<article class="fair-card motion-tile" tabindex="0">
+<div class="fair-letter">F</div>
+<h3>Findable: możliwe do znalezienia</h3>
+<p>Pliki powinny mieć opis, słowa kluczowe, autorów, wersję, datę oraz trwały identyfikator, na przykład DOI.</p>
+</article>
+<article class="fair-card motion-tile" tabindex="0">
+<div class="fair-letter">A</div>
+<h3>Accessible: dostępne</h3>
+<p>Należy jasno określić sposób dostępu. Dane wrażliwe mogą wymagać zgody, umowy lub kontrolowanego repozytorium.</p>
+</article>
+<article class="fair-card motion-tile" tabindex="0">
+<div class="fair-letter">I</div>
+<h3>Interoperable: interoperacyjne</h3>
+<p>Stosuj otwarte formaty, jednoznaczne nazwy zmiennych, standardowe jednostki i metadane zrozumiałe dla innych narzędzi.</p>
+</article>
+<article class="fair-card motion-tile" tabindex="0">
+<div class="fair-letter">R</div>
+<h3>Reusable: możliwe do ponownego użycia</h3>
+<p>Dołącz licencję, opis pochodzenia danych, warunki użycia, dokumentację i informacje potrzebne do interpretacji.</p>
+</article>
+</div>
+<div class="card">
+<h3>Co warto udostępnić razem z pracą?</h3>
+<div class="hover-reveal-grid">
+<article class="hover-reveal-card accent-blue motion-tile" tabindex="0">
+<h3>Kod źródłowy</h3><span class="card-lead">Programy, skrypty analityczne, pliki konfiguracyjne, modele i instrukcja uruchomienia.</span>
+<div class="reveal-content">Programy, skrypty analityczne, pliki konfiguracyjne, modele i instrukcja uruchomienia.</div>
+</article>
+<article class="hover-reveal-card accent-cyan motion-tile" tabindex="0">
+<h3>Dane surowe</h3><span class="card-lead">Oryginalne wyniki pomiarów przed czyszczeniem, agregacją i przekształceniami.</span>
+<div class="reveal-content">Oryginalne wyniki pomiarów przed czyszczeniem, agregacją i przekształceniami.</div>
+</article>
+<article class="hover-reveal-card accent-violet motion-tile" tabindex="0">
+<h3>Dane przetworzone</h3><span class="card-lead">Zbiory wykorzystane bezpośrednio do obliczeń, wykresów, trenowania modeli lub testów.</span>
+<div class="reveal-content">Zbiory wykorzystane bezpośrednio do obliczeń, wykresów, trenowania modeli lub testów.</div>
+</article>
+<article class="hover-reveal-card accent-pink motion-tile" tabindex="0">
+<h3>Metadane</h3><span class="card-lead">Opis zmiennych, jednostek, aparatury, czasu pomiaru, warunków i pochodzenia danych.</span>
+<div class="reveal-content">Opis zmiennych, jednostek, aparatury, czasu pomiaru, warunków i pochodzenia danych.</div>
+</article>
+<article class="hover-reveal-card accent-orange motion-tile" tabindex="0">
+<h3>Środowisko wykonawcze</h3><span class="card-lead">Wersje bibliotek, pliki requirements.txt, environment.yml, kontener Docker lub inny opis zależności.</span>
+<div class="reveal-content">Wersje bibliotek, pliki requirements.txt, environment.yml, kontener Docker lub inny opis zależności.</div>
+</article>
+<article class="hover-reveal-card accent-green motion-tile" tabindex="0">
+<h3>Raport odtwarzalności</h3><span class="card-lead">Kolejność uruchamiania skryptów, parametry eksperymentów, ziarna losowe i sposób odtworzenia tabel oraz wykresów.</span>
+<div class="reveal-content">Kolejność uruchamiania skryptów, parametry eksperymentów, ziarna losowe i sposób odtworzenia tabel oraz wykresów.</div>
+</article>
+</div>
+</div>
+<div class="grid-2" style="margin-top:20px">
+<div class="card">
+<h3>Zalecana struktura repozytorium kodu</h3>
+<div class="file-tree">projekt/
+├── README.md
+├── LICENSE
+├── CITATION.cff
+├── requirements.txt
+├── src/
+├── tests/
+├── configs/
+├── scripts/
+├── notebooks/
+├── data/
+│   └── README.md
+├── results/
+└── docs/</div>
+</div>
+<div class="card">
+<h3>Minimalna dokumentacja</h3>
+<div class="principle"><div class="n">01</div><div><h3>README</h3><p>Cel projektu, wymagania, instalacja, uruchomienie, dane wejściowe i oczekiwane wyniki.</p></div></div>
+<div class="principle"><div class="n">02</div><div><h3>Licencja</h3><p>Brak licencji nie oznacza swobodnego użycia. Kod i dane powinny mieć jawnie określone warunki ponownego wykorzystania.</p></div></div>
+<div class="principle"><div class="n">03</div><div><h3>Wersja</h3><p>Oznacz wydanie odpowiadające pracy, na przykład tagiem v1.0.0, i zachowaj numer wersji w tekście pracy.</p></div></div>
+<div class="principle"><div class="n">04</div><div><h3>Cytowanie</h3><p>Dodaj plik CITATION.cff i podaj DOI archiwalnego wydania, jeśli repozytorium zostało zdeponowane w Zenodo.</p></div></div>
+</div>
+</div>
+<div class="card" style="margin-top:20px">
+<h3>Udostępnianie danych badawczych</h3>
+<div class="decision-grid">
+<article class="decision-card open">
+<h3>Dane otwarte</h3>
+<p>Publikuj dane, gdy nie zawierają informacji poufnych, danych osobowych ani treści objętych ograniczeniami licencyjnymi.</p>
+</article>
+<article class="decision-card restricted">
+<h3>Dostęp ograniczony</h3>
+<p>Stosuj, gdy dane mogą być udostępnione wyłącznie po spełnieniu warunków, podpisaniu umowy lub zatwierdzeniu celu użycia.</p>
+</article>
+<article class="decision-card closed">
+<h3>Dane niepubliczne</h3>
+<p>Nie publikuj danych, jeśli anonimizacja jest niewystarczająca, naruszałaby zgodę uczestników, prawo, tajemnicę przedsiębiorstwa lub bezpieczeństwo.</p>
+</article>
+</div>
+<div class="advice-box">
+<h3>Zasada: tak otwarte, jak to możliwe, tak zamknięte, jak to konieczne</h3>
+<p>Brak możliwości publikacji danych surowych nie zwalnia z dokumentowania badania. Można udostępnić schemat danych, kod analizy, syntetyczny zbiór demonstracyjny, zagregowane wyniki oraz opis procedury dostępu.</p>
+</div>
+</div>
+<div class="grid-2" style="margin-top:20px">
+<div class="card">
+<h3>Anonimizacja i dane wrażliwe</h3>
+<div class="principle"><div class="n">A</div><div><h3>Usuń identyfikatory bezpośrednie</h3><p>Imiona, adresy, numery albumów, adresy e-mail, numery urządzeń i inne jednoznaczne identyfikatory nie powinny znaleźć się w zbiorze publicznym.</p></div></div>
+<div class="principle"><div class="n">B</div><div><h3>Oceń ryzyko ponownej identyfikacji</h3><p>Połączenie wieku, daty, lokalizacji, obrazu twarzy, głosu lub rzadkich cech może umożliwić identyfikację mimo usunięcia nazwiska.</p></div></div>
+<div class="principle"><div class="n">C</div><div><h3>Oddziel klucz identyfikacyjny</h3><p>Jeśli pseudonimizacja jest konieczna, klucz należy przechowywać osobno i nie publikować go razem z danymi.</p></div></div>
+</div>
+<div class="card">
+<h3>Plan zarządzania danymi</h3>
+<div class="principle"><div class="n">1</div><div><h3>Przed badaniem</h3><p>Ustal formaty, sposób zapisu, kopie zapasowe, uprawnienia, nazewnictwo plików i odpowiedzialność za dane.</p></div></div>
+<div class="principle"><div class="n">2</div><div><h3>W trakcie badania</h3><p>Rejestruj zmiany, błędy, wykluczenia, kalibrację, parametry i historię przetwarzania.</p></div></div>
+<div class="principle"><div class="n">3</div><div><h3>Po badaniu</h3><p>Wybierz materiały do archiwizacji, ustal licencję, okres przechowywania i poziom dostępu.</p></div></div>
+</div>
+</div>
+<div class="card" style="margin-top:20px">
+<h3>Gdzie publikować kod i dane?</h3>
+<div style="overflow:auto">
+<table class="repo-table">
+<thead>
+<tr><th>Repozytorium</th><th>Najlepsze zastosowanie</th><th>Ważna cecha</th></tr>
+</thead>
+<tbody>
+<tr>
+<td><a href="https://github.com/" rel="noopener" target="_blank">GitHub</a></td>
+<td>Rozwój kodu, historia zmian, zgłoszenia błędów i współpraca.</td>
+<td>Nie jest sam w sobie repozytorium długoterminowej archiwizacji wyników naukowych.</td>
+</tr>
+<tr>
+<td><a href="https://zenodo.org/" rel="noopener" target="_blank">Zenodo</a></td>
+<td>Archiwizacja kodu, danych, raportów, modeli i innych rezultatów.</td>
+<td>Nadaje trwały DOI i może archiwizować wydania repozytorium GitHub.</td>
+</tr>
+<tr>
+<td><a href="https://osf.io/" rel="noopener" target="_blank">Open Science Framework</a></td>
+<td>Zarządzanie projektem, prerejestracja, materiały, dane i dokumentacja badania.</td>
+<td>Łączy kolejne elementy procesu badawczego w jednym projekcie.</td>
+</tr>
+<tr>
+<td><a href="https://repod.icm.edu.pl/" rel="noopener" target="_blank">RepOD</a></td>
+<td>Publikowanie danych badawczych w polskim repozytorium.</td>
+<td>Repozytorium rozwijane przez Interdyscyplinarne Centrum Modelowania UW.</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<div class="ai-disclosure">
+<h3>Jawność użycia narzędzi generatywnej AI</h3>
+<p>
+            Student pozostaje autorem pracy i ponosi pełną odpowiedzialność za jej treść.
+            Narzędzia genAI mogą wspierać pracę, ale nie mogą zastępować samodzielnej analizy,
+            decyzji metodologicznych, interpretacji wyników ani wkładu projektowego.
+          </p>
+<div class="ai-use-grid">
+<article class="ai-use-card allowed">
+<h4>Użycie pomocnicze</h4>
+<p>Korekta językowa, propozycje struktury, wyjaśnienie błędów w kodzie, tworzenie przykładów testowych lub pomoc w redakcji własnego tekstu.</p>
+</article>
+<article class="ai-use-card conditional">
+<h4>Użycie wymagające szczególnej kontroli</h4>
+<p>Generowanie kodu, analiza danych, streszczanie literatury, tworzenie tabel, ilustracji lub fragmentów tekstu. Każdy wynik musi zostać sprawdzony i opisany.</p>
+</article>
+<article class="ai-use-card prohibited">
+<h4>Użycie niedopuszczalne</h4>
+<p>Przypisywanie sobie treści wygenerowanej przez AI, tworzenie fikcyjnych źródeł lub wyników, ukrywanie zakresu użycia AI oraz przekazywanie danych poufnych bez podstawy prawnej.</p>
+</article>
+</div>
+<h3 style="margin-top:22px">Co należy ujawnić w oświadczeniu?</h3>
+<div class="ai-fields">
+<article class="ai-field">
+<b>Nazwa narzędzia i dostawca</b>
+<p>Na przykład ChatGPT firmy OpenAI, GitHub Copilot, Gemini lub Claude.</p>
+</article>
+<article class="ai-field">
+<b>Model lub wersja</b>
+<p>Podaj model, wersję lub datę dostępu, jeśli numer wersji nie jest widoczny.</p>
+</article>
+<article class="ai-field">
+<b>Cel użycia</b>
+<p>Określ, czy narzędzie służyło do korekty, programowania, analizy, tłumaczenia, wizualizacji lub innego zadania.</p>
+</article>
+<article class="ai-field">
+<b>Zakres pracy</b>
+<p>Wskaż konkretne rozdziały, pliki, skrypty, ilustracje, tabele lub etapy badań, w których użyto AI.</p>
+</article>
+<article class="ai-field">
+<b>Rodzaj przekazanych danych</b>
+<p>Opisz, czy do systemu przesłano tekst, kod, dane pomiarowe, obrazy lub inne materiały.</p>
+</article>
+<article class="ai-field">
+<b>Sposób wykorzystania wyniku</b>
+<p>Wyjaśnij, czy wynik został użyty bezpośrednio, zmodyfikowany, potraktowany jako inspiracja czy odrzucony.</p>
+</article>
+<article class="ai-field">
+<b>Weryfikacja</b>
+<p>Opisz, jak sprawdzono poprawność merytoryczną, źródła, kod, obliczenia oraz zgodność z danymi.</p>
+</article>
+<article class="ai-field">
+<b>Zakres odpowiedzialności autora</b>
+<p>Potwierdź, że autor samodzielnie ocenił i zatwierdził wszystkie wykorzystane treści oraz ponosi za nie odpowiedzialność.</p>
+</article>
+</div>
+<div class="declaration-template">
+<h4>Przykładowa treść oświadczenia</h4>
+<p>
+              „W trakcie przygotowania pracy korzystano z narzędzia [nazwa i wersja] w celu
+              [cel użycia]. Narzędzie zastosowano w zakresie [rozdziały, pliki lub etapy].
+              Przekazane materiały obejmowały [rodzaj danych]. Uzyskane wyniki zostały
+              [sposób wykorzystania] oraz zweryfikowane przez [opis weryfikacji].
+              Narzędzie nie zastępowało samodzielnej analizy, interpretacji wyników ani
+              decyzji metodologicznych autora. Autor ponosi pełną odpowiedzialność za treść pracy.”
+            </p>
+</div>
+<details style="margin-top:16px">
+<summary><span class="summary-copy"><span class="summary-title">Jak dokumentować użycie genAI w trakcie pracy?</span><span class="panel-summary">Należy zapisywać użyte narzędzia, cele, zakres przekazanych danych i sposób weryfikacji wyników. Dokumentacja umożliwia ocenę samodzielności autora.</span></span></summary>
+<div class="details-body">
+<ul>
+<li>Prowadź tabelę zawierającą datę, nazwę narzędzia, cel, zakres i rezultat użycia.</li>
+<li>Zachowuj istotne polecenia i odpowiedzi, jeśli miały wpływ na kod, analizę lub treść pracy.</li>
+<li>Oznaczaj w repozytorium fragmenty kodu wygenerowane lub istotnie zmodyfikowane z pomocą AI.</li>
+<li>Nie traktuj odpowiedzi modelu jako źródła naukowego. Każde twierdzenie sprawdź w publikacji pierwotnej.</li>
+<li>Nie przesyłaj danych osobowych, poufnych, nieopublikowanych ani objętych umową bez zgody i podstawy prawnej.</li>
+<li>Uzgodnij z promotorem nietypowe zastosowania AI przed ich użyciem.</li>
+</ul>
+</div>
+</details>
+<div class="link-strip">
+<a href="https://wz.prz.edu.pl/studenci/praca-dyplomowa/procedura-dyplomowania-wz" rel="noopener" target="_blank">Procedura GenAI na PRz: Wydział Zarządzania</a>
+<a href="https://wmifs.prz.edu.pl/studenci/praca-dyplomowa/instrukcja-postepowania-z-praca-dyplomowa" rel="noopener" target="_blank">Procedura GenAI na PRz: WMiFS</a>
+<a href="https://weii.prz.edu.pl/studenci/praca-dyplomowa/informacje-ogolne--procedury-i-instrukcje" rel="noopener" target="_blank">Aktualne procedury WEiI</a>
+</div>
+</div>
+<div class="error-panel">
+<h3><span class="error-badge">!</span>Najczęstsze błędy w otwieraniu rezultatów badań</h3>
+<div class="error-grid">
+<div class="error-item"><b>Publikacja samego kodu</b><p>Kod bez danych przykładowych, konfiguracji i instrukcji uruchomienia zwykle nie pozwala odtworzyć wyników.</p></div>
+<div class="error-item"><b>Brak licencji</b><p>Publiczne repozytorium bez licencji nie daje innym jasnego prawa do kopiowania, modyfikowania ani ponownego użycia.</p></div>
+<div class="error-item"><b>Publikacja tylko końcowych wykresów</b><p>Bez danych i skryptów nie można sprawdzić, jak uzyskano przedstawione rezultaty.</p></div>
+<div class="error-item"><b>Niejawne czyszczenie danych</b><p>Usunięte obserwacje, poprawki i transformacje powinny być zapisane w kodzie lub dzienniku przetwarzania.</p></div>
+<div class="error-item"><b>Dane osobowe w repozytorium</b><p>Usunięcie kolumny z nazwiskiem może nie wystarczyć do skutecznej anonimizacji.</p></div>
+<div class="error-item"><b>Brak trwałej wersji</b><p>Odwołanie wyłącznie do zmiennej gałęzi repozytorium utrudnia ustalenie, która wersja odpowiada pracy.</p></div>
+</div>
+</div>
+<div class="link-strip">
+<a href="https://www.gov.pl/web/hpkpw/dane-badawcze-w-programie-horyzont-europa" rel="noopener" target="_blank">Dane badawcze i zasady FAIR</a>
+<a href="https://eosc.eu/eosc-about" rel="noopener" target="_blank">European Open Science Cloud</a>
+<a href="https://help.zenodo.org/docs/deposit/describe-records/reserve-doi/" rel="noopener" target="_blank">DOI w Zenodo</a>
+<a href="https://docs.github.com/en/repositories/managing-your-repositorys-settings-and-features/customizing-your-repository/about-citation-files" rel="noopener" target="_blank">Plik CITATION.cff</a>
+<a href="https://docs.github.com/en/communities/setting-up-your-project-for-healthy-contributions/adding-a-license-to-a-repository" rel="noopener" target="_blank">Licencja repozytorium</a>
+</div>
+</div>
+</section>
+<section id="supervisor">
+<div class="container">
+<div class="section-head">
+<h2>8. Kontakt z promotorem</h2>
+<p>
+            Promotor nadzoruje poprawność merytoryczną i metodologiczną pracy. Student odpowiada za regularną realizację zadań,
+            terminowe przekazywanie materiałów i jasne informowanie o problemach.
+          </p>
+</div>
+<div class="three-column">
+<article class="info-tile motion-tile" tabindex="0">
+<div class="tile-no">1</div>
+<h3>Pisz konkretnie</h3>
+<p>Podaj temat wiadomości, numer albumu, nazwę pracy, cel kontaktu oraz jednoznaczne pytanie lub oczekiwaną decyzję.</p>
+</article>
+<article class="info-tile motion-tile" tabindex="0">
+<div class="tile-no">2</div>
+<h3>Przesyłaj materiał w uporządkowanej formie</h3>
+<p>Stosuj nazwy plików zawierające nazwisko, rozdział i datę. Zaznacz, co zostało zmienione od poprzedniej wersji.</p>
+</article>
+<article class="info-tile motion-tile" tabindex="0">
+<div class="tile-no">3</div>
+<h3>Nie wysyłaj wersji roboczej bez komentarza</h3>
+<p>Wskaż, które fragmenty są gotowe, które wymagają konsultacji i jakie decyzje należy podjąć.</p>
+</article>
+<article class="info-tile motion-tile" tabindex="0">
+<div class="tile-no">4</div>
+<h3>Szanuj czas odpowiedzi</h3>
+<p>Odpowiedź nie musi nadejść tego samego dnia. W zwykłych sprawach rozsądne jest odczekanie od 3 do 5 dni roboczych przed uprzejmym przypomnieniem.</p>
+</article>
+<article class="info-tile motion-tile" tabindex="0">
+<div class="tile-no">5</div>
+<h3>Nie odkładaj konsultacji</h3>
+<p>Rozdział przekazany tuż przed terminem złożenia pracy może nie zostać sprawdzony wystarczająco dokładnie.</p>
+</article>
+<article class="info-tile motion-tile" tabindex="0">
+<div class="tile-no">6</div>
+<h3>Dokumentuj ustalenia</h3>
+<p>Po spotkaniu zapisz uzgodniony zakres zmian, termin kolejnej wersji oraz decyzje dotyczące metody i eksperymentów.</p>
+</article>
+</div>
+<div class="grid-2" style="margin-top:20px">
+<div class="card">
+<h3>Aspekt administracyjny</h3>
+<div class="principle"><div class="n">A</div><div><h3>Zatwierdzenie tematu</h3><p>Temat powinien zostać uzgodniony z promotorem, odpowiadać efektom uczenia się i zostać zarejestrowany zgodnie z procedurą WEiI.</p></div></div>
+<div class="principle"><div class="n">B</div><div><h3>Zmiana tematu lub zakresu</h3><p>Istotną zmianę należy uzgodnić przed jej wprowadzeniem. Student powinien sprawdzić, czy wymaga ona aktualizacji danych w systemie uczelni.</p></div></div>
+<div class="principle"><div class="n">C</div><div><h3>Akceptacja pracy</h3><p>Wgranie pliku do APD powinno nastąpić dopiero po zatwierdzeniu treści przez promotora. Samo przesłanie pliku nie oznacza akceptacji pracy.</p></div></div>
+</div>
+<div class="card">
+<h3>Zatwierdzanie rozdziałów</h3>
+<div class="timeline">
+<div class="timeline-item"><div class="timeline-dot">1</div><div class="timeline-content"><h3>Plan pracy</h3><p>Najpierw uzgodnij problem, cel, zakres, strukturę rozdziałów i plan badań.</p></div></div>
+<div class="timeline-item"><div class="timeline-dot">2</div><div class="timeline-content"><h3>Wersje cząstkowe</h3><p>Przekazuj pełne, spójne fragmenty. Nie oczekuj szczegółowej recenzji luźnych notatek.</p></div></div>
+<div class="timeline-item"><div class="timeline-dot">3</div><div class="timeline-content"><h3>Poprawki</h3><p>Odpowiedz na wszystkie uwagi. Gdy nie zgadzasz się z sugestią, przedstaw uzasadnienie merytoryczne.</p></div></div>
+<div class="timeline-item"><div class="timeline-dot">4</div><div class="timeline-content"><h3>Wersja końcowa</h3><p>Zarezerwuj czas na korektę całości, kontrolę bibliografii, rysunków, załączników i zgodności z wymaganiami.</p></div></div>
+</div>
+</div>
+</div>
+<div class="advice-box">
+<h3>Praktyczna zasada</h3>
+<p>Promotor nie powinien być pierwszą osobą, która próbuje zrozumieć nieuporządkowany tekst. Przed wysłaniem wersji wykonaj samodzielną korektę merytoryczną, językową i formalną.</p>
+</div>
+<div class="link-strip">
+<a href="https://weii.prz.edu.pl/studenci/praca-dyplomowa/wybor-tematow-prac-dyplomowych" rel="noopener" target="_blank">Wybór tematów prac dyplomowych</a>
+<a href="https://weii.prz.edu.pl/studenci/praca-dyplomowa/informacje-ogolne--procedury-i-instrukcje" rel="noopener" target="_blank">Procedury WEiI</a>
+<a href="https://apd.prz.edu.pl/" rel="noopener" target="_blank">System APD</a>
+</div>
+</div>
+</section>
+<section id="review">
+<div class="container">
+<div class="section-head">
+<h2>9. Recenzja pracy</h2>
+<p>
+            Pracę oceniają promotor i recenzent. Obie oceny dotyczą tego samego dokumentu,
+            lecz powstają z innej perspektywy.
+          </p>
+</div>
+<div class="role-compare">
+<article class="role-card">
+<header>
+<h3>Opinia promotora</h3>
+<p>Ocena autora, procesu realizacji i końcowego rezultatu.</p>
+</header>
+<div class="role-body">
+<ul>
+<li>uwzględnia znajomość przebiegu pracy i samodzielność studenta,</li>
+<li>ocenia realizację uzgodnionego celu i zakresu,</li>
+<li>odnosi się do systematyczności oraz reagowania na uwagi,</li>
+<li>potwierdza gotowość pracy do procedury dyplomowej,</li>
+<li>uczestniczy w analizie raportu antyplagiatowego i akceptacji pracy w APD.</li>
+</ul>
+</div>
+</article>
+<article class="role-card">
+<header>
+<h3>Recenzja recenzenta</h3>
+<p>Niezależna ocena końcowej wersji pracy.</p>
+</header>
+<div class="role-body">
+<ul>
+<li>ocenia pracę bez nadzorowania jej powstawania,</li>
+<li>sprawdza zgodność treści z tematem i celem,</li>
+<li>ocenia poprawność metody, wyników i wniosków,</li>
+<li>weryfikuje poziom merytoryczny i jakość redakcyjną,</li>
+<li>może wskazać problemy, które nie zostały zauważone podczas konsultacji.</li>
+</ul>
+</div>
+</article>
+</div>
+<div class="card" style="margin-top:20px">
+<h3>Co jest brane pod uwagę?</h3>
+<div class="three-column">
+<article class="info-tile motion-tile" tabindex="0"><div class="tile-no">A</div><h3>Zgodność z tematem</h3><p>Czy praca realizuje zadeklarowany cel i nie zastępuje go pobocznymi zagadnieniami.</p></article>
+<article class="info-tile motion-tile" tabindex="0"><div class="tile-no">B</div><h3>Poziom merytoryczny</h3><p>Czy autor poprawnie rozumie pojęcia, metody, technologie i wyniki.</p></article>
+<article class="info-tile motion-tile" tabindex="0"><div class="tile-no">C</div><h3>Wkład własny</h3><p>Czy można jednoznacznie wskazać, co student zaprojektował, zaimplementował, zbadał lub zinterpretował.</p></article>
+<article class="info-tile motion-tile" tabindex="0"><div class="tile-no">D</div><h3>Metodyka</h3><p>Czy metoda odpowiada na pytanie badawcze, a procedura jest rzetelna i odtwarzalna.</p></article>
+<article class="info-tile motion-tile" tabindex="0"><div class="tile-no">E</div><h3>Analiza wyników</h3><p>Czy wyniki zostały właściwie przedstawione, porównane i zinterpretowane.</p></article>
+<article class="info-tile motion-tile" tabindex="0"><div class="tile-no">F</div><h3>Forma pracy</h3><p>Czy struktura, język, cytowania, bibliografia, rysunki i tabele są poprawne.</p></article>
+</div>
+</div>
+<div class="advice-box">
+<h3>Co dzieje się po wystawieniu ocen?</h3>
+<p>Na WEiI promotor i recenzent sporządzają oceny w systemie APD. Aktualna procedura przewiduje wykonanie obu ocen w terminie nie dłuższym niż tydzień od umieszczenia pracy w APD. Po sporządzeniu recenzji promotor wykonuje ostateczne zatwierdzenie pracy.</p>
+</div>
+<div class="link-strip">
+<a href="https://apd.prz.edu.pl/" rel="noopener" target="_blank">Recenzje w APD</a>
+<a href="https://weii.prz.edu.pl/studenci/praca-dyplomowa/informacje-ogolne--procedury-i-instrukcje" rel="noopener" target="_blank">Aktualna procedura WEiI</a>
+</div>
+</div>
+</section>
+<section id="defense">
+<div class="container">
+<div class="section-head">
+<h2>10. Obrona pracy</h2>
+<p>
+            Egzamin dyplomowy obejmuje weryfikację wiedzy zdobytej podczas studiów oraz obronę pracy.
+            Szczegółowy harmonogram i aktualne zasady należy sprawdzić w komunikatach WEiI.
+          </p>
+</div>
+<div class="timeline">
+<div class="timeline-item"><div class="timeline-dot">1</div><div class="timeline-content"><h3>Przygotowanie administracyjne</h3><p>Praca musi uzyskać status „Gotowa do obrony” w APD. Student składa wymagane wnioski w dziekanacie i sprawdza status elektronicznej karty obiegowej.</p></div></div>
+<div class="timeline-item"><div class="timeline-dot">2</div><div class="timeline-content"><h3>Weryfikacja tożsamości i rozpoczęcie</h3><p>Przewodniczący przedstawia skład komisji i informuje o przebiegu egzaminu.</p></div></div>
+<div class="timeline-item"><div class="timeline-dot">3</div><div class="timeline-content"><h3>Pytania komisji</h3><p>Komisja sprawdza efekty uczenia się osiągnięte podczas studiów. Pytania mogą dotyczyć podstaw kierunku, specjalności oraz zagadnień związanych z pracą.</p></div></div>
+<div class="timeline-item"><div class="timeline-dot">4</div><div class="timeline-content"><h3>Prezentacja pracy</h3><p>Student przedstawia problem, cel, metodę, wkład własny, wyniki i wnioski. W procedurze WEiI wskazano maksymalnie 10 minut.</p></div></div>
+<div class="timeline-item"><div class="timeline-dot">5</div><div class="timeline-content"><h3>Dyskusja</h3><p>Komisja zadaje pytania dotyczące decyzji projektowych, metodyki, wyników, ograniczeń i możliwości dalszego rozwoju.</p></div></div>
+<div class="timeline-item"><div class="timeline-dot">6</div><div class="timeline-content"><h3>Ocena egzaminu</h3><p>Po zakończeniu odpowiedzi komisja ustala wynik zgodnie z regulaminem studiów i dokumentuje przebieg egzaminu.</p></div></div>
+</div>
+<div class="card" style="margin-top:22px">
+<h3>Proponowany układ prezentacji na 10 minut</h3>
+<div class="presentation-plan">
+<article class="presentation-part motion-tile" tabindex="0"><span class="time">0:30</span><h3>Tytuł i kontekst</h3><p>Temat, autor, promotor i jedno zdanie wyjaśniające problem.</p></article>
+<article class="presentation-part motion-tile" tabindex="0"><span class="time">1:00</span><h3>Cel i zakres</h3><p>Co miało zostać osiągnięte i czego praca nie obejmuje.</p></article>
+<article class="presentation-part motion-tile" tabindex="0"><span class="time">1:30</span><h3>Luka i założenia</h3><p>Dlaczego problem jest istotny i jakie przyjęto pytania lub hipotezy.</p></article>
+<article class="presentation-part motion-tile" tabindex="0"><span class="time">2:00</span><h3>Metodyka</h3><p>Dane, architektura, aparatura, procedura i kryteria oceny.</p></article>
+<article class="presentation-part motion-tile" tabindex="0"><span class="time">3:30</span><h3>Wyniki</h3><p>Najważniejsze rezultaty, porównania i demonstracja wkładu własnego.</p></article>
+<article class="presentation-part motion-tile" tabindex="0"><span class="time">1:30</span><h3>Wnioski</h3><p>Odpowiedź na cel, ograniczenia i dalsze możliwe prace.</p></article>
+</div>
+</div>
+<div class="grid-2">
+<div class="card">
+<h3>Zasady przygotowania slajdów</h3>
+<div class="principle"><div class="n">01</div><div><h3>Jedna teza na slajd</h3><p>Slajd powinien wspierać jedną myśl, a nie zastępować tekst pracy.</p></div></div>
+<div class="principle"><div class="n">02</div><div><h3>Wyniki zamiast opisu</h3><p>Najwięcej miejsca przeznacz na wkład własny, wykresy, schematy, zdjęcia i porównania.</p></div></div>
+<div class="principle"><div class="n">03</div><div><h3>Czytelność</h3><p>Używaj dużej czcionki, krótkich podpisów, jednolitej kolorystyki i wysokiego kontrastu.</p></div></div>
+<div class="principle"><div class="n">04</div><div><h3>Źródła</h3><p>Podawaj źródła cudzych rysunków i danych także w prezentacji.</p></div></div>
+</div>
+<div class="card">
+<h3>Przygotowanie do pytań</h3>
+<div class="principle"><div class="n">A</div><div><h3>Znaj swoje decyzje</h3><p>Przygotuj uzasadnienie wyboru technologii, metod, danych i miar.</p></div></div>
+<div class="principle"><div class="n">B</div><div><h3>Znaj ograniczenia</h3><p>Umiej wskazać słabe strony pracy bez podważania jej sensu.</p></div></div>
+<div class="principle"><div class="n">C</div><div><h3>Odpowiadaj bezpośrednio</h3><p>Najpierw udziel krótkiej odpowiedzi, a następnie przedstaw uzasadnienie.</p></div></div>
+<div class="principle"><div class="n">D</div><div><h3>Nie zgaduj</h3><p>Gdy nie znasz odpowiedzi, określ, co wiesz i jak sprawdziłbyś brakującą informację.</p></div></div>
+</div>
+</div>
+<div class="advice-box">
+<h3>Próba generalna</h3>
+<p>Przećwicz prezentację kilka razy z pomiarem czasu. Sprawdź plik PDF na innym komputerze, przygotuj kopię na nośniku i w chmurze oraz przećwicz odpowiedzi na pytania o cel, metodę, wyniki, wkład własny i ograniczenia.</p>
+</div>
+<div class="link-strip">
+<a href="https://weii.prz.edu.pl/studenci/praca-dyplomowa/harmonogramy-obron" rel="noopener" target="_blank">Harmonogramy obron</a>
+<a href="https://weii.prz.edu.pl/studenci/praca-dyplomowa/masz-gotowa-prace-dyplomowa-co-dalej" rel="noopener" target="_blank">Dokumenty przed obroną</a>
+<a href="https://weii.prz.edu.pl/studenci/praca-dyplomowa/informacje-ogolne--procedury-i-instrukcje" rel="noopener" target="_blank">Procedury egzaminu dyplomowego</a>
+</div>
+</div>
+</section>
+<section id="checklist">
+<div class="container">
+<div class="section-head">
+<h2>11. Lista kontrolna przed oddaniem</h2>
+<p>Zaznacz elementy, które są już gotowe. Stan listy jest zapisywany lokalnie w przeglądarce.</p>
+</div>
+<div class="checklist" id="checklistBox">
+<label class="check"><input type="checkbox"/><span>Cel pracy jest jednoznaczny i zgodny z rzeczywiście wykonanym zakresem.</span></label>
+<label class="check"><input type="checkbox"/><span>Pytania badawcze, hipotezy lub wymagania są mierzalne.</span></label>
+<label class="check"><input type="checkbox"/><span>Literatura obejmuje źródła kluczowe i aktualne dla problemu.</span></label>
+<label class="check"><input type="checkbox"/><span>Metodyka umożliwia odtworzenie badania lub implementacji.</span></label>
+<label class="check"><input type="checkbox"/><span>Wyniki są oddzielone od ich interpretacji.</span></label>
+<label class="check"><input type="checkbox"/><span>Przedstawiono sensowny punkt odniesienia lub grupę kontrolną.</span></label>
+<label class="check"><input type="checkbox"/><span>Opisano ograniczenia, ryzyka i źródła niepewności.</span></label>
+<label class="check"><input type="checkbox"/><span>Wkład własny autora jest wyraźnie wskazany.</span></label>
+<label class="check"><input type="checkbox"/><span>Rysunki, tabele, cytowania i bibliografia są spójne formalnie.</span></label>
+<label class="check"><input type="checkbox"/><span>Wnioski odpowiadają na problem postawiony we wstępie.</span></label>
+<label class="check"><input type="checkbox"/><span>Kod, dane i materiały badawcze mają ustalony sposób archiwizacji oraz poziom dostępu.</span></label>
+<label class="check"><input type="checkbox"/><span>Repozytorium zawiera README, wersję, licencję i instrukcję odtworzenia wyników.</span></label>
+<label class="check"><input type="checkbox"/><span>Dane osobowe i poufne zostały usunięte, zanonimizowane lub objęte kontrolą dostępu.</span></label>
+<label class="check"><input type="checkbox"/><span>Zakres użycia narzędzi genAI został ujawniony w oświadczeniu lub tabeli wymaganej przez jednostkę.</span></label>
+<label class="check"><input type="checkbox"/><span>Wszystkie treści, źródła, obliczenia i fragmenty kodu powstałe z pomocą AI zostały samodzielnie zweryfikowane.</span></label>
+<label class="check"><input type="checkbox"/><span>Do narzędzi genAI nie przekazano danych poufnych, osobowych ani materiałów objętych ograniczeniami.</span></label>
+</div>
+</div>
+</section>
+<section>
+<div class="container">
+<div class="callout">
+<h2>Najważniejsza zasada</h2>
+<p>
+            Dobra praca dyplomowa rozwiązuje ograniczony, jasno zdefiniowany problem za pomocą adekwatnej metody. Zakres twierdzeń musi odpowiadać uzyskanym dowodom.
+          </p>
+</div>
+</div>
+</section>
+</main>
+<footer>
+<div class="container">
+      Seminarium dyplomowe: poradnik dla studentów WEiI i Katedry Informatyki i Automatyki Politechniki Rzeszowskiej.
+      <div class="context-links">
+<a class="context-link" href="https://weii.prz.edu.pl/" rel="noopener" target="_blank">WEiI PRz</a>
+<a class="context-link" href="https://kia.prz.edu.pl/" rel="noopener" target="_blank">KIiA PRz</a>
+<a class="context-link" href="https://biblio.prz.edu.pl/" rel="noopener" target="_blank">Centrum Informacyjno-Biblioteczne</a>
+</div>
+</div>
+</footer>
+<script>
+
+    const buttons = document.querySelectorAll('.tab-btn');
+    const panels = document.querySelectorAll('.tab-panel');
+
+    buttons.forEach(btn => {
+      btn.addEventListener('click', () => {
+        buttons.forEach(b => {
+          b.classList.remove('active');
+          b.setAttribute('aria-selected', 'false');
+        });
+        panels.forEach(p => p.classList.remove('active'));
+        btn.classList.add('active');
+        btn.setAttribute('aria-selected', 'true');
+        document.getElementById(btn.dataset.tab).classList.add('active');
+      });
+    });
+
+    const checks = [...document.querySelectorAll('#checklistBox input[type="checkbox"]')];
+    const savedChecks = JSON.parse(localStorage.getItem('thesisChecklist') || '[]');
+
+    checks.forEach((box, index) => {
+      box.checked = Boolean(savedChecks[index]);
+      box.addEventListener('change', () => {
+        localStorage.setItem('thesisChecklist', JSON.stringify(checks.map(item => item.checked)));
+      });
+    });
+
+    const root = document.documentElement;
+    const themeToggle = document.getElementById('themeToggle');
+    const themeLabel = themeToggle.querySelector('.theme-label');
+    const savedTheme = localStorage.getItem('seminariumTheme');
+
+    function setTheme(theme) {
+      root.dataset.theme = theme;
+      const dark = theme === 'dark';
+      themeToggle.setAttribute('aria-pressed', String(dark));
+      themeLabel.textContent = dark ? 'Motyw jasny' : 'Motyw ciemny';
+      localStorage.setItem('seminariumTheme', theme);
+    }
+
+    setTheme(savedTheme === 'dark' ? 'dark' : 'light');
+
+    themeToggle.addEventListener('click', () => {
+      setTheme(root.dataset.theme === 'dark' ? 'light' : 'dark');
+    });
+
+  
+    const motionTiles = document.querySelectorAll('.motion-tile');
+    const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+    if (!reducedMotion) {
+      motionTiles.forEach(tile => {
+        tile.addEventListener('pointermove', event => {
+          if (event.pointerType === 'touch') return;
+
+          const rect = tile.getBoundingClientRect();
+          const x = Math.min(Math.max(event.clientX - rect.left, 0), rect.width);
+          const y = Math.min(Math.max(event.clientY - rect.top, 0), rect.height);
+
+          const px = x / rect.width;
+          const py = y / rect.height;
+          const rotateY = (px - 0.5) * 5;
+          const rotateX = (0.5 - py) * 5;
+
+          tile.style.setProperty('--mouse-x', `${px * 100}%`);
+          tile.style.setProperty('--mouse-y', `${py * 100}%`);
+          tile.style.setProperty('--rotate-x', `${rotateX}deg`);
+          tile.style.setProperty('--rotate-y', `${rotateY}deg`);
+        });
+
+        tile.addEventListener('pointerleave', () => {
+          tile.style.setProperty('--mouse-x', '50%');
+          tile.style.setProperty('--mouse-y', '50%');
+          tile.style.setProperty('--rotate-x', '0deg');
+          tile.style.setProperty('--rotate-y', '0deg');
+        });
+      });
+    }
+</script>
+</body>
+</html>
