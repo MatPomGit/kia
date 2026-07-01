@@ -12,7 +12,7 @@ export default function AsdPage() {
 
   return (
     <div className="shell">
-      <Header active="dashboard" title="kia.asid" />
+      <Header active="dashboard" courseHref="/kia.asid" title="kia.asid" />
       <main id="main" className="container">
         <section className="page-intro">
           <span className="eyebrow">Algorytmy i struktury danych</span>

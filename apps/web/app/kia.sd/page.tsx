@@ -8,7 +8,7 @@ import { sdMaterial, sdQuizzes } from "@/lib/courses";
 export default function SeminarPage() {
   return (
     <div className="shell">
-      <Header active="dashboard" title="kia.sd" />
+      <Header active="dashboard" courseHref="/kia.sd" title="kia.sd" />
       <main id="main" className="container">
         <section className="page-intro">
           <span className="eyebrow">Seminarium dyplomowe</span>

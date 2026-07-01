@@ -39,10 +39,10 @@ export type GradeRequirement = {
 export const courses: Course[] = [
   { name: "Narzędzia dla programistów", href: "/kia.ndp", available: true },
   { name: "Algorytmy i struktury danych", href: "/kia.asid", available: true },
-  { name: "Programowanie aplikacji mobilnych", href: "#", available: false },
-  { name: "Programowanie gier komputerowych", href: "#", available: false },
-  { name: "Informatyka afektywna", href: "#", available: false },
-  { name: "Robotyka afektywna", href: "#", available: false },
+  { name: "Programowanie aplikacji mobilnych", href: "/kia.pam", available: false },
+  { name: "Programowanie gier komputerowych", href: "/kia.pgk", available: false },
+  { name: "Informatyka afektywna", href: "/kia.ia", available: false },
+  { name: "Robotyka afektywna", href: "/kia.ra", available: false },
   { name: "Seminarium dyplomowe", href: "/kia.sd", available: true },
 ];
 
