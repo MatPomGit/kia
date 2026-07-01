@@ -4,16 +4,7 @@ import Link from "next/link";
 import { FormEvent, useEffect, useRef, useState } from "react";
 import { Footer } from "@/components/Footer";
 import { DEMO_PASSWORD, DEMO_USERNAME, loginInstructor } from "@/lib/auth";
-
-const subjects = [
-  { name: "Narzędzia dla programistów", href: "/kia.ndp", available: true },
-  { name: "Algorytmy i struktury danych", href: "/kia.asid", available: true },
-  { name: "Programowanie aplikacji mobilnych", href: "#", available: false },
-  { name: "Programowanie gier komputerowych", href: "#", available: false },
-  { name: "Informatyka afektywna", href: "#", available: false },
-  { name: "Robotyka afektywna", href: "#", available: false },
-  { name: "Seminarium dyplomowe", href: "/kia.sd", available: true },
-];
+import { courses } from "@/lib/courses";
 
 const steps = [
   {
@@ -108,7 +99,7 @@ export default function KiaHomePage() {
             </p>
           </div>
           <div className="subject-grid">
-            {subjects.map((subject) => subject.available ? (
+            {courses.map((subject) => subject.available ? (
               <Link className="subject-button" href={subject.href} key={subject.name}>
                 <span>{subject.name}</span><small>Dostępny</small>
               </Link>

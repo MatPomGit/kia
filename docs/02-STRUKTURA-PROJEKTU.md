@@ -27,7 +27,7 @@ apps/web/
 │   ├── quiz/demo/            # demonstracyjny quiz
 │   └── wyniki/               # wyniki studenta
 ├── components/               # współdzielone komponenty
-├── lib/                      # funkcje pomocnicze
+├── lib/                      # funkcje pomocnicze i statyczne dane kursów
 ├── public/                   # statyczne pliki publiczne
 ├── globals.css               # style globalne
 └── next.config.mjs           # eksport statyczny i basePath
@@ -50,6 +50,6 @@ apps/web/
 ## Zasady odpowiedzialności
 
 - komponent nie powinien równocześnie pobierać danych, walidować domeny i renderować rozbudowanego interfejsu,
-- dane demonstracyjne należy przenieść z plików `page.tsx` do `data/`,
-- typy `Course`, `Quiz`, `Question`, `Attempt` i `Result` należy utrzymywać w jednym miejscu,
+- dane demonstracyjne widoków kursów należy utrzymywać poza plikami `page.tsx`, obecnie w `apps/web/lib/courses.ts`,
+- typy domenowe kursów, quizów, pytań, podejść i wyników należy utrzymywać w jednym miejscu,
 - konfiguracja adresów API nie może być wpisana na stałe w komponentach.
