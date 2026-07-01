@@ -163,7 +163,7 @@ export default function NdPPage() {
             {simulators.map((simulator) => (
               <article className="card" key={simulator.href}>
                 <span className="badge success">{simulator.label}</span>
-                <h2>{simulator.title}</h2>
+                <h3>{simulator.title}</h3>
                 <p>{simulator.description}</p>
                 <div className="card-actions">
                   <a className="btn secondary" href={simulator.href}>Uruchom symulator</a>
