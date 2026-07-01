@@ -22,6 +22,13 @@ type Material = {
   links: Array<{ label: string; href: string }>;
 };
 
+type Simulator = {
+  label: string;
+  title: string;
+  description: string;
+  href: string;
+};
+
 const studyModes: Array<{ id: StudyMode; label: string }> = [
   { id: "fullTime", label: "Studia stacjonarne" },
   { id: "partTime", label: "Studia niestacjonarne" },
@@ -42,6 +49,33 @@ const quizzesByMode: Record<StudyMode, Quiz[]> = {
     { label: "Zajęcia 5", title: "System kontroli wersji Git", time: "10 min", status: "Wkrótce", available: false },
   ],
 };
+
+const simulators: Simulator[] = [
+  {
+    label: "Terminal",
+    title: "Symulator terminala",
+    description: "Ćwicz podstawowe polecenia powłoki Bash w bezpiecznym środowisku przeglądarkowym.",
+    href: "../materialy/ndp_terminal.html",
+  },
+  {
+    label: "LaTeX",
+    title: "Symulator LaTeX",
+    description: "Sprawdzaj składnię dokumentów LaTeX i obserwuj efekt zmian bez lokalnej instalacji narzędzi.",
+    href: "../materialy/ndp_latex.html",
+  },
+  {
+    label: "Git",
+    title: "Symulator Git",
+    description: "Przećwicz komendy kontroli wersji, analizę historii i typowe operacje na repozytorium.",
+    href: "../materialy/ndp_git.html",
+  },
+  {
+    label: "VIM",
+    title: "Symulator VIM",
+    description: "Ćwicz podstawową nawigację, tryby pracy i edycję tekstu w edytorze VIM.",
+    href: "../materialy/ndp_vim.html",
+  },
+];
 
 const materialsByMode: Record<StudyMode, Material[]> = {
   fullTime: [
@@ -113,6 +147,27 @@ export default function NdPPage() {
                 <h2>{quiz.title}</h2>
                 <p>Czas rozwiązania: {quiz.time}. Jedno podejście.</p>
                 {quiz.available ? <Link className="btn" href="/quiz/demo">Rozpocznij</Link> : <button className="btn secondary" disabled>Jeszcze niedostępna</button>}
+              </article>
+            ))}
+          </div>
+        </section>
+
+        <section className="tabbed-panel" aria-labelledby="simulators-heading">
+          <div className="section-head compact">
+            <div>
+              <h2 id="simulators-heading">Symulatory</h2>
+              <p>Uruchom interaktywne środowiska do ćwiczenia terminala, LaTeX-a, Gita i VIM-a.</p>
+            </div>
+          </div>
+          <div className="grid">
+            {simulators.map((simulator) => (
+              <article className="card" key={simulator.href}>
+                <span className="badge success">{simulator.label}</span>
+                <h3>{simulator.title}</h3>
+                <p>{simulator.description}</p>
+                <div className="card-actions">
+                  <a className="btn secondary" href={simulator.href} aria-label={"Uruchom " + simulator.title}>Uruchom symulator</a>
+                </div>
               </article>
             ))}
           </div>
