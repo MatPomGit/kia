@@ -1,0 +1,1086 @@
+<!doctype html><html lang="pl" data-theme="light"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="description" content="Interaktywny wykład o architekturze i budowie urządzeń mobilnych z prostymi objaśnieniami i laboratoriami."><title>Architektura i budowa urządzeń mobilnych - wykład interaktywny</title><style>
+    :root {
+      --bg: #f5f7fb;
+      --surface: #ffffff;
+      --surface-2: #eef2f7;
+      --ink: #131a26;
+      --muted: #5d6878;
+      --line: #d7dee8;
+      --brand: #00b97c;
+      --brand-2: #1683d8;
+      --magenta: #d70a72;
+      --amber: #bd7b00;
+      --purple: #6d32d9;
+      --danger: #c93d4b;
+      --ok: #168a58;
+      --shadow: 0 14px 42px rgba(20, 35, 55, 0.09);
+      --radius: 18px;
+      --nav-h: 66px;
+      --max: 1240px;
+      color-scheme: light;
+    }
+    html[data-theme="dark"] {
+      --bg: #0e1420;
+      --surface: #141d2b;
+      --surface-2: #1b2738;
+      --ink: #eef4fc;
+      --muted: #a8b5c6;
+      --line: #2b3a4f;
+      --brand: #22d49a;
+      --brand-2: #55aef2;
+      --magenta: #f055a0;
+      --amber: #e4aa3c;
+      --purple: #9a78ef;
+      --danger: #ff7b86;
+      --ok: #50d49a;
+      --shadow: 0 18px 50px rgba(0,0,0,.28);
+      color-scheme: dark;
+    }
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; scroll-padding-top: calc(var(--nav-h) + 14px); }
+    body {
+      margin: 0;
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      color: var(--ink);
+      background:
+        radial-gradient(circle at 10% -10%, color-mix(in srgb, var(--brand) 15%, transparent), transparent 31%),
+        radial-gradient(circle at 95% 5%, color-mix(in srgb, var(--brand-2) 13%, transparent), transparent 28%),
+        var(--bg);
+      line-height: 1.55;
+    }
+    button, input, select { font: inherit; }
+    button { color: inherit; }
+    a { color: var(--brand-2); }
+    code, pre, .mono { font-family: "SFMono-Regular", Consolas, "Liberation Mono", monospace; }
+    .skip-link { position: fixed; left: 12px; top: -60px; z-index: 1000; background: var(--surface); padding: 10px 14px; border-radius: 9px; }
+    .skip-link:focus { top: 10px; }
+    .topbar {
+      position: sticky; top: 0; z-index: 100;
+      height: var(--nav-h);
+      backdrop-filter: blur(16px);
+      background: color-mix(in srgb, var(--surface) 83%, transparent);
+      border-bottom: 1px solid var(--line);
+    }
+    .topbar-inner { max-width: var(--max); height: 100%; margin: auto; padding: 0 20px; display: flex; align-items: center; gap: 16px; }
+    .brand-mark { display: flex; align-items: center; gap: 10px; font-weight: 800; letter-spacing: -.02em; white-space: nowrap; }
+    .brand-dot { width: 13px; height: 13px; background: var(--brand); border-radius: 50%; box-shadow: 0 0 0 7px color-mix(in srgb, var(--brand) 16%, transparent); }
+    .progress-wrap { flex: 1; height: 5px; border-radius: 8px; overflow: hidden; background: var(--surface-2); }
+    #readingProgress { height: 100%; width: 0; background: linear-gradient(90deg, var(--brand), var(--brand-2)); }
+    .icon-btn { border: 1px solid var(--line); background: var(--surface); border-radius: 12px; width: 42px; height: 42px; display: grid; place-items: center; cursor: pointer; }
+    .layout { max-width: var(--max); margin: 0 auto; padding: 30px 20px 70px; display: grid; grid-template-columns: 238px minmax(0, 1fr); gap: 28px; }
+    .sidebar { position: sticky; top: calc(var(--nav-h) + 22px); height: fit-content; }
+    .toc { background: color-mix(in srgb, var(--surface) 94%, transparent); border: 1px solid var(--line); border-radius: var(--radius); padding: 12px; box-shadow: var(--shadow); }
+    .toc-title { font-size: .78rem; text-transform: uppercase; letter-spacing: .12em; color: var(--muted); padding: 8px 10px; font-weight: 800; }
+    .toc a { display: flex; align-items: center; gap: 10px; padding: 9px 10px; margin: 2px 0; border-radius: 10px; text-decoration: none; color: var(--muted); font-size: .91rem; }
+    .toc a:hover, .toc a.active { background: var(--surface-2); color: var(--ink); }
+    .toc a.active::before { content: ""; width: 4px; align-self: stretch; background: var(--brand); border-radius: 4px; }
+    main { min-width: 0; }
+    .hero {
+      position: relative; overflow: hidden; min-height: 530px;
+      background: linear-gradient(135deg, #111a2b 0%, #0d1322 48%, #121f31 100%);
+      color: #f5f8fd; border-radius: 28px; padding: clamp(28px, 5vw, 64px);
+      box-shadow: var(--shadow); display: grid; grid-template-columns: 1.25fr .75fr; gap: 28px; align-items: center;
+    }
+    .hero::after { content: ""; position: absolute; inset: auto -80px -120px auto; width: 360px; height: 360px; border-radius: 50%; background: radial-gradient(circle, rgba(0,185,124,.34), transparent 66%); }
+    .eyebrow { color: #4ce0ae; font-weight: 800; letter-spacing: .17em; text-transform: uppercase; font-size: .82rem; }
+    h1 { font-family: Georgia, "Times New Roman", serif; font-size: clamp(2.6rem, 5.4vw, 5.4rem); line-height: .98; letter-spacing: -.045em; margin: 16px 0 22px; max-width: 850px; }
+    .hero p { color: #b9c6d8; font-size: 1.08rem; max-width: 710px; }
+    .chips { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 25px; }
+    .chip { border: 1px solid rgba(255,255,255,.18); background: rgba(255,255,255,.06); color: #dbe5f2; padding: 7px 11px; border-radius: 999px; font-size: .84rem; }
+    .phone-scene { position: relative; height: 390px; display: grid; place-items: center; }
+    .phone {
+      width: 220px; height: 430px; max-height: 100%; border-radius: 36px; border: 8px solid #26344a;
+      background: #f7fafc; box-shadow: 0 24px 70px rgba(0,0,0,.42); overflow: hidden; transform: rotate(5deg); position: relative; z-index: 2;
+    }
+    .phone-notch { width: 88px; height: 20px; background: #26344a; border-radius: 0 0 15px 15px; margin: 0 auto; }
+    .phone-screen { color: #172030; padding: 24px 18px; }
+    .app-top { width: 68%; height: 10px; background: #d9e1eb; border-radius: 10px; }
+    .app-card { margin-top: 18px; padding: 16px; border-radius: 18px; background: linear-gradient(135deg, #00b97c, #1683d8); color: #fff; }
+    .app-card strong { display: block; font-size: 1.55rem; }
+    .app-row { display: flex; gap: 10px; margin-top: 16px; }
+    .app-row span { flex: 1; height: 70px; border-radius: 14px; background: #eef2f7; border: 1px solid #d7dee8; }
+    .orbit { position: absolute; border: 1px dashed rgba(255,255,255,.18); border-radius: 50%; animation: rotate 22s linear infinite; }
+    .orbit.o1 { width: 330px; height: 330px; }
+    .orbit.o2 { width: 270px; height: 270px; animation-direction: reverse; animation-duration: 17s; }
+    .orbit span { position: absolute; width: 38px; height: 38px; display: grid; place-items: center; border-radius: 12px; background: rgba(255,255,255,.1); backdrop-filter: blur(8px); }
+    .orbit.o1 span:first-child { top: -18px; left: calc(50% - 19px); }
+    .orbit.o1 span:last-child { bottom: 10px; left: 8px; }
+    .orbit.o2 span:first-child { right: -18px; top: calc(50% - 19px); }
+    .orbit.o2 span:last-child { left: 10px; top: 16px; }
+    @keyframes rotate { to { transform: rotate(360deg); } }
+    section { margin-top: 34px; }
+    .section-card { background: color-mix(in srgb, var(--surface) 96%, transparent); border: 1px solid var(--line); border-radius: 24px; padding: clamp(22px, 4vw, 40px); box-shadow: var(--shadow); }
+    .section-head { display: flex; align-items: flex-end; justify-content: space-between; gap: 20px; margin-bottom: 24px; }
+    .kicker { display: inline-flex; align-items: center; gap: 8px; text-transform: uppercase; letter-spacing: .12em; font-size: .76rem; color: var(--brand); font-weight: 900; }
+    h2 { font-family: Georgia, "Times New Roman", serif; font-size: clamp(2rem, 3.4vw, 3.3rem); line-height: 1.08; margin: 8px 0 0; letter-spacing: -.03em; }
+    h3 { margin: 0 0 10px; font-size: 1.18rem; }
+    .lead { color: var(--muted); max-width: 800px; font-size: 1.03rem; }
+    .note { border-left: 4px solid var(--amber); background: color-mix(in srgb, var(--amber) 9%, var(--surface)); padding: 16px 18px; border-radius: 0 14px 14px 0; color: var(--muted); }
+    .grid-2 { display: grid; grid-template-columns: repeat(2, minmax(0,1fr)); gap: 16px; }
+    .grid-3 { display: grid; grid-template-columns: repeat(3, minmax(0,1fr)); gap: 16px; }
+    .grid-4 { display: grid; grid-template-columns: repeat(4, minmax(0,1fr)); gap: 14px; }
+    .mini-card { border: 1px solid var(--line); background: var(--surface); border-radius: 16px; padding: 18px; }
+    .mini-card p { color: var(--muted); margin: 6px 0 0; font-size: .93rem; }
+    .metric { border-top: 4px solid var(--c, var(--brand)); }
+    .metric strong { display: block; font-family: Georgia, serif; font-size: clamp(1.9rem, 3vw, 3rem); color: var(--c, var(--brand)); line-height: 1; }
+    .metric span { color: var(--muted); font-size: .88rem; }
+    .control-row { display: flex; flex-wrap: wrap; align-items: center; gap: 10px; margin: 14px 0 18px; }
+    .segmented { display: inline-flex; background: var(--surface-2); border: 1px solid var(--line); border-radius: 12px; padding: 4px; gap: 4px; }
+    .segmented button { border: 0; background: transparent; padding: 8px 12px; border-radius: 9px; cursor: pointer; color: var(--muted); font-weight: 700; }
+    .segmented button.active { background: var(--surface); color: var(--ink); box-shadow: 0 3px 12px rgba(0,0,0,.08); }
+    .pill-btn { border: 1px solid var(--line); background: var(--surface); border-radius: 999px; padding: 8px 13px; cursor: pointer; }
+    .pill-btn.active { border-color: var(--brand); background: color-mix(in srgb, var(--brand) 10%, var(--surface)); }
+    .chart-shell { border: 1px solid var(--line); border-radius: 18px; padding: 14px; background: var(--surface); overflow: hidden; }
+    #marketChart { width: 100%; height: 360px; display: block; }
+    .legend { display: flex; flex-wrap: wrap; gap: 15px; color: var(--muted); font-size: .86rem; }
+    .legend i { display: inline-block; width: 10px; height: 10px; border-radius: 50%; margin-right: 6px; background: var(--c); }
+    .range-label { color: var(--muted); font-size: .88rem; }
+    input[type="range"] { accent-color: var(--brand); }
+    .timeline { display: grid; gap: 10px; }
+    .timeline-item { display: grid; grid-template-columns: 74px 1fr; gap: 14px; align-items: start; }
+    .timeline-item .n { font-weight: 900; color: var(--brand); padding-top: 10px; }
+    .timeline-content { padding: 10px 14px; border-left: 2px solid var(--line); }
+    .timeline-content strong { display: block; }
+    .timeline-content span { color: var(--muted); font-size: .88rem; }
+    .decision-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; }
+    .weights { display: grid; gap: 13px; }
+    .weight-row { display: grid; grid-template-columns: minmax(150px,1fr) 160px 44px; gap: 10px; align-items: center; }
+    .weight-row output { text-align: right; font-weight: 800; }
+    .score-card { border: 1px solid var(--line); border-radius: 18px; padding: 20px; background: var(--surface-2); }
+    .score-line { display: grid; grid-template-columns: 74px 1fr 48px; gap: 10px; align-items: center; margin: 15px 0; }
+    .bar { height: 12px; background: var(--surface); border-radius: 999px; overflow: hidden; border: 1px solid var(--line); }
+    .bar > span { display: block; height: 100%; width: 0; background: var(--c); transition: width .35s ease; }
+    .verdict { margin-top: 18px; padding: 14px; border-radius: 13px; background: var(--surface); font-weight: 750; }
+    .tabs { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 18px; }
+    .tab { border: 1px solid var(--line); border-radius: 12px; background: var(--surface); padding: 9px 13px; cursor: pointer; color: var(--muted); font-weight: 800; }
+    .tab.active { color: var(--ink); border-color: var(--brand); background: color-mix(in srgb, var(--brand) 9%, var(--surface)); }
+    .tab-panel { display: none; }
+    .tab-panel.active { display: block; }
+    .tool-stack { display: grid; grid-template-columns: repeat(5,minmax(0,1fr)); gap: 10px; }
+    .tool { position: relative; min-height: 136px; padding: 15px; border: 1px solid var(--line); border-top: 4px solid var(--c); border-radius: 14px; background: var(--surface); }
+    .tool b { display: block; }
+    .tool small { color: var(--muted); }
+    .code-grid { display: grid; grid-template-columns: 1.2fr .8fr; gap: 18px; }
+    pre { margin: 0; white-space: pre-wrap; overflow-x: auto; border-radius: 16px; padding: 18px; background: #0c1423; color: #dce9f7; border: 1px solid #24344c; font-size: .85rem; line-height: 1.55; }
+    .kw { color: #63b3ff; } .str { color: #f0a8bf; } .cm { color: #89a966; } .type { color: #51d7c0; }
+    .concept-list { display: grid; gap: 9px; }
+    .concept { border-left: 4px solid var(--c); background: var(--surface); padding: 12px 14px; border-radius: 0 12px 12px 0; }
+    .concept small { color: var(--muted); }
+    .demo-box { margin-top: 14px; padding: 16px; border: 1px dashed var(--line); border-radius: 14px; background: var(--surface-2); }
+    .text-input { width: 100%; border: 1px solid var(--line); background: var(--surface); color: var(--ink); border-radius: 10px; padding: 10px 12px; }
+    .lifecycle-layout { display: grid; grid-template-columns: .9fr 1.1fr; gap: 18px; }
+    .state-machine { position: relative; min-height: 455px; border: 1px solid var(--line); border-radius: 18px; background: var(--surface-2); overflow: hidden; }
+    .state-node { position: absolute; width: 126px; min-height: 58px; display: grid; place-items: center; text-align: center; border: 2px solid var(--line); border-radius: 15px; background: var(--surface); cursor: pointer; font-weight: 800; padding: 8px; transition: .25s; z-index: 2; }
+    .state-node.active { border-color: var(--brand); box-shadow: 0 0 0 7px color-mix(in srgb, var(--brand) 13%, transparent); transform: scale(1.04); }
+    .state-node[data-i="0"] { top: 22px; left: calc(50% - 63px); }
+    .state-node[data-i="1"] { top: 104px; left: 24px; }
+    .state-node[data-i="2"] { top: 104px; right: 24px; }
+    .state-node[data-i="3"] { top: 215px; right: 24px; }
+    .state-node[data-i="4"] { top: 300px; left: calc(50% - 63px); }
+    .state-node[data-i="5"] { top: 215px; left: 24px; }
+    .state-node[data-i="6"] { bottom: 18px; left: calc(50% - 63px); }
+    .state-lines { position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; }
+    .state-lines path { stroke: var(--muted); stroke-width: 2; fill: none; stroke-dasharray: 7 7; marker-end: url(#arrow); opacity: .75; }
+    .state-info { border: 1px solid var(--line); border-radius: 18px; padding: 20px; background: var(--surface); min-height: 220px; }
+    .state-info p { color: var(--muted); }
+    .framework-grid { display: grid; grid-template-columns: repeat(4,minmax(0,1fr)); gap: 12px; }
+    .framework { border: 1px solid var(--line); border-top: 5px solid var(--c); background: var(--surface); border-radius: 16px; padding: 16px; }
+    .framework ul { padding-left: 18px; color: var(--muted); font-size: .88rem; }
+    .switch-row { display: flex; justify-content: space-between; align-items: center; gap: 16px; padding: 11px 0; border-bottom: 1px solid var(--line); }
+    .switch { position: relative; width: 48px; height: 26px; background: var(--line); border-radius: 99px; cursor: pointer; flex: 0 0 auto; }
+    .switch input { position: absolute; opacity: 0; }
+    .switch span { position: absolute; top: 4px; left: 4px; width: 18px; height: 18px; background: var(--surface); border-radius: 50%; transition: .2s; box-shadow: 0 2px 6px rgba(0,0,0,.25); }
+    .switch input:checked + span { left: 26px; background: var(--brand); }
+    .architecture-layout { display: grid; grid-template-columns: 280px 1fr; gap: 18px; }
+    .pattern-list { display: grid; gap: 8px; }
+    .pattern-btn { text-align: left; border: 1px solid var(--line); background: var(--surface); border-radius: 12px; padding: 12px 14px; cursor: pointer; }
+    .pattern-btn.active { border-color: var(--brand); background: color-mix(in srgb, var(--brand) 8%, var(--surface)); }
+    .arch-canvas { border: 1px solid var(--line); background: var(--surface-2); border-radius: 18px; min-height: 390px; padding: 18px; }
+    #archSvg { width: 100%; height: 280px; }
+    #archSvg .node { fill: var(--surface); stroke: var(--line); stroke-width: 2; }
+    #archSvg .node-accent { stroke: var(--brand); stroke-width: 3; }
+    #archSvg text { fill: var(--ink); font: 700 15px Inter, sans-serif; text-anchor: middle; dominant-baseline: middle; }
+    #archSvg path { stroke: var(--muted); stroke-width: 2; fill: none; marker-end: url(#archArrow); }
+    .offline-sim { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; }
+    .sim-phone { min-height: 330px; border: 8px solid var(--line); border-radius: 30px; padding: 22px 14px; background: var(--surface); }
+    .sim-status { display: flex; justify-content: space-between; font-size: .85rem; color: var(--muted); }
+    .article-list { display: grid; gap: 8px; margin: 16px 0; }
+    .article { display: flex; justify-content: space-between; gap: 10px; padding: 11px; border: 1px solid var(--line); border-radius: 12px; background: var(--surface-2); }
+    .sync-badge { font-size: .75rem; padding: 3px 7px; border-radius: 999px; background: color-mix(in srgb, var(--amber) 15%, var(--surface)); color: var(--amber); }
+    .sync-badge.synced { color: var(--ok); background: color-mix(in srgb, var(--ok) 12%, var(--surface)); }
+    .primary { border: 0; border-radius: 11px; background: var(--brand); color: #071711; padding: 10px 14px; cursor: pointer; font-weight: 900; }
+    .secondary { border: 1px solid var(--line); border-radius: 11px; background: var(--surface); padding: 10px 14px; cursor: pointer; }
+    .sim-log { height: 300px; overflow: auto; background: #0c1423; color: #b8c8dd; border-radius: 15px; padding: 14px; font: .81rem/1.5 monospace; }
+    .test-pyramid { width: min(500px,100%); margin: 0 auto; display: grid; gap: 8px; align-items: center; }
+    .pyr { justify-self: center; height: 74px; clip-path: polygon(50% 0, 100% 100%, 0 100%); display: grid; place-items: end center; padding-bottom: 8px; font-weight: 900; cursor: pointer; color: #fff; transition: .2s; }
+    .pyr:hover { filter: brightness(1.08); transform: translateY(-2px); }
+    .pyr.ui { width: 44%; background: var(--magenta); }
+    .pyr.int { width: 68%; background: var(--brand-2); }
+    .pyr.unit { width: 92%; background: var(--brand); }
+    .pipeline { display: grid; grid-template-columns: repeat(5,1fr); gap: 10px; }
+    .stage { border: 1px solid var(--line); border-radius: 14px; padding: 14px; min-height: 108px; background: var(--surface); position: relative; }
+    .stage::after { content: "→"; position: absolute; right: -11px; top: 36%; color: var(--muted); z-index: 4; }
+    .stage:last-child::after { display: none; }
+    .stage .status { margin-top: 10px; color: var(--muted); font-size: .82rem; }
+    .stage.running { border-color: var(--amber); box-shadow: 0 0 0 5px color-mix(in srgb, var(--amber) 10%, transparent); }
+    .stage.done { border-color: var(--ok); }
+    .stage.failed { border-color: var(--danger); }
+    .budget-grid { display: grid; grid-template-columns: repeat(4,1fr); gap: 12px; }
+    .gauge { border: 1px solid var(--line); border-radius: 14px; padding: 14px; background: var(--surface); }
+    .gauge-meter { height: 9px; background: var(--surface-2); border-radius: 99px; overflow: hidden; margin-top: 9px; }
+    .gauge-meter span { display: block; height: 100%; width: 0; background: var(--ok); transition: .3s; }
+    .locale-preview { border: 1px solid var(--line); border-radius: 18px; padding: 18px; background: var(--surface); }
+    .security-grid { display: grid; grid-template-columns: repeat(4,1fr); gap: 10px; }
+    .security { border: 1px solid var(--line); border-radius: 14px; padding: 14px; background: var(--surface); cursor: pointer; min-height: 150px; }
+    .security b { display: block; color: var(--danger); margin-bottom: 7px; }
+    .security .mitigation { display: none; margin-top: 9px; color: var(--ok); font-size: .85rem; }
+    .security.open .mitigation { display: block; }
+    .career-lanes { display: grid; grid-template-columns: repeat(4,1fr); gap: 12px; }
+    .lane { border-left: 5px solid var(--c); border-radius: 0 16px 16px 0; padding: 16px; background: var(--surface); }
+    .lane p { color: var(--muted); font-size: .88rem; }
+    .project-check { display: grid; grid-template-columns: repeat(2,1fr); gap: 8px 18px; }
+    .check-item { display: flex; gap: 10px; align-items: flex-start; padding: 9px 0; border-bottom: 1px solid var(--line); }
+    .check-item input { margin-top: 5px; accent-color: var(--brand); }
+    .check-item.done label { text-decoration: line-through; color: var(--muted); }
+    .completion { height: 12px; border: 1px solid var(--line); background: var(--surface-2); border-radius: 99px; overflow: hidden; }
+    .completion span { display: block; height: 100%; background: linear-gradient(90deg,var(--brand),var(--brand-2)); width: 0; }
+    .grade-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; }
+    .grade-result { display: grid; place-items: center; min-height: 220px; border-radius: 20px; background: linear-gradient(135deg, color-mix(in srgb,var(--brand) 12%,var(--surface)), color-mix(in srgb,var(--brand-2) 11%,var(--surface))); border: 1px solid var(--line); }
+    .grade-result strong { font-family: Georgia,serif; font-size: 4rem; line-height: 1; }
+    .quiz-list { display: grid; gap: 14px; }
+    .question { border: 1px solid var(--line); background: var(--surface); border-radius: 16px; padding: 18px; }
+    .question.correct { border-color: var(--ok); }
+    .question.incorrect { border-color: var(--danger); }
+    .answers { display: grid; gap: 8px; margin-top: 12px; }
+    .answers label { display: flex; gap: 9px; align-items: flex-start; padding: 8px 10px; border-radius: 9px; background: var(--surface-2); cursor: pointer; }
+    .feedback { display: none; margin-top: 12px; color: var(--muted); font-size: .9rem; }
+    .question.graded .feedback { display: block; }
+    .footer { max-width: var(--max); margin: 0 auto 40px; padding: 0 20px; color: var(--muted); font-size: .88rem; }
+    .footer-inner { border-top: 1px solid var(--line); padding-top: 22px; display: flex; justify-content: space-between; gap: 20px; flex-wrap: wrap; }
+    .mobile-toc { display: none; }
+    .sr-only { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0,0,0,0); white-space: nowrap; border: 0; }
+
+    /* Rozszerzenia dydaktyczne i laboratoria interaktywne */
+    .didactic-grid { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:12px; margin:18px 0 24px; }
+    .teaching-card { position:relative; border:1px solid var(--line); border-radius:15px; padding:16px 16px 16px 18px; background:var(--surface); min-height:132px; }
+    .teaching-card::before { content:""; position:absolute; inset:0 auto 0 0; width:4px; border-radius:15px 0 0 15px; background:var(--c,var(--brand)); }
+    .teaching-card b { display:block; margin-bottom:6px; }
+    .teaching-card p { margin:0; color:var(--muted); font-size:.91rem; }
+    .teaching-card .tag { display:inline-block; margin-bottom:8px; color:var(--c,var(--brand)); font-weight:900; font-size:.72rem; letter-spacing:.1em; text-transform:uppercase; }
+    .lab { margin-top:22px; border:1px solid var(--line); border-radius:18px; padding:18px; background:linear-gradient(145deg,color-mix(in srgb,var(--brand) 5%,var(--surface)),var(--surface)); }
+    .lab-head { display:flex; justify-content:space-between; align-items:flex-start; gap:18px; margin-bottom:14px; }
+    .lab-head h3 { margin:0; }
+    .lab-head h3 + p { margin:9px 0 0; color:var(--muted); max-width:760px; font-size:.92rem; }
+    .lab-badge { white-space:nowrap; border-radius:999px; padding:5px 9px; background:color-mix(in srgb,var(--brand) 11%,var(--surface)); color:var(--brand); font-weight:850; font-size:.74rem; }
+    .lab-actions { display:flex; flex-wrap:wrap; justify-content:flex-end; align-items:center; gap:8px; }
+    .auto-toolbar { display:flex; justify-content:flex-end; align-items:center; margin:10px 0 16px; }
+    .auto-control { display:flex; align-items:center; gap:9px; min-width:218px; padding:7px 9px 7px 11px; border:1px solid var(--line); border-radius:14px; background:var(--surface); box-shadow:0 5px 18px rgba(20,35,55,.06); }
+    .auto-control-copy { min-width:0; flex:1; line-height:1.15; }
+    .auto-control-copy strong { display:flex; align-items:center; gap:7px; font-size:.82rem; }
+    .auto-control-copy small { display:block; margin-top:4px; color:var(--muted); font-size:.69rem; line-height:1.25; }
+    .auto-indicator { width:8px; height:8px; border-radius:50%; background:var(--muted); flex:0 0 auto; }
+    .auto-control[data-state="running"] .auto-indicator { background:var(--brand); box-shadow:0 0 0 5px color-mix(in srgb,var(--brand) 14%,transparent); animation:autoPulse 1.25s ease-in-out infinite; }
+    .auto-control[data-state="waiting"] .auto-indicator { background:var(--amber); }
+    .auto-control[data-state="off"] .auto-indicator { background:var(--muted); box-shadow:none; animation:none; }
+    .auto-switch { width:44px; height:24px; }
+    .auto-switch span { width:16px; height:16px; }
+    .auto-switch input:checked + span { left:24px; }
+    @keyframes autoPulse { 50% { transform:scale(1.22); opacity:.68; } }
+    .offline-sim > .auto-toolbar { grid-column:1 / -1; margin:0 0 2px; }
+    .lifecycle-layout .auto-control { margin-bottom:12px; }
+    .sim-grid { display:grid; grid-template-columns:1fr 1fr; gap:16px; }
+    .sim-controls { display:grid; gap:12px; }
+    .slider-row { display:grid; grid-template-columns:minmax(150px,1fr) minmax(130px,220px) 62px; gap:10px; align-items:center; }
+    .slider-row output { text-align:right; font-weight:850; }
+    .explain-box { border:1px solid var(--line); border-radius:14px; padding:15px; background:var(--surface); color:var(--muted); }
+    .explain-box strong { color:var(--ink); }
+    .factor-bars { display:grid; gap:10px; }
+    .factor-bar { display:grid; grid-template-columns:125px 1fr 50px; gap:9px; align-items:center; font-size:.86rem; }
+    .factor-bar .track { height:11px; border-radius:999px; background:var(--surface-2); overflow:hidden; border:1px solid var(--line); }
+    .factor-bar .track span { display:block; height:100%; width:0; background:var(--c,var(--brand)); transition:.3s; }
+    .scenario-presets { display:flex; flex-wrap:wrap; gap:8px; margin:10px 0 18px; }
+    .process-flow { display:grid; grid-template-columns:repeat(5,1fr); gap:9px; align-items:stretch; }
+    .process-node { min-height:106px; border:1px solid var(--line); border-radius:14px; background:var(--surface); padding:13px; position:relative; transition:.25s; }
+    .process-node:not(:last-child)::after { content:"→"; position:absolute; right:-12px; top:38%; color:var(--muted); z-index:2; }
+    .process-node small { display:block; color:var(--muted); margin-top:6px; }
+    .process-node.active { border-color:var(--brand); box-shadow:0 0 0 5px color-mix(in srgb,var(--brand) 11%,transparent); transform:translateY(-2px); }
+    .process-node.done { border-color:var(--ok); background:color-mix(in srgb,var(--ok) 6%,var(--surface)); }
+    .process-node.error { border-color:var(--danger); background:color-mix(in srgb,var(--danger) 7%,var(--surface)); }
+    .console { min-height:116px; max-height:190px; overflow:auto; border-radius:13px; padding:12px; background:#0c1423; color:#b8c8dd; font:.8rem/1.5 monospace; }
+    .thread-lane { position:relative; border:1px solid var(--line); border-radius:14px; padding:12px; background:var(--surface); overflow:hidden; }
+    .thread-track { display:flex; gap:4px; height:42px; margin-top:9px; }
+    .thread-block { min-width:18px; flex:1; border-radius:7px; background:var(--surface-2); border:1px solid var(--line); transition:.2s; }
+    .thread-block.work { background:var(--brand-2); border-color:transparent; }
+    .thread-block.blocked { background:var(--danger); border-color:transparent; }
+    .thread-block.frame-drop { outline:3px solid color-mix(in srgb,var(--danger) 30%,transparent); }
+    .event-grid { display:grid; grid-template-columns:repeat(4,1fr); gap:8px; }
+    .event-btn { min-height:82px; display:flex; flex-direction:column; justify-content:center; border:1px solid var(--line); border-radius:12px; background:var(--surface); padding:11px 12px; cursor:pointer; text-align:left; transition:.2s; }
+    .event-btn b { display:block; margin-bottom:7px; line-height:1.2; }
+    .event-btn small { display:block; color:var(--muted); line-height:1.35; }
+    .event-btn:hover { border-color:var(--brand); transform:translateY(-1px); }
+    .event-btn.active { border-color:var(--brand); background:color-mix(in srgb,var(--brand) 8%,var(--surface)); box-shadow:0 0 0 4px color-mix(in srgb,var(--brand) 10%,transparent); }
+    .event-btn:disabled { cursor:wait; opacity:.68; transform:none; }
+    .resource-panel { display:flex; flex-wrap:wrap; gap:8px; margin-top:12px; }
+    .resource-chip { padding:7px 10px; border-radius:999px; border:1px solid var(--line); background:var(--surface-2); color:var(--muted); font-size:.82rem; transition:.25s; }
+    .resource-chip.on { color:var(--ok); border-color:var(--ok); background:color-mix(in srgb,var(--ok) 8%,var(--surface)); }
+    .resource-chip.warn { color:var(--danger); border-color:var(--danger); background:color-mix(in srgb,var(--danger) 7%,var(--surface)); }
+    .event-sim-dashboard { display:grid; grid-template-columns:.9fr 1.1fr; gap:14px; margin-top:14px; }
+    .event-state-card { border:1px solid var(--line); border-radius:15px; padding:14px; background:var(--surface); }
+    .event-state-card h4 { margin:3px 0 12px; font-size:1rem; }
+    .system-state-grid { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:8px; }
+    .system-state { border:1px solid var(--line); border-radius:11px; padding:10px; background:var(--surface-2); }
+    .system-state span { display:block; color:var(--muted); font-size:.72rem; text-transform:uppercase; letter-spacing:.06em; margin-bottom:4px; }
+    .system-state strong { display:block; font-size:.92rem; overflow-wrap:anywhere; }
+    .callback-timeline { display:grid; gap:7px; max-height:250px; overflow:auto; padding-right:3px; }
+    .callback-step { display:grid; grid-template-columns:26px 1fr; gap:9px; align-items:start; border:1px solid var(--line); border-radius:10px; padding:8px 9px; color:var(--muted); background:var(--surface-2); transition:.22s; }
+    .callback-step .step-no { display:grid; place-items:center; width:24px; height:24px; border-radius:50%; background:var(--surface); border:1px solid var(--line); font-weight:850; font-size:.75rem; }
+    .callback-step b { display:block; color:var(--ink); margin-bottom:3px; }
+    .callback-step small { display:block; line-height:1.35; }
+    .callback-step.active { border-color:var(--brand); background:color-mix(in srgb,var(--brand) 8%,var(--surface)); transform:translateX(3px); }
+    .callback-step.done { border-color:color-mix(in srgb,var(--ok) 55%,var(--line)); }
+    .callback-step.done .step-no { background:var(--ok); color:white; border-color:var(--ok); }
+    .energy-meter { height:12px; margin-top:8px; overflow:hidden; border:1px solid var(--line); border-radius:999px; background:var(--surface-2); }
+    .energy-meter span { display:block; width:0; height:100%; border-radius:inherit; background:var(--ok); transition:.3s; }
+    .event-assessment { min-height:48px; margin:10px 0 0; color:var(--muted); font-size:.88rem; }
+    .render-lab { display:grid; grid-template-columns:.8fr 1.2fr; gap:16px; }
+    .mock-ui { border:7px solid var(--line); border-radius:25px; background:var(--surface); padding:16px; min-height:260px; transition:.25s; }
+    .mock-ui.dark-preview { background:#111827; color:#eef4fc; }
+    .mock-row { display:flex; justify-content:space-between; align-items:center; gap:12px; padding:12px; border:1px solid var(--line); border-radius:12px; margin-top:9px; }
+    .tree { display:grid; gap:8px; }
+    .tree-node { border:1px solid var(--line); border-radius:10px; padding:9px 11px; background:var(--surface); transition:.25s; }
+    .tree-node.indent-1 { margin-left:22px; }
+    .tree-node.indent-2 { margin-left:44px; }
+    .tree-node.recomposed { border-color:var(--magenta); background:color-mix(in srgb,var(--magenta) 8%,var(--surface)); animation:pulseNode .55s ease; }
+    @keyframes pulseNode { 50% { transform:scale(1.02); } }
+    .trace { display:flex; flex-wrap:wrap; gap:8px; align-items:center; margin-top:12px; }
+    .trace-step { border:1px solid var(--line); border-radius:11px; padding:9px 11px; background:var(--surface); color:var(--muted); font-size:.85rem; transition:.25s; }
+    .trace-step.active { color:var(--ink); border-color:var(--brand); background:color-mix(in srgb,var(--brand) 8%,var(--surface)); }
+    .trace-arrow { color:var(--muted); }
+    #archSvg g.flow-active rect { stroke:var(--magenta); stroke-width:4; filter:drop-shadow(0 0 5px color-mix(in srgb,var(--magenta) 45%,transparent)); }
+    .sync-dashboard { display:grid; grid-template-columns:repeat(4,1fr); gap:10px; margin-top:14px; }
+    .sync-stat { border:1px solid var(--line); border-radius:13px; padding:12px; background:var(--surface); }
+    .sync-stat strong { display:block; font-size:1.45rem; }
+    .conflict-row { display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-top:10px; }
+    .version-card { border:1px solid var(--line); border-radius:13px; padding:12px; background:var(--surface); }
+    .version-card.conflict { border-color:var(--danger); }
+    .test-mix { display:grid; grid-template-columns:1fr 1fr; gap:16px; }
+    .test-stack { display:flex; flex-direction:column-reverse; height:280px; border:1px solid var(--line); border-radius:15px; overflow:hidden; background:var(--surface-2); }
+    .test-stack div { flex:0 0 var(--size,33.333%); min-height:0; display:grid; place-items:center; color:white; font-weight:850; transition:flex-basis .35s ease, opacity .25s ease, filter .25s ease; text-align:center; padding:0 8px; overflow:hidden; }
+    .test-stack div.zero { opacity:.18; filter:saturate(.25); }
+    .test-stack .unit { background:var(--brand); }
+    .test-stack .integration { background:var(--brand-2); }
+    .test-stack .ui { background:var(--magenta); }
+    .metric-table { display:grid; gap:8px; }
+    .metric-row { display:flex; justify-content:space-between; gap:15px; border-bottom:1px solid var(--line); padding:8px 0; }
+    .frame-sim { display:grid; grid-template-columns:1fr 1fr; gap:16px; }
+    .frames { display:grid; grid-template-columns:repeat(20,1fr); gap:4px; align-items:end; height:150px; padding:12px; border:1px solid var(--line); border-radius:14px; background:var(--surface); }
+    .frame { min-height:6px; border-radius:5px 5px 2px 2px; background:var(--ok); transition:.2s; position:relative; }
+    .frame.slow { background:var(--danger); }
+    .frame::after { content:attr(data-ms); position:absolute; bottom:100%; left:50%; transform:translateX(-50%); font-size:.62rem; color:var(--muted); opacity:0; pointer-events:none; }
+    .frame:hover::after { opacity:1; }
+    .a11y-preview { transition:.2s; }
+    .a11y-preview.high-contrast { filter:contrast(1.55); }
+    .attack-grid { display:grid; grid-template-columns:1fr 1fr; gap:16px; }
+    .risk-meter { height:18px; border:1px solid var(--line); border-radius:99px; overflow:hidden; background:var(--surface-2); }
+    .risk-meter span { display:block; height:100%; width:0; transition:.3s; background:linear-gradient(90deg,var(--ok),var(--amber),var(--danger)); }
+    .skill-lab { display:grid; grid-template-columns:260px 1fr; gap:18px; }
+    .skill-bars { display:grid; gap:10px; }
+    .skill-bar { display:grid; grid-template-columns:140px 1fr 40px; gap:9px; align-items:center; }
+    .skill-bar .barline { height:12px; border-radius:99px; background:var(--surface-2); overflow:hidden; }
+    .skill-bar .barline span { display:block; height:100%; background:var(--c,var(--brand)); width:0; transition:.35s; }
+    .kanban { display:grid; grid-template-columns:repeat(3,1fr); gap:12px; }
+    .kanban-col { border:1px solid var(--line); border-radius:15px; padding:12px; background:var(--surface-2); min-height:220px; }
+    .kanban-col h4 { margin:0 0 10px; display:flex; justify-content:space-between; }
+    .task-card { border:1px solid var(--line); border-radius:11px; background:var(--surface); padding:10px; margin:8px 0; cursor:pointer; }
+    .task-card small { color:var(--muted); display:block; margin-top:4px; }
+    .task-card.blocked { border-color:var(--danger); }
+    .sim-hint { margin-top:10px; color:var(--muted); font-size:.84rem; }
+
+    /* Spójny odstęp między tytułem a opisem we wszystkich kafelkach */
+    .mini-card > h3,
+    .mini-card > h4,
+    .mini-card > b,
+    .mini-card:not(.metric) > strong,
+    .tool > b,
+    .concept > b,
+    .process-node > b,
+    .thread-lane > b,
+    .version-card > b,
+    .security > b,
+    .task-card > b,
+    .task-card > strong {
+      display: block;
+      margin: 0 0 8px;
+      line-height: 1.25;
+    }
+    .teaching-card > b { margin-bottom: 8px; line-height: 1.3; }
+    .framework > h3,
+    .lane > h3,
+    .score-card > h3,
+    .state-info > h3 { margin-bottom: 10px; line-height: 1.25; }
+    .tool > small,
+    .concept > small,
+    .process-node > small,
+    .thread-lane > small,
+    .task-card > small {
+      display: block;
+      margin-top: 0;
+      line-height: 1.45;
+    }
+    .mini-card > p,
+    .lane > p,
+    .version-card > p,
+    .security > p,
+    .question > p {
+      margin-top: 0;
+      line-height: 1.5;
+    }
+    .framework > ul { margin-top: 0; }
+    .metric > strong { margin-bottom: 9px; }
+    .sync-stat > span { display: block; margin-bottom: 6px; color: var(--muted); }
+    .sync-stat > strong { line-height: 1.15; }
+
+    @media (max-width: 1050px) {
+      .layout { grid-template-columns: 1fr; }
+      .sidebar { display: none; }
+      .mobile-toc { display: block; margin-bottom: 16px; }
+      .mobile-toc select { width: 100%; border: 1px solid var(--line); border-radius: 12px; background: var(--surface); color: var(--ink); padding: 11px; }
+      .tool-stack, .framework-grid { grid-template-columns: repeat(2,1fr); }
+      .security-grid, .career-lanes { grid-template-columns: repeat(2,1fr); }
+      .didactic-grid, .sync-dashboard { grid-template-columns:repeat(2,1fr); }
+      .skill-lab { grid-template-columns:1fr; }
+    }
+    @media (max-width: 760px) {
+      .brand-mark span:last-child { display: none; }
+      .hero { grid-template-columns: 1fr; min-height: auto; }
+      .phone-scene { height: 330px; }
+      .phone { width: 180px; height: 340px; }
+      .grid-2, .grid-3, .grid-4, .decision-grid, .code-grid, .lifecycle-layout, .architecture-layout, .offline-sim, .grade-grid { grid-template-columns: 1fr; }
+      .didactic-grid, .sim-grid, .render-lab, .test-mix, .frame-sim, .attack-grid, .conflict-row, .kanban, .sync-dashboard { grid-template-columns:1fr; }
+      .process-flow { grid-template-columns:1fr; }
+      .process-node:not(:last-child)::after { content:"↓"; right:50%; top:auto; bottom:-18px; }
+      .event-grid { grid-template-columns:repeat(2,1fr); }
+      .event-sim-dashboard { grid-template-columns:1fr; }
+      .slider-row { grid-template-columns:1fr 120px 56px; }
+      .tool-stack, .framework-grid, .security-grid, .career-lanes, .budget-grid { grid-template-columns: 1fr; }
+      .pipeline { grid-template-columns: 1fr; }
+      .stage::after { content: "↓"; right: 50%; top: auto; bottom: -19px; }
+      .project-check { grid-template-columns: 1fr; }
+      .weight-row { grid-template-columns: 1fr 125px 36px; }
+      .state-machine { min-height: 470px; }
+      .section-card { border-radius: 18px; }
+      .section-head { align-items: flex-start; flex-direction: column; }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after { animation-duration: .01ms !important; animation-iteration-count: 1 !important; scroll-behavior: auto !important; transition-duration: .01ms !important; }
+    }
+    @media print {
+      .topbar, .sidebar, .mobile-toc, button, .control-row { display: none !important; }
+      .layout { display: block; max-width: none; padding: 0; }
+      body { background: #fff; color: #000; }
+      .hero, .section-card { box-shadow: none; break-inside: avoid; }
+    }
+  
+
+    :root { --cyan:#12b8c8; }
+    .hero.hardware { grid-template-columns:1.08fr .92fr; }
+    .soc-scene { position:relative; min-height:430px; display:grid; place-items:center; perspective:1000px; }
+    .soc-board { position:relative; width:min(430px,100%); aspect-ratio:1.08; border-radius:34px; background:linear-gradient(145deg,#17253a,#0a1220); border:1px solid rgba(255,255,255,.14); box-shadow:0 30px 80px rgba(0,0,0,.45); transform:rotateX(58deg) rotateZ(-18deg); transform-style:preserve-3d; }
+    .soc-board::before { content:""; position:absolute; inset:22px; border:1px dashed rgba(255,255,255,.12); border-radius:24px; }
+    .hero-chip { position:absolute; display:grid; place-items:center; text-align:center; padding:8px; border-radius:13px; color:white; font-weight:900; font-size:.74rem; letter-spacing:.03em; box-shadow:0 12px 24px rgba(0,0,0,.3); transform:translateZ(16px); animation:chipFloat 3.8s ease-in-out infinite; }
+    .hero-chip small { display:block; opacity:.72; font-weight:600; font-size:.62rem; }
+    .hero-chip.cpu { left:12%; top:13%; width:34%; height:28%; background:#0ebd87; }
+    .hero-chip.gpu { right:10%; top:13%; width:35%; height:28%; background:#d60b73; animation-delay:.3s; }
+    .hero-chip.npu { left:12%; bottom:14%; width:30%; height:26%; background:#6b35df; animation-delay:.6s; }
+    .hero-chip.isp { left:45%; bottom:14%; width:20%; height:26%; background:#1683d8; animation-delay:.9s; }
+    .hero-chip.modem { right:10%; bottom:14%; width:21%; height:26%; background:#bd7b00; animation-delay:1.2s; }
+    .board-trace { position:absolute; height:2px; transform-origin:left center; background:linear-gradient(90deg,rgba(46,226,192,.1),rgba(46,226,192,.95),rgba(46,226,192,.1)); box-shadow:0 0 9px rgba(46,226,192,.5); animation:tracePulse 2s linear infinite; }
+    .board-trace.t1 { left:41%; top:31%; width:23%; transform:rotate(0deg); }
+    .board-trace.t2 { left:31%; top:49%; width:28%; transform:rotate(82deg); }
+    .board-trace.t3 { left:56%; top:52%; width:22%; transform:rotate(55deg); }
+    @keyframes chipFloat { 50% { transform:translateZ(26px); filter:brightness(1.08); } }
+    @keyframes tracePulse { 50% { opacity:.3; } }
+    .lab { margin-top:20px; border:1px solid var(--line); border-radius:20px; background:var(--surface-2); padding:18px; }
+    .lab-head { display:flex; justify-content:space-between; align-items:flex-start; gap:16px; margin-bottom:14px; }
+    .lab-head h3 { margin:0 0 7px; }
+    .lab-head p { margin:0; color:var(--muted); max-width:760px; }
+    .lab-actions { display:flex; align-items:center; gap:10px; flex-wrap:wrap; justify-content:flex-end; }
+    .lab-badge { white-space:nowrap; border-radius:999px; padding:6px 10px; background:var(--surface); border:1px solid var(--line); color:var(--muted); font-size:.75rem; font-weight:800; }
+    .explain-grid { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:12px; margin:18px 0; }
+    .teaching-card { position:relative; border:1px solid var(--line); border-radius:15px; background:var(--surface); padding:16px 16px 16px 19px; overflow:hidden; }
+    .teaching-card::before { content:""; position:absolute; inset:0 auto 0 0; width:4px; background:var(--c,var(--brand)); }
+    .teaching-card b { display:block; margin-bottom:8px; }
+    .teaching-card p { margin:0; color:var(--muted); font-size:.91rem; }
+    .tag { display:inline-block; margin-bottom:7px; color:var(--c,var(--brand)); text-transform:uppercase; letter-spacing:.1em; font-size:.68rem; font-weight:900; }
+    .auto-toolbar { display:flex; justify-content:flex-end; margin:0 0 14px; }
+    .auto-control { display:flex; align-items:center; gap:9px; min-width:226px; padding:7px 9px 7px 11px; border:1px solid var(--line); border-radius:14px; background:var(--surface); box-shadow:0 5px 18px rgba(20,35,55,.06); }
+    .auto-control-copy { min-width:0; flex:1; line-height:1.15; }
+    .auto-control-copy strong { display:flex; align-items:center; gap:7px; font-size:.82rem; }
+    .auto-control-copy small { display:block; margin-top:4px; color:var(--muted); font-size:.69rem; line-height:1.25; }
+    .auto-indicator { width:8px; height:8px; border-radius:50%; background:var(--muted); flex:0 0 auto; }
+    .auto-control[data-state="running"] .auto-indicator { background:var(--brand); box-shadow:0 0 0 5px color-mix(in srgb,var(--brand) 14%,transparent); animation:autoPulse 1.25s ease-in-out infinite; }
+    .auto-control[data-state="waiting"] .auto-indicator { background:var(--amber); }
+    .auto-control[data-state="off"] .auto-indicator { background:var(--muted); box-shadow:none; animation:none; }
+    .auto-switch { width:44px; height:24px; }
+    .auto-switch span { width:16px; height:16px; }
+    .auto-switch input:checked + span { left:24px; }
+    @keyframes autoPulse { 50% { transform:scale(1.22); opacity:.68; } }
+    .sim-grid { display:grid; grid-template-columns:minmax(260px,.78fr) minmax(0,1.22fr); gap:16px; }
+    .controls { border:1px solid var(--line); border-radius:16px; background:var(--surface); padding:16px; display:grid; gap:13px; align-content:start; }
+    .control { display:grid; gap:6px; }
+    .control label, .control-row-label { display:flex; justify-content:space-between; gap:10px; font-size:.86rem; font-weight:750; }
+    .control small { color:var(--muted); }
+    .control select, .control input[type="number"] { width:100%; border:1px solid var(--line); border-radius:10px; padding:9px 10px; background:var(--surface-2); color:var(--ink); }
+    .viz { position:relative; border:1px solid var(--line); border-radius:16px; background:var(--surface); min-height:330px; padding:16px; overflow:hidden; }
+    .metric-row { display:grid; grid-template-columns:repeat(4,minmax(0,1fr)); gap:9px; margin-top:12px; }
+    .metric-box { border:1px solid var(--line); border-radius:12px; background:var(--surface); padding:11px; }
+    .metric-box strong { display:block; font-size:1.25rem; line-height:1.1; color:var(--c,var(--brand)); margin-bottom:5px; }
+    .metric-box small { color:var(--muted); }
+    .bar-row { display:grid; grid-template-columns:88px 1fr 48px; align-items:center; gap:9px; margin:8px 0; font-size:.82rem; }
+    .bar-row .bar { height:11px; }
+    .bar-row output { text-align:right; font-weight:800; }
+    .timeline-sim { position:relative; padding:30px 8px 12px; }
+    .timeline-track { height:8px; border-radius:99px; background:var(--line); position:relative; }
+    .timeline-progress { position:absolute; inset:0 auto 0 0; width:0; border-radius:99px; background:linear-gradient(90deg,var(--brand),var(--brand-2),var(--magenta)); transition:.45s; }
+    .era-nodes { display:grid; grid-template-columns:repeat(10,1fr); margin-top:-16px; position:relative; }
+    .era-node { display:grid; justify-items:center; gap:8px; cursor:pointer; }
+    .era-dot { width:18px; height:18px; border:4px solid var(--surface); background:var(--line); border-radius:50%; box-shadow:0 0 0 2px var(--line); transition:.25s; }
+    .era-node.active .era-dot { background:var(--brand); box-shadow:0 0 0 5px color-mix(in srgb,var(--brand) 18%,transparent); }
+    .era-node span { font-size:.69rem; color:var(--muted); text-align:center; }
+    .history-panel { margin-top:20px; display:grid; grid-template-columns:130px 1fr; gap:16px; align-items:center; border:1px solid var(--line); border-radius:16px; padding:17px; background:var(--surface); }
+    .history-year { font:800 2.6rem/1 Georgia,serif; color:var(--brand); }
+    .history-panel h3 { margin-bottom:8px; }
+    .history-panel p { margin:0; color:var(--muted); }
+    .soc-map { display:grid; grid-template-columns:repeat(4,1fr); grid-template-rows:repeat(3,84px); gap:8px; }
+    .soc-block { border:2px solid var(--line); border-radius:13px; background:var(--surface-2); padding:9px; display:flex; flex-direction:column; justify-content:space-between; transition:.3s; position:relative; overflow:hidden; }
+    .soc-block b { font-size:.86rem; }
+    .soc-block small { color:var(--muted); font-size:.71rem; }
+    .soc-block.active { border-color:var(--c,var(--brand)); background:color-mix(in srgb,var(--c,var(--brand)) 12%,var(--surface)); box-shadow:0 0 0 5px color-mix(in srgb,var(--c,var(--brand)) 8%,transparent); }
+    .soc-block.active::after { content:""; position:absolute; inset:-50%; background:linear-gradient(100deg,transparent,rgba(255,255,255,.35),transparent); animation:sweep 1.4s linear infinite; }
+    .soc-block.cpu { grid-column:1/3; --c:var(--brand); }
+    .soc-block.gpu { grid-column:3/5; --c:var(--magenta); }
+    .soc-block.npu { grid-column:1/2; --c:var(--purple); }
+    .soc-block.isp { grid-column:2/3; --c:var(--brand-2); }
+    .soc-block.mem { grid-column:3/4; --c:var(--cyan); }
+    .soc-block.modem { grid-column:4/5; --c:var(--amber); }
+    .soc-block.sec { grid-column:1/3; --c:var(--ok); }
+    .soc-block.io { grid-column:3/5; --c:#64748b; }
+    @keyframes sweep { to { transform:translateX(100%); } }
+    .core-grid { display:grid; grid-template-columns:repeat(8,1fr); gap:7px; margin:16px 0; }
+    .core { height:76px; border:1px solid var(--line); border-radius:12px; background:var(--surface-2); display:flex; flex-direction:column; justify-content:flex-end; padding:7px; overflow:hidden; }
+    .core-fill { height:0; border-radius:7px; background:linear-gradient(180deg,var(--brand-2),var(--brand)); transition:.4s; }
+    .core.p .core-fill { background:linear-gradient(180deg,var(--magenta),var(--amber)); }
+    .core span { font-size:.65rem; font-weight:850; margin-top:5px; text-align:center; }
+    .tile-grid { display:grid; grid-template-columns:repeat(8,1fr); aspect-ratio:1.55; gap:3px; background:#07111f; padding:8px; border-radius:13px; }
+    .tile { border-radius:3px; background:#14253b; transition:.18s; position:relative; overflow:hidden; }
+    .tile.object::before { content:""; position:absolute; inset:12%; background:linear-gradient(145deg,#30d5a2,#1683d8); border-radius:3px; opacity:.8; }
+    .tile.hidden::before { background:#d70a72; opacity:.45; }
+    .tile.processing { outline:2px solid #fff; box-shadow:0 0 14px #55aef2; }
+    .tile.done { background:#164a44; }
+    .systolic { display:grid; grid-template-columns:repeat(8,1fr); gap:4px; width:min(390px,100%); margin:8px auto; }
+    .pe { aspect-ratio:1; border-radius:5px; background:var(--surface-2); border:1px solid var(--line); transition:.2s; }
+    .pe.hot { background:var(--purple); box-shadow:0 0 10px color-mix(in srgb,var(--purple) 60%,transparent); }
+    .memory-path { display:flex; align-items:center; justify-content:space-between; gap:7px; margin:45px 0 24px; }
+    .mem-node { min-width:68px; border:2px solid var(--line); border-radius:12px; padding:12px 7px; text-align:center; background:var(--surface); position:relative; transition:.3s; }
+    .mem-node b { display:block; }
+    .mem-node small { color:var(--muted); font-size:.69rem; }
+    .mem-node.active { border-color:var(--brand); box-shadow:0 0 0 6px color-mix(in srgb,var(--brand) 12%,transparent); }
+    .mem-arrow { color:var(--muted); }
+    .display-preview { width:210px; height:360px; margin:auto; border:9px solid #26344a; border-radius:30px; background:#05090f; overflow:hidden; position:relative; }
+    .display-content { position:absolute; inset:0; display:grid; place-items:center; text-align:center; color:white; transition:.35s; }
+    .display-content.video { background:linear-gradient(145deg,#ffb24a,#d60b73 46%,#301f79); }
+    .display-content.reading { background:#f4f0df; color:#222; }
+    .display-content.aod { background:#000; color:#dfe9f5; }
+    .refresh-pulse { position:absolute; left:0; right:0; height:2px; background:#fff; box-shadow:0 0 10px #fff; animation:refreshScan 1s linear infinite; opacity:.65; }
+    @keyframes refreshScan { from{top:0}to{top:100%} }
+    .pwm-wave { height:72px; display:flex; align-items:flex-end; gap:2px; padding:9px; background:#0c1423; border-radius:12px; }
+    .pwm-wave i { flex:1; background:#55aef2; height:100%; transition:.2s; }
+    .camera-preview { position:relative; min-height:250px; border-radius:15px; overflow:hidden; background:linear-gradient(#2f4b68 0 54%,#283725 54%); }
+    .camera-object { position:absolute; left:50%; top:46%; width:76px; height:76px; border-radius:50%; background:#ffcf66; transform:translate(-50%,-50%); box-shadow:0 0 40px rgba(255,207,102,.4); }
+    .camera-gridlines { position:absolute; inset:0; background:linear-gradient(90deg,transparent 33%,rgba(255,255,255,.2) 33% 33.5%,transparent 33.5% 66%,rgba(255,255,255,.2) 66% 66.5%,transparent 66.5%),linear-gradient(transparent 33%,rgba(255,255,255,.2) 33% 33.5%,transparent 33.5% 66%,rgba(255,255,255,.2) 66% 66.5%,transparent 66.5%); }
+    .camera-preview.shake .camera-object { animation:shake .12s linear infinite; }
+    .camera-preview.stabilized .camera-object { animation:microShake .7s ease-in-out infinite; }
+    @keyframes shake { 25%{transform:translate(-45%,-54%)}75%{transform:translate(-55%,-46%)} }
+    @keyframes microShake { 50%{transform:translate(-49%,-51%)} }
+    .pipeline-row { display:grid; grid-template-columns:repeat(7,1fr); gap:5px; margin-top:10px; }
+    .pipe-stage { border:1px solid var(--line); border-radius:9px; padding:8px 4px; text-align:center; font-size:.68rem; background:var(--surface); }
+    .pipe-stage.active { background:color-mix(in srgb,var(--brand-2) 15%,var(--surface)); border-color:var(--brand-2); }
+    .radio-field { position:relative; min-height:285px; display:grid; place-items:center; background:radial-gradient(circle at center,color-mix(in srgb,var(--brand-2) 12%,transparent),transparent 55%); }
+    .phone-node { width:62px; height:105px; border:5px solid var(--ink); border-radius:15px; background:var(--surface-2); z-index:3; }
+    .radio-ring { position:absolute; border:2px solid var(--c,var(--brand)); border-radius:50%; opacity:.35; animation:ring 2s ease-out infinite; }
+    .radio-ring.r1 { width:90px;height:90px; }
+    .radio-ring.r2 { width:160px;height:160px; animation-delay:.5s; }
+    .radio-ring.r3 { width:230px;height:230px; animation-delay:1s; }
+    @keyframes ring { 0%{transform:scale(.55);opacity:.75}100%{transform:scale(1.2);opacity:0} }
+    .radio-labels { position:absolute; inset:0; }
+    .radio-label { position:absolute; border:1px solid var(--line); border-radius:999px; padding:6px 9px; background:var(--surface); font-size:.71rem; color:var(--muted); transition:.25s; }
+    .radio-label.active { color:var(--ink); border-color:var(--brand); box-shadow:0 0 0 5px color-mix(in srgb,var(--brand) 10%,transparent); }
+    .radio-label.wifi { top:15px;left:12%; }.radio-label.cell{top:15px;right:12%}.radio-label.bt{bottom:20px;left:10%}.radio-label.uwb{bottom:20px;right:10%}.radio-label.nfc{top:48%;left:2%}.radio-label.gps{top:48%;right:2%}
+    .battery-shell { width:290px; height:118px; border:7px solid var(--ink); border-radius:18px; position:relative; margin:34px auto; padding:8px; }
+    .battery-shell::after { content:""; position:absolute; right:-18px; top:32px; width:13px; height:42px; background:var(--ink); border-radius:0 6px 6px 0; }
+    .battery-fill { height:100%; width:20%; border-radius:7px; background:linear-gradient(90deg,var(--danger),var(--amber),var(--brand)); transition:.4s; }
+    .battery-label { position:absolute; inset:0; display:grid; place-items:center; font:900 1.6rem/1 monospace; mix-blend-mode:difference; color:white; }
+    .charge-curve { width:100%; height:145px; }
+    .chain { display:grid; grid-template-columns:repeat(6,1fr); gap:8px; align-items:center; }
+    .chain-stage { border:2px solid var(--line); border-radius:13px; padding:12px 7px; min-height:92px; text-align:center; background:var(--surface); position:relative; }
+    .chain-stage:not(:last-child)::after { content:"→"; position:absolute; right:-14px; top:34%; color:var(--muted); z-index:4; }
+    .chain-stage b { display:block; margin-bottom:6px; font-size:.8rem; }
+    .chain-stage small { color:var(--muted); font-size:.67rem; }
+    .chain-stage.checking { border-color:var(--amber); box-shadow:0 0 0 5px color-mix(in srgb,var(--amber) 10%,transparent); }
+    .chain-stage.ok { border-color:var(--ok); background:color-mix(in srgb,var(--ok) 8%,var(--surface)); }
+    .chain-stage.fail { border-color:var(--danger); background:color-mix(in srgb,var(--danger) 8%,var(--surface)); }
+    .stack-viz { display:grid; gap:7px; max-width:650px; margin:auto; }
+    .stack-layer { border:2px solid var(--line); border-radius:12px; padding:13px 15px; display:flex; justify-content:space-between; gap:12px; align-items:center; background:var(--surface); transition:.3s; }
+    .stack-layer b { display:block; }
+    .stack-layer small { color:var(--muted); }
+    .stack-layer.active { border-color:var(--c,var(--brand)); background:color-mix(in srgb,var(--c,var(--brand)) 10%,var(--surface)); transform:translateX(6px); }
+    .thermal-phone { width:220px; height:350px; margin:auto; border:8px solid #29374a; border-radius:32px; background:#172337; position:relative; overflow:hidden; }
+    .heatmap { position:absolute; inset:0; background:radial-gradient(circle at 50% 36%,rgba(255,60,50,.9),rgba(255,160,30,.45) 26%,transparent 55%); opacity:.35; transition:.4s; }
+    .vapor { position:absolute; left:22px; right:22px; top:64px; height:98px; border:2px solid #55aef2; border-radius:24px; background:linear-gradient(135deg,rgba(85,174,242,.3),rgba(85,174,242,.05)); }
+    .graphite { position:absolute; left:25px; right:25px; top:180px; height:90px; background:repeating-linear-gradient(0deg,#343e49 0 4px,#1b232d 4px 7px); border-radius:14px; }
+    .temp-badge { position:absolute; bottom:24px; left:50%; transform:translateX(-50%); background:rgba(0,0,0,.55); color:white; padding:8px 13px; border-radius:999px; font-weight:850; }
+    .device-grid { display:grid; grid-template-columns:repeat(5,1fr); gap:10px; }
+    .device-btn { border:1px solid var(--line); background:var(--surface); border-radius:14px; padding:13px 8px; cursor:pointer; text-align:center; }
+    .device-btn.active { border-color:var(--brand); background:color-mix(in srgb,var(--brand) 9%,var(--surface)); }
+    .device-icon { display:block; font-size:2rem; margin-bottom:7px; }
+    .device-detail { margin-top:14px; border:1px solid var(--line); border-radius:16px; background:var(--surface); padding:17px; display:grid; grid-template-columns:1fr 1fr; gap:16px; }
+    .constraint-list { display:grid; gap:8px; }
+    .constraint { border-left:4px solid var(--c,var(--brand)); padding:9px 11px; background:var(--surface-2); border-radius:0 10px 10px 0; }
+    .ai-meter { border:1px solid var(--line); border-radius:15px; padding:16px; background:var(--surface); }
+    .ai-fit { height:22px; border-radius:999px; background:var(--surface-2); overflow:hidden; position:relative; }
+    .ai-fit span { display:block; width:0; height:100%; background:linear-gradient(90deg,var(--danger),var(--amber),var(--brand)); transition:.4s; }
+    .ai-fit em { position:absolute; inset:0; display:grid; place-items:center; font-style:normal; font-size:.72rem; font-weight:900; }
+    .question { border:1px solid var(--line); border-radius:15px; background:var(--surface); padding:16px; margin:10px 0; }
+    .answers { display:grid; grid-template-columns:1fr 1fr; gap:7px; margin-top:11px; }
+    .answers label { border:1px solid var(--line); border-radius:10px; padding:9px; cursor:pointer; }
+    .feedback { display:none; margin-top:10px; color:var(--muted); }
+    .question.graded .feedback { display:block; }
+    .question.correct { border-color:var(--ok); }.question.incorrect { border-color:var(--danger); }
+    .sim-verdict { margin-top:10px; border-left:4px solid var(--brand); padding:12px 14px; border-radius:0 11px 11px 0; background:var(--surface); color:var(--muted); }
+    @media(max-width:1000px){ .explain-grid,.grid-3{grid-template-columns:1fr 1fr}.sim-grid{grid-template-columns:1fr}.metric-row{grid-template-columns:1fr 1fr}.device-grid{grid-template-columns:repeat(3,1fr)}.chain{grid-template-columns:repeat(3,1fr)}.chain-stage:nth-child(3)::after{display:none}.hero.hardware{grid-template-columns:1fr}.soc-scene{min-height:370px} }
+    @media(max-width:700px){ .explain-grid,.grid-2,.grid-3,.metric-row,.answers,.device-detail{grid-template-columns:1fr}.era-nodes{grid-template-columns:repeat(5,1fr);row-gap:15px}.history-panel{grid-template-columns:1fr}.core-grid{grid-template-columns:repeat(4,1fr)}.soc-map{grid-template-columns:repeat(2,1fr);grid-template-rows:repeat(4,84px)}.soc-block.cpu,.soc-block.gpu,.soc-block.sec,.soc-block.io{grid-column:auto}.soc-block.npu,.soc-block.isp,.soc-block.mem,.soc-block.modem{grid-column:auto}.pipeline-row{grid-template-columns:repeat(4,1fr)}.chain{grid-template-columns:1fr}.chain-stage::after{display:none!important}.device-grid{grid-template-columns:repeat(2,1fr)}.memory-path{overflow-x:auto;justify-content:flex-start}.mem-node{flex:0 0 76px}.auto-control{min-width:0;width:100%}.auto-toolbar{justify-content:stretch}.lab-head{display:block}.lab-actions{margin-top:10px;justify-content:stretch}.soc-board{transform:rotateX(50deg) rotateZ(-14deg)} }
+
+    .bg-timeline { display:grid; grid-template-columns:repeat(12,1fr); gap:4px; margin:24px 0; }
+    .bg-slot { height:76px; border:1px solid var(--line); border-radius:8px; background:var(--surface-2); display:flex; align-items:flex-end; justify-content:center; padding:5px; font-size:.62rem; color:var(--muted); transition:.25s; }
+    .bg-slot.window { background:color-mix(in srgb,var(--brand) 18%,var(--surface)); border-color:var(--brand); color:var(--ink); }
+    .bg-slot.blocked { background:color-mix(in srgb,var(--danger) 9%,var(--surface)); }
+    .bg-slot.running { box-shadow:0 0 0 4px color-mix(in srgb,var(--brand-2) 14%,transparent); border-color:var(--brand-2); transform:translateY(-3px); }
+    .policy-flow { display:grid; grid-template-columns:repeat(4,1fr); gap:8px; margin-top:14px; }
+    .policy-step { border:1px solid var(--line); border-radius:11px; padding:10px; text-align:center; background:var(--surface); font-size:.75rem; }
+    .policy-step.active { border-color:var(--brand); background:color-mix(in srgb,var(--brand) 10%,var(--surface)); }
+    @media(max-width:700px){.bg-timeline{grid-template-columns:repeat(6,1fr)}.policy-flow{grid-template-columns:1fr 1fr}}
+
+    /* Proste objaśnienia rozdziałów */
+    .chapter-guide { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:12px; margin:18px 0 24px; }
+    .chapter-guide .teaching-card { min-height:148px; }
+    .chapter-guide .teaching-card p { line-height:1.52; }
+    .chapter-guide .plain-example { font-weight:800; color:var(--ink); }
+
+    /* Laboratorium wdrożenia modelu AI */
+    .npu-viz { display:grid; gap:14px; align-content:start; }
+    .deployment-flow { display:grid; grid-template-columns:repeat(5,minmax(0,1fr)); gap:7px; }
+    .deployment-step { position:relative; border:1px solid var(--line); border-radius:11px; padding:10px 8px; background:var(--surface-2); color:var(--muted); text-align:center; font-size:.73rem; font-weight:800; transition:.25s; }
+    .deployment-step:not(:last-child)::after { content:'›'; position:absolute; right:-7px; top:50%; transform:translateY(-50%); color:var(--muted); z-index:2; }
+    .deployment-step.done { border-color:var(--ok); color:var(--ok); background:color-mix(in srgb,var(--ok) 8%,var(--surface)); }
+    .deployment-step.active { border-color:var(--purple); color:var(--ink); background:color-mix(in srgb,var(--purple) 13%,var(--surface)); box-shadow:0 0 0 4px color-mix(in srgb,var(--purple) 10%,transparent); transform:translateY(-2px); }
+    .deployment-step.error { border-color:var(--danger); color:var(--danger); background:color-mix(in srgb,var(--danger) 8%,var(--surface)); }
+    .npu-resource-row { display:grid; grid-template-columns:minmax(150px,.8fr) minmax(220px,1.2fr); gap:12px; }
+    .model-package, .memory-budget { border:1px solid var(--line); border-radius:13px; padding:12px; background:var(--surface-2); }
+    .model-package-head, .memory-budget-head { display:flex; align-items:center; justify-content:space-between; gap:10px; margin-bottom:9px; font-size:.8rem; }
+    .model-package-head strong, .memory-budget-head strong { color:var(--ink); }
+    .model-visual { height:72px; display:flex; align-items:flex-end; gap:4px; overflow:hidden; }
+    .model-slice { flex:1 1 0; min-width:5px; border-radius:5px 5px 2px 2px; background:linear-gradient(180deg,var(--purple),var(--brand-2)); opacity:.86; transition:.28s; }
+    .model-slice:nth-child(3n) { background:linear-gradient(180deg,var(--magenta),var(--purple)); }
+    .model-slice:nth-child(4n) { background:linear-gradient(180deg,var(--brand),var(--brand-2)); }
+    .memory-gauge { position:relative; height:25px; overflow:hidden; border:1px solid var(--line); border-radius:999px; background:var(--surface); }
+    .memory-gauge > span { position:absolute; inset:0 auto 0 0; width:0; border-radius:999px; background:linear-gradient(90deg,var(--brand),var(--brand-2)); transition:.35s; }
+    .memory-gauge > span.warn { background:linear-gradient(90deg,var(--amber),var(--danger)); }
+    .memory-gauge > i { position:absolute; top:-2px; bottom:-2px; width:2px; background:var(--ink); opacity:.72; transition:.35s; }
+    .memory-gauge-labels { display:flex; justify-content:space-between; gap:10px; color:var(--muted); font-size:.72rem; margin-top:7px; }
+    .accelerator-strip { display:grid; grid-template-columns:repeat(3,1fr); gap:8px; }
+    .accelerator-unit { border:1px solid var(--line); border-radius:12px; padding:10px; background:var(--surface-2); transition:.25s; }
+    .accelerator-unit b { display:block; margin-bottom:4px; }
+    .accelerator-unit small { color:var(--muted); line-height:1.35; }
+    .accelerator-unit.active { border-color:var(--c,var(--brand)); background:color-mix(in srgb,var(--c,var(--brand)) 11%,var(--surface)); box-shadow:0 0 0 4px color-mix(in srgb,var(--c,var(--brand)) 8%,transparent); }
+    .accelerator-unit.fallback { border-color:var(--amber); }
+    .systolic-shell { border:1px solid var(--line); border-radius:13px; padding:11px; background:#0b1423; }
+    .systolic-head { display:flex; justify-content:space-between; gap:10px; color:#dce7f5; font-size:.78rem; margin-bottom:8px; }
+    .systolic { margin:0 auto; }
+    .pe { opacity:.24; transform:scale(.88); }
+    .pe.enabled { opacity:.62; transform:scale(1); border-color:color-mix(in srgb,var(--purple) 55%,var(--line)); background:color-mix(in srgb,var(--purple) 20%,#14243a); }
+    .pe.hot { opacity:1; transform:scale(1.06); background:var(--purple); box-shadow:0 0 13px color-mix(in srgb,var(--purple) 75%,transparent); }
+    .pe.burst { animation:peBurst .5s ease-in-out alternate infinite; }
+    @keyframes peBurst { to { filter:brightness(1.55); transform:scale(1.12); } }
+    .npu-live-note { border-left:4px solid var(--purple); border-radius:0 11px 11px 0; padding:11px 13px; background:color-mix(in srgb,var(--purple) 8%,var(--surface)); color:var(--muted); font-size:.86rem; }
+    .npu-live-note b { color:var(--ink); }
+    #runNpuOnce { width:100%; }
+
+    @media(max-width:1000px){ .chapter-guide{grid-template-columns:1fr 1fr}.npu-resource-row{grid-template-columns:1fr} }
+    @media(max-width:700px){ .chapter-guide,.deployment-flow,.accelerator-strip{grid-template-columns:1fr}.deployment-step:not(:last-child)::after{content:'↓';right:50%;top:auto;bottom:-13px;transform:translateX(50%)} }
+
+</style></head><body>
+<a class="skip-link" href="#content">Przejdź do treści</a>
+<header class="topbar"><div class="topbar-inner"><div class="brand-mark"><span class="brand-dot"></span> PAM · Wykład 2</div><div class="progress-wrap"><div id="readingProgress"></div></div><button class="icon-btn" id="themeBtn" aria-label="Zmień motyw">◐</button></div></header>
+<div class="layout">
+<aside class="sidebar"><nav class="toc" aria-label="Spis treści"><div class="toc-title">Rozdziały</div>
+<a href="#start">Wprowadzenie</a><a href="#history">Historia</a><a href="#soc">SoC</a><a href="#cpu">CPU i ARM</a><a href="#gpu">GPU i TBDR</a><a href="#npu">NPU i AI</a><a href="#memory">Pamięć</a><a href="#display">Wyświetlacz</a><a href="#camera">Kamery</a><a href="#connectivity">Łączność</a><a href="#power">Bateria</a><a href="#security">Bezpieczeństwo</a><a href="#stack">Android i iOS</a><a href="#background">Praca w tle</a><a href="#thermal">Termika</a><a href="#devices">Klasy urządzeń</a><a href="#future">Przyszłość</a><a href="#quiz">Sprawdzenie wiedzy</a>
+</nav></aside>
+<main id="content">
+<section id="start" class="hero hardware">
+<div><div class="eyebrow">Wykład 2 · Programowanie aplikacji mobilnych</div><h1>Architektura i budowa urządzeń mobilnych</h1><p>Interaktywny model urządzenia mobilnego: od tranzystorów i heterogenicznego SoC, przez pamięć, wyświetlacz, kamerę i łączność, po system operacyjny, bezpieczeństwo oraz zarządzanie energią.</p><div class="chips"><span class="chip">ARM</span><span class="chip">SoC</span><span class="chip">TBDR</span><span class="chip">NPU</span><span class="chip">LPDDR5X</span><span class="chip">OLED LTPO</span><span class="chip">5G / WiFi 7</span><span class="chip">TrustZone</span></div></div>
+<div class="soc-scene" aria-hidden="true"><div class="soc-board"><div class="hero-chip cpu">CPU<small>sterowanie</small></div><div class="hero-chip gpu">GPU<small>grafika</small></div><div class="hero-chip npu">NPU<small>AI</small></div><div class="hero-chip isp">ISP<small>kamera</small></div><div class="hero-chip modem">RF<small>łączność</small></div><i class="board-trace t1"></i><i class="board-trace t2"></i><i class="board-trace t3"></i></div></div>
+</section>
+
+<section id="history" class="section-card"><div class="section-head"><div><div class="kicker">01 · Ewolucja</div><h2>Od PDA do AI Phone</h2></div></div><p class="lead">Urządzenie mobilne ewoluowało od prostego terminala komunikacyjnego do heterogenicznego komputera wykonującego lokalnie grafikę 3D, przetwarzanie obrazu i modele generatywne.</p>
+<div class="explain-grid"><div class="teaching-card" style="--c:var(--brand)"><span class="tag">Co się zmieniło?</span><b>Integracja zastąpiła dokładanie układów</b><p>CPU, GPU, modem, ISP i akceleratory AI przeniesiono do jednego SoC, skracając ścieżki danych i zmniejszając pobór energii.</p></div><div class="teaching-card" style="--c:var(--brand-2)"><span class="tag">Dlaczego to ważne?</span><b>Możliwości aplikacji wynikają ze sprzętu</b><p>Multitouch, 5G, LiDAR czy NPU stają się dostępne dla programisty dopiero przez API systemowe i właściwe warstwy abstrakcji.</p></div><div class="teaching-card" style="--c:var(--magenta)"><span class="tag">Wniosek</span><b>Mobilność wymusza kompromisy</b><p>Wydajność, masa, temperatura, czas pracy i bezpieczeństwo są współzależne. Nie można optymalizować jednego parametru w izolacji.</p></div></div>
+<div class="lab" id="historyLab"><div class="lab-head"><div><h3>Interaktywna oś rozwoju</h3><p>Wybierz epokę i obserwuj, jak zmieniają się pamięć, łączność, interfejs oraz lokalne możliwości obliczeniowe.</p></div><div class="lab-actions"><span class="lab-badge">1992–2025</span></div></div><div class="timeline-sim"><div class="timeline-track"><div class="timeline-progress" id="historyProgress"></div></div><div class="era-nodes" id="eraNodes"></div></div><div class="history-panel"><div class="history-year" id="historyYear">1992</div><div><h3 id="historyTitle">IBM Simon</h3><p id="historyDesc"></p><div class="metric-row" id="historyMetrics"></div></div></div></div>
+</section>
+
+<section id="soc" class="section-card"><div class="section-head"><div><div class="kicker">02 · Integracja</div><h2>System on Chip jako układ współpracujących akceleratorów</h2></div></div><p class="lead">SoC nie jest jednym „procesorem”. Jest siecią wyspecjalizowanych bloków IP, między którymi system rozdziela zadania w zależności od typu obciążenia, opóźnienia i budżetu energetycznego.</p>
+<div class="chapter-guide" aria-label="Proste objaśnienie rozdziału"><div class="teaching-card" style="--c:var(--brand)"><span class="tag">W prostych słowach</span><p>SoC to cała „płyta główna” telefonu zamknięta w jednym układzie. Ma osobne części do logiki, grafiki, AI, zdjęć, łączności i bezpieczeństwa.</p></div><div class="teaching-card" style="--c:var(--brand-2)"><span class="tag">Po co to znać?</span><p>Aplikacja działa szybciej i oszczędniej, gdy jej zadanie trafia do właściwego bloku. Film powinien korzystać z kodeka, zdjęcie z ISP, a model ML z NPU.</p></div><div class="teaching-card" style="--c:var(--amber)"><span class="tag">Przykład</span><p>Podczas rozmowy wideo CPU steruje aplikacją, ISP przetwarza kamerę, GPU składa obraz, NPU usuwa tło, a modem wysyła dane.</p></div></div>
+<div class="lab" id="socLab"><div class="lab-head"><div><h3>Dyspozytor obciążenia SoC</h3><p>Zmień scenariusz. Aktywne bloki pokazują, które jednostki uczestniczą w wykonaniu zadania i gdzie przepływają dane.</p></div><div class="lab-actions"><span class="lab-badge">heterogeneous computing</span></div></div><div class="sim-grid"><div class="controls"><div class="control"><label>Scenariusz</label><select id="socWorkload"><option value="ui">Przewijanie interfejsu</option><option value="game">Gra 3D</option><option value="camera">Zdjęcie nocne</option><option value="ai">Lokalny model AI</option><option value="payment">Płatność biometryczna</option><option value="call">Wideorozmowa 5G</option></select></div><div class="control"><label>Priorytet <output id="socPriorityOut">zrównoważony</output></label><input id="socPriority" type="range" min="0" max="2" value="1"><small>0 = energia, 1 = balans, 2 = maksymalna wydajność</small></div><div id="socNarrative" class="sim-verdict"></div></div><div class="viz"><div class="soc-map" id="socMap"><div class="soc-block cpu" data-block="cpu"><b>CPU cluster</b><small>sterowanie, logika, system</small></div><div class="soc-block gpu" data-block="gpu"><b>GPU</b><small>rendering i obliczenia równoległe</small></div><div class="soc-block npu" data-block="npu"><b>NPU</b><small>macierze i inference</small></div><div class="soc-block isp" data-block="isp"><b>ISP</b><small>pipeline obrazu</small></div><div class="soc-block mem" data-block="mem"><b>LPDDR</b><small>współdzielone dane</small></div><div class="soc-block modem" data-block="modem"><b>Modem / RF</b><small>5G, WiFi, BT</small></div><div class="soc-block sec" data-block="sec"><b>Secure Enclave / TEE</b><small>klucze i biometria</small></div><div class="soc-block io" data-block="io"><b>I/O, sensory i kontrolery</b><small>kamera, ekran, pamięć UFS</small></div></div><div class="metric-row"><div class="metric-box" style="--c:var(--brand)"><strong id="socPerf">58%</strong><small>obciążenie SoC</small></div><div class="metric-box" style="--c:var(--amber)"><strong id="socPower">3.2 W</strong><small>moc chwilowa</small></div><div class="metric-box" style="--c:var(--brand-2)"><strong id="socLatency">16 ms</strong><small>opóźnienie zadania</small></div><div class="metric-box" style="--c:var(--magenta)"><strong id="socHeat">37°C</strong><small>temperatura SoC</small></div></div></div></div></div>
+</section>
+
+<section id="cpu" class="section-card"><div class="section-head"><div><div class="kicker">03 · CPU</div><h2>ARM, heterogeniczne rdzenie i DVFS</h2></div></div><p class="lead">Planista systemu kieruje krótkie, interaktywne zadania na szybkie rdzenie, a pracę tła na rdzenie energooszczędne. DVFS dopasowuje częstotliwość i napięcie do aktualnego obciążenia.</p>
+<div class="explain-grid"><div class="teaching-card"><span class="tag">big.LITTLE</span><b>Nie każdy rdzeń ma ten sam cel</b><p>Rdzeń wydajnościowy minimalizuje czas odpowiedzi, a rdzeń efektywny wykonuje długą pracę przy niższym napięciu.</p></div><div class="teaching-card" style="--c:var(--purple)"><span class="tag">ISA</span><b>NEON i SVE2 przyspieszają dane wektorowe</b><p>Jedna instrukcja operuje na wielu elementach, co jest istotne dla kodeków, DSP, grafiki i przetwarzania ML.</p></div><div class="teaching-card" style="--c:var(--amber)"><span class="tag">Pułapka</span><b>Maksymalne taktowanie nie jest stałe</b><p>Po przekroczeniu budżetu cieplnego system obniża częstotliwość. Krótki benchmark nie opisuje wydajności długotrwałej.</p></div></div>
+<div class="lab" id="cpuLab"><div class="lab-head"><div><h3>Planista Energy-Aware Scheduler</h3><p>Dobierz rodzaj zadania i obciążenie. Symulator rozkłada pracę między rdzenie P/E oraz wylicza częstotliwość, czas i energię.</p></div><div class="lab-actions"><span class="lab-badge">ARM64 · DVFS</span></div></div><div class="sim-grid"><div class="controls"><div class="control"><label>Typ zadania</label><select id="cpuTask"><option value="ui">animacja UI</option><option value="background">synchronizacja w tle</option><option value="compile">kompilacja / obliczenia</option><option value="codec">kodek SIMD</option><option value="mixed">mieszane obciążenie</option></select></div><div class="control"><label>Obciążenie <output id="cpuLoadOut">55%</output></label><input id="cpuLoad" type="range" min="5" max="100" value="55"></div><div class="control"><label>Temperatura otoczenia <output id="ambientOut">24°C</output></label><input id="ambient" type="range" min="10" max="40" value="24"></div><div id="cpuVerdict" class="sim-verdict"></div></div><div class="viz"><div class="core-grid" id="coreGrid"></div><div class="bar-row"><span>Częstotliwość</span><div class="bar"><span id="freqBar"></span></div><output id="freqOut">2.4</output></div><div class="bar-row"><span>IPC</span><div class="bar"><span id="ipcBar" style="--c:var(--purple)"></span></div><output id="ipcOut">3.2</output></div><div class="bar-row"><span>Termika</span><div class="bar"><span id="cpuTempBar" style="--c:var(--magenta)"></span></div><output id="cpuTempOut">39°</output></div><div class="metric-row"><div class="metric-box"><strong id="cpuTime">12 ms</strong><small>czas zadania</small></div><div class="metric-box" style="--c:var(--amber)"><strong id="cpuEnergy">18 mJ</strong><small>energia</small></div><div class="metric-box" style="--c:var(--magenta)"><strong id="cpuThrottle">0%</strong><small>throttling</small></div><div class="metric-box" style="--c:var(--brand-2)"><strong id="cpuFrame">60 fps</strong><small>płynność UI</small></div></div></div></div></div>
+</section>
+
+<section id="gpu" class="section-card"><div class="section-head"><div><div class="kicker">04 · GPU</div><h2>Tile-Based Deferred Rendering</h2></div></div><p class="lead">Mobilny GPU dzieli ekran na małe kafelki przetwarzane w szybkiej pamięci on-chip. Usuwanie niewidocznych powierzchni przed shadingiem ogranicza transfer do energochłonnej pamięci DRAM.</p>
+<div class="chapter-guide" aria-label="Proste objaśnienie rozdziału"><div class="teaching-card" style="--c:var(--brand)"><span class="tag">W prostych słowach</span><p>GPU rysuje obraz. Zamiast obrabiać cały ekran naraz, mobilny układ dzieli go na małe kafelki i kończy każdy kafelek w szybkiej pamięci wewnętrznej.</p></div><div class="teaching-card" style="--c:var(--brand-2)"><span class="tag">Dlaczego kafelki?</span><p>Pamięć operacyjna zużywa dużo energii. Im mniej razy GPU zapisuje i odczytuje duży obraz z LPDDR, tym dłużej telefon działa na baterii.</p></div><div class="teaching-card" style="--c:var(--amber)"><span class="tag">Przykład</span><p>W grze niewidoczna ściana za budynkiem nie powinna być cieniowana. HSR odrzuca ją wcześniej i nie marnuje obliczeń na piksele, których użytkownik nie zobaczy.</p></div></div>
+<div class="lab" id="gpuLab"><div class="lab-head"><div><h3>Porównanie TBDR i Immediate Mode</h3><p>Uruchom fazy renderowania. Białe obramowanie oznacza aktualnie przetwarzany kafelek, a kolor magenta - fragment zasłonięty.</p></div><div class="lab-actions"><span class="lab-badge">Metal / Vulkan</span></div></div><div class="sim-grid"><div class="controls"><div class="control"><label>Tryb renderowania</label><select id="renderMode"><option value="tbdr">TBDR</option><option value="imr">Immediate Mode</option></select></div><div class="control"><label>Złożoność sceny <output id="sceneOut">55%</output></label><input id="sceneComplexity" type="range" min="10" max="100" value="55"></div><div class="control"><label><span>Usuwanie powierzchni HSR</span><span class="switch"><input id="hsr" type="checkbox" checked><span></span></span></label></div><button class="primary" id="renderOnce">Wykonaj jeden render</button><div id="gpuPhaseText" class="sim-verdict"></div></div><div class="viz"><div class="tile-grid" id="tileGrid"></div><div class="metric-row"><div class="metric-box"><strong id="gpuAlu">48%</strong><small>operacje shaderów</small></div><div class="metric-box" style="--c:var(--brand-2)"><strong id="gpuBw">18 GB/s</strong><small>transfer DRAM</small></div><div class="metric-box" style="--c:var(--amber)"><strong id="gpuEnergy">1.8 W</strong><small>moc GPU</small></div><div class="metric-box" style="--c:var(--magenta)"><strong id="gpuFrames">60 fps</strong><small>wynik</small></div></div></div></div></div>
+</section>
+
+<section id="npu" class="section-card"><div class="section-head"><div><div class="kicker">05 · AI on-device</div><h2>NPU, systolic array i kwantyzacja</h2></div></div><p class="lead">NPU optymalizuje mnożenie macierzy. Kwantyzacja zmniejsza liczbę bitów reprezentacji wag i aktywacji, redukując pamięć, transfer oraz energię kosztem możliwej utraty dokładności.</p>
+<div class="chapter-guide" aria-label="Proste objaśnienie rozdziału"><div class="teaching-card" style="--c:var(--brand)"><span class="tag">W prostych słowach</span><p>NPU to układ zbudowany specjalnie do powtarzania ogromnej liczby mnożeń używanych przez sieci neuronowe. Robi to znacznie oszczędniej niż CPU.</p></div><div class="teaching-card" style="--c:var(--brand-2)"><span class="tag">Czym jest kwantyzacja?</span><p>Wagi modelu zapisuje się mniejszą liczbą bitów. INT8 zajmuje około cztery razy mniej miejsca niż FP32, ale może nieznacznie zmienić wynik modelu.</p></div><div class="teaching-card" style="--c:var(--amber)"><span class="tag">Najważniejszy kompromis</span><p>Model musi zmieścić się w RAM, korzystać z operatorów obsługiwanych przez akcelerator i nie przekraczać budżetu energii. Same TOPS nie gwarantują szybkości.</p></div></div>
+<div class="lab" id="npuLab"><div class="lab-head"><div><h3>Laboratorium wdrożenia modelu</h3><p>Dobierz rozmiar modelu, precyzję i akcelerator. Macierz PE pokazuje przepływ obliczeń, a wyniki wskazują, czy model zmieści się w pamięci telefonu.</p></div><div class="lab-actions"><span class="lab-badge">GEMM · INT8 · INT4</span></div></div><div class="sim-grid"><div class="controls"><div class="control"><label>Model <output id="modelSizeOut">3.0B</output></label><input id="modelSize" type="range" min="2" max="70" value="30"><small>wartość /10 = miliardy parametrów</small></div><div class="control"><label>Precyzja</label><select id="precision"><option value="32">FP32</option><option value="16">FP16</option><option value="8" selected>INT8</option><option value="4">INT4</option></select></div><div class="control"><label>Akcelerator</label><select id="accelerator"><option value="cpu">CPU</option><option value="gpu">GPU</option><option value="npu" selected>NPU</option></select></div><div class="control"><label>Dostępna RAM <output id="ramOut">8 GB</output></label><input id="deviceRam" type="range" min="4" max="24" value="8"></div><div id="npuVerdict" class="sim-verdict"></div></div><div class="viz npu-viz">
+<div class="deployment-flow" id="npuFlow" aria-label="Etapy wdrożenia modelu"><div class="deployment-step" data-step="load">1. Model</div><div class="deployment-step" data-step="quant">2. Precyzja</div><div class="deployment-step" data-step="memory">3. Pamięć</div><div class="deployment-step" data-step="dispatch">4. Akcelerator</div><div class="deployment-step" data-step="infer">5. Inferencja</div></div>
+<div class="npu-resource-row"><div class="model-package"><div class="model-package-head"><strong>Pakiet wag modelu</strong><span id="modelPackageLabel">3.0B · INT8</span></div><div class="model-visual" id="modelVisual" aria-hidden="true"></div></div><div class="memory-budget"><div class="memory-budget-head"><strong>Budżet pamięci urządzenia</strong><span id="npuMemorySummary">3.7 / 8 GB</span></div><div class="memory-gauge"><span id="npuMemoryFill"></span><i id="npuReserveMarker" title="Pamięć zarezerwowana dla systemu"></i></div><div class="memory-gauge-labels"><span id="npuMemoryText">wagi + aktywacje + cache</span><span id="npuReserveText">system rezerwuje 2 GB</span></div></div></div>
+<div class="accelerator-strip" id="acceleratorStrip"><div class="accelerator-unit" data-acc="cpu" style="--c:var(--brand-2)"><b>CPU</b><small>uniwersalny, ale mało efektywny dla macierzy</small></div><div class="accelerator-unit" data-acc="gpu" style="--c:var(--magenta)"><b>GPU</b><small>dużo równoległych jednostek, wyższa moc</small></div><div class="accelerator-unit" data-acc="npu" style="--c:var(--purple)"><b>NPU</b><small>najlepsza efektywność dla wspieranych operatorów</small></div></div>
+<div class="systolic-shell"><div class="systolic-head"><span id="npuArrayLabel">Macierz PE: NPU</span><span id="npuUtilLabel">64 / 64 aktywnych</span></div><div class="systolic" id="systolic"></div></div>
+<button class="primary" id="runNpuOnce">Uruchom pojedynczą inferencję</button>
+<div class="npu-live-note" id="npuLiveExplanation"><b>Interpretacja:</b> zmiana suwaków wpływa na rozmiar pakietu wag, zajętość RAM, liczbę aktywnych jednostek i tempo przepływu danych.</div>
+<div class="metric-row"><div class="metric-box"><strong id="modelMemory">3.0 GB</strong><small>pamięć całkowita</small></div><div class="metric-box" style="--c:var(--purple)"><strong id="modelSpeed">24 tok/s</strong><small>przepustowość</small></div><div class="metric-box" style="--c:var(--amber)"><strong id="modelPower">4.1 W</strong><small>moc</small></div><div class="metric-box" style="--c:var(--magenta)"><strong id="accuracyDrop">&lt;1%</strong><small>spadek jakości</small></div></div></div></div></div>
+</section>
+
+<section id="memory" class="section-card"><div class="section-head"><div><div class="kicker">06 · Hierarchia danych</div><h2>Cache, LPDDR5X, UFS i zRAM</h2></div></div><p class="lead">Im dalej od rdzenia znajduje się pamięć, tym większa jest pojemność, ale także opóźnienie i koszt energetyczny. Wirtualny RAM nie jest odpowiednikiem fizycznej pamięci LPDDR.</p>
+<div class="chapter-guide" aria-label="Proste objaśnienie rozdziału"><div class="teaching-card" style="--c:var(--brand)"><span class="tag">W prostych słowach</span><p>Telefon ma kilka „półek” pamięci. Najbliższy cache jest bardzo szybki i mały, RAM jest większy, a UFS przechowuje dane trwale, ale reaguje znacznie wolniej.</p></div><div class="teaching-card" style="--c:var(--brand-2)"><span class="tag">Dlaczego lokalność?</span><p>Procesor działa najlepiej, gdy kolejne dane leżą obok siebie i mieszczą się w cache. Losowe skakanie po dużej tablicy częściej wymusza czekanie na LPDDR.</p></div><div class="teaching-card" style="--c:var(--amber)"><span class="tag">Uwaga na wirtualny RAM</span><p>zRAM kompresuje dane w fizycznym RAM, a swap zapisuje je do UFS. Nie tworzy to szybszej pamięci i może wyraźnie spowolnić aplikację.</p></div></div>
+<div class="lab" id="memoryLab"><div class="lab-head"><div><h3>Wędrówka żądania pamięci</h3><p>Ustaw lokalność danych oraz presję pamięci. Symulator pokazuje, na którym poziomie zostaje obsłużony odczyt i jak wzrasta opóźnienie.</p></div><div class="lab-actions"><span class="lab-badge">L1 → UFS</span></div></div><div class="sim-grid"><div class="controls"><div class="control"><label>Typ dostępu</label><select id="accessType"><option value="sequential">sekwencyjny strumień</option><option value="random">losowy odczyt</option><option value="app">uruchomienie aplikacji</option><option value="swap">brak RAM / swap</option></select></div><div class="control"><label>Lokalność cache <output id="localityOut">70%</output></label><input id="locality" type="range" min="0" max="100" value="70"></div><div class="control"><label>Presja RAM <output id="pressureOut">45%</output></label><input id="ramPressure" type="range" min="0" max="100" value="45"></div><button class="primary" id="memoryRequest">Wykonaj odczyt</button><div id="memoryVerdict" class="sim-verdict"></div></div><div class="viz"><div class="memory-path"><div class="mem-node" data-mem="l1"><b>L1</b><small>~1 ns</small></div><span class="mem-arrow">→</span><div class="mem-node" data-mem="l2"><b>L2</b><small>~4 ns</small></div><span class="mem-arrow">→</span><div class="mem-node" data-mem="l3"><b>SLC</b><small>~12 ns</small></div><span class="mem-arrow">→</span><div class="mem-node" data-mem="ram"><b>LPDDR</b><small>~100 ns</small></div><span class="mem-arrow">→</span><div class="mem-node" data-mem="ufs"><b>UFS</b><small>~80 µs</small></div></div><div class="metric-row"><div class="metric-box"><strong id="memLatency">4 ns</strong><small>opóźnienie</small></div><div class="metric-box" style="--c:var(--brand-2)"><strong id="memBw">136 GB/s</strong><small>przepustowość</small></div><div class="metric-box" style="--c:var(--amber)"><strong id="memEnergy">1×</strong><small>koszt energii</small></div><div class="metric-box" style="--c:var(--magenta)"><strong id="memHit">L2 hit</strong><small>wynik dostępu</small></div></div></div></div></div>
+</section>
+
+<section id="display" class="section-card"><div class="section-head"><div><div class="kicker">07 · Wyświetlanie</div><h2>OLED, LTPO, HDR i PWM</h2></div></div><p class="lead">Wyświetlacz jest zwykle największym konsumentem energii. LTPO dopasowuje częstotliwość odświeżania do treści, OLED wyłącza czarne piksele, a PWM steruje jasnością przez szybkie przełączanie.</p>
+<div class="chapter-guide" aria-label="Proste objaśnienie rozdziału"><div class="teaching-card" style="--c:var(--brand)"><span class="tag">W prostych słowach</span><p>OLED świeci każdym pikselem osobno. Czarny piksel może być całkowicie wyłączony. LTPO dodatkowo zmienia liczbę odświeżeń ekranu na sekundę.</p></div><div class="teaching-card" style="--c:var(--brand-2)"><span class="tag">Po co zmieniać Hz?</span><p>120 Hz daje płynne przewijanie, ale tekst lub nieruchomy zegar nie potrzebują tylu klatek. Obniżenie do 1–10 Hz oszczędza energię.</p></div><div class="teaching-card" style="--c:var(--amber)"><span class="tag">Czym jest PWM?</span><p>Jasność bywa regulowana przez bardzo szybkie włączanie i wyłączanie pikseli. Zbyt niska częstotliwość może powodować odczuwalne migotanie.</p></div></div>
+<div class="lab" id="displayLab"><div class="lab-head"><div><h3>Model zużycia energii panelu</h3><p>Zmień treść, jasność i odświeżanie. Podgląd pokazuje zachowanie panelu, częstotliwość skanowania oraz sygnał PWM.</p></div><div class="lab-actions"><span class="lab-badge">1–120 Hz</span></div></div><div class="sim-grid"><div class="controls"><div class="control"><label>Treść</label><select id="displayContent"><option value="reading">czytanie statyczne</option><option value="video">wideo HDR</option><option value="scroll">przewijanie UI</option><option value="aod">Always-On Display</option></select></div><div class="control"><label>Jasność <output id="brightnessOut">55%</output></label><input id="brightness" type="range" min="1" max="100" value="55"></div><div class="control"><label>Tryb odświeżania</label><select id="refreshMode"><option value="adaptive">LTPO adaptacyjne</option><option value="60">stałe 60 Hz</option><option value="120">stałe 120 Hz</option></select></div><div class="control"><label>Częstotliwość PWM <output id="pwmOut">1440 Hz</output></label><input id="pwm" type="range" min="120" max="2160" step="120" value="1440"></div><div id="displayVerdict" class="sim-verdict"></div></div><div class="viz"><div class="grid-2"><div><div class="display-preview"><div id="displayVisual" class="display-content reading"><div><b id="displayTitle">Czytanie</b><br><small id="displaySubtitle">statyczny tekst</small></div><i class="refresh-pulse" id="refreshPulse"></i></div></div></div><div><div class="pwm-wave" id="pwmWave"></div><div class="metric-row" style="grid-template-columns:1fr 1fr"><div class="metric-box"><strong id="displayHz">10 Hz</strong><small>odświeżanie</small></div><div class="metric-box" style="--c:var(--amber)"><strong id="displayPower">0.8 W</strong><small>moc panelu</small></div><div class="metric-box" style="--c:var(--brand-2)"><strong id="displayFrame">100 ms</strong><small>okres klatki</small></div><div class="metric-box" style="--c:var(--magenta)"><strong id="flickerRisk">niskie</strong><small>ryzyko migotania</small></div></div></div></div></div></div></div>
+</section>
+
+<section id="camera" class="section-card"><div class="section-head"><div><div class="kicker">08 · Obrazowanie</div><h2>Sensor, ISP, OIS i fotografia obliczeniowa</h2></div></div><p class="lead">Jakość zdjęcia wynika z całego toru: optyki, sensora, stabilizacji, ISP i algorytmów scalających wiele ekspozycji. Surowa liczba megapikseli nie opisuje skuteczności systemu.</p>
+<div class="chapter-guide" aria-label="Proste objaśnienie rozdziału"><div class="teaching-card" style="--c:var(--brand)"><span class="tag">W prostych słowach</span><p>Zdjęcie nie powstaje wyłącznie w matrycy. Światło przechodzi przez optykę, sensor zamienia je na sygnał, a ISP i algorytmy tworzą finalny obraz.</p></div><div class="teaching-card" style="--c:var(--brand-2)"><span class="tag">Po co wiele klatek?</span><p>W nocy pojedyncza klatka jest zaszumiona. Telefon wykonuje serię zdjęć, wyrównuje je i łączy, aby odzyskać szczegóły bez nadmiernego rozmycia.</p></div><div class="teaching-card" style="--c:var(--amber)"><span class="tag">OIS a EIS</span><p>OIS fizycznie porusza soczewką lub sensorem. EIS przesuwa i przycina obraz programowo. Tryb hybrydowy łączy oba mechanizmy.</p></div></div>
+<div class="lab" id="cameraLab"><div class="lab-head"><div><h3>Symulator nocnego zdjęcia</h3><p>Zwiększ drgania lub zmniejsz światło. OIS stabilizuje tor optyczny, EIS kadruje obraz, a pipeline computational photography łączy wiele klatek.</p></div><div class="lab-actions"><span class="lab-badge">sensor → ISP → HEIF</span></div></div><div class="sim-grid"><div class="controls"><div class="control"><label>Poziom światła <output id="lightOut">45%</output></label><input id="light" type="range" min="5" max="100" value="45"></div><div class="control"><label>Drgania <output id="shakeOut">40%</output></label><input id="shake" type="range" min="0" max="100" value="40"></div><div class="control"><label>Stabilizacja</label><select id="stabilization"><option value="none">brak</option><option value="ois">OIS</option><option value="hybrid" selected>OIS + EIS</option></select></div><div class="control"><label>Przetwarzanie</label><select id="photoMode"><option value="raw">RAW pojedyncza klatka</option><option value="hdr">HDR wieloklatkowy</option><option value="night" selected>Night mode + ML</option></select></div><button class="primary" id="takePhoto">Wykonaj ekspozycję</button><div id="cameraVerdict" class="sim-verdict"></div></div><div class="viz"><div id="cameraPreview" class="camera-preview"><div class="camera-object"></div><div class="camera-gridlines"></div></div><div class="pipeline-row" id="cameraPipeline"><div class="pipe-stage">Optyka</div><div class="pipe-stage">Sensor</div><div class="pipe-stage">Demosaic</div><div class="pipe-stage">NR</div><div class="pipe-stage">HDR</div><div class="pipe-stage">Tone map</div><div class="pipe-stage">HEIF</div></div><div class="metric-row"><div class="metric-box"><strong id="cameraSharp">78%</strong><small>ostrość</small></div><div class="metric-box" style="--c:var(--brand-2)"><strong id="cameraNoise">22%</strong><small>szum</small></div><div class="metric-box" style="--c:var(--amber)"><strong id="cameraTime">0.8 s</strong><small>czas przetwarzania</small></div><div class="metric-box" style="--c:var(--magenta)"><strong id="cameraCrop">1.1×</strong><small>crop EIS</small></div></div></div></div></div>
+</section>
+
+<section id="connectivity" class="section-card"><div class="section-head"><div><div class="kicker">09 · Radio</div><h2>5G, WiFi 7, Bluetooth, UWB, NFC i GNSS</h2></div></div><p class="lead">Smartfon zarządza wieloma interfejsami radiowymi, często korzystającymi z tych samych pasm lub anten. System wybiera technologię według zasięgu, przepustowości, opóźnienia i poboru energii.</p>
+<div class="chapter-guide" aria-label="Proste objaśnienie rozdziału"><div class="teaching-card" style="--c:var(--brand)"><span class="tag">W prostych słowach</span><p>Każdy interfejs radiowy ma inne zadanie. WiFi przenosi dużo danych lokalnie, Bluetooth łączy akcesoria, NFC działa z kilku centymetrów, a UWB dokładnie mierzy kierunek i odległość.</p></div><div class="teaching-card" style="--c:var(--brand-2)"><span class="tag">Dlaczego nie zawsze 5G?</span><p>Najwyższa prędkość zwykle oznacza większy pobór energii i zależy od zasięgu. System wybiera radio, które spełnia wymagania przy możliwie małym koszcie.</p></div><div class="teaching-card" style="--c:var(--amber)"><span class="tag">Przykład</span><p>Płatność korzysta z NFC i bezpiecznego elementu, słuchawki z Bluetooth LE, pobieranie pliku z WiFi lub 5G, a lokalizacja z GNSS i sensor fusion.</p></div></div>
+<div class="lab" id="radioLab"><div class="lab-head"><div><h3>Dobór interfejsu bezprzewodowego</h3><p>Wybierz zadanie i warunki propagacji. Symulator wskaże aktywny moduł oraz konsekwencje dla prędkości, opóźnienia i baterii.</p></div><div class="lab-actions"><span class="lab-badge">coexistence</span></div></div><div class="sim-grid"><div class="controls"><div class="control"><label>Zadanie</label><select id="radioTask"><option value="download">pobieranie dużego pliku</option><option value="audio">słuchawki bezprzewodowe</option><option value="payment">płatność zbliżeniowa</option><option value="finding">precyzyjne lokalizowanie</option><option value="navigation">nawigacja</option><option value="emergency">łączność awaryjna poza siecią</option></select></div><div class="control"><label>Odległość <output id="distanceOut">15 m</output></label><input id="distance" type="range" min="1" max="500" value="15"></div><div class="control"><label>Przeszkody <output id="obstacleOut">30%</output></label><input id="obstacles" type="range" min="0" max="100" value="30"></div><div class="control"><label>Priorytet</label><select id="radioPriority"><option value="speed">prędkość</option><option value="latency">opóźnienie</option><option value="battery">energia</option></select></div><div id="radioVerdict" class="sim-verdict"></div></div><div class="viz"><div class="radio-field"><div class="radio-ring r1"></div><div class="radio-ring r2"></div><div class="radio-ring r3"></div><div class="phone-node"></div><div class="radio-labels"><span class="radio-label wifi" data-radio="wifi">WiFi 7</span><span class="radio-label cell" data-radio="cell">5G</span><span class="radio-label bt" data-radio="bt">BT LE</span><span class="radio-label uwb" data-radio="uwb">UWB</span><span class="radio-label nfc" data-radio="nfc">NFC</span><span class="radio-label gps" data-radio="gps">GNSS</span></div></div><div class="metric-row"><div class="metric-box"><strong id="radioSpeed">4.2 Gb/s</strong><small>przepustowość</small></div><div class="metric-box" style="--c:var(--brand-2)"><strong id="radioLatency">5 ms</strong><small>opóźnienie</small></div><div class="metric-box" style="--c:var(--amber)"><strong id="radioPower">1.4 W</strong><small>moc radia</small></div><div class="metric-box" style="--c:var(--magenta)"><strong id="radioRange">50 m</strong><small>zasięg użyteczny</small></div></div></div></div></div>
+</section>
+
+<section id="power" class="section-card"><div class="section-head"><div><div class="kicker">10 · Energia</div><h2>Bateria, PMIC, CC-CV i szybkie ładowanie</h2></div></div><p class="lead">PMIC tworzy wiele szyn napięć, mierzy przepływ ładunku i kontroluje bezpieczeństwo. Ładowanie CC-CV jest szybkie przy niskim stanie baterii, lecz zwalnia w fazie stałego napięcia.</p>
+<div class="chapter-guide" aria-label="Proste objaśnienie rozdziału"><div class="teaching-card" style="--c:var(--brand)"><span class="tag">W prostych słowach</span><p>Bateria przechowuje energię, a PMIC rozdziela ją jako wiele napięć potrzebnych przez CPU, ekran, radio i sensory. Kontroluje też ładowanie i temperaturę.</p></div><div class="teaching-card" style="--c:var(--brand-2)"><span class="tag">Dlaczego końcówka ładuje się wolno?</span><p>Na początku ładowarka utrzymuje wysoki prąd. Blisko pełnej baterii przechodzi do stałego napięcia, a prąd stopniowo maleje, aby chronić ogniwo.</p></div><div class="teaching-card" style="--c:var(--amber)"><span class="tag">Co zużywa baterię?</span><p>Liczy się nie tylko czas pracy, ale moc. Jasny ekran, słaby zasięg, kamera, GPS i długie obciążenie GPU mogą działać równocześnie i sumować pobór.</p></div></div>
+<div class="lab" id="powerLab"><div class="lab-head"><div><h3>Symulator procesu ładowania</h3><p>Zmień moc ładowarki, temperaturę i strategię ochrony baterii. Krzywa pokazuje przejście z fazy CC do CV oraz ograniczenia termiczne.</p></div><div class="lab-actions"><span class="lab-badge">CC → CV</span></div></div><div class="sim-grid"><div class="controls"><div class="control"><label>Moc ładowarki <output id="chargerOut">65 W</output></label><input id="chargerPower" type="range" min="5" max="300" step="5" value="65"></div><div class="control"><label>Temperatura baterii <output id="batteryTempOut">30°C</output></label><input id="batteryTemp" type="range" min="0" max="50" value="30"></div><div class="control"><label>Pojemność</label><select id="capacity"><option value="3600">3600 mAh</option><option value="5000" selected>5000 mAh</option><option value="11000">11000 mAh tablet</option></select></div><div class="control"><label><span>Ochrona 80%</span><span class="switch"><input id="chargeLimit" type="checkbox"><span></span></span></label></div><button class="primary" id="chargeStep">Dodaj 10 minut</button><button class="secondary" id="chargeReset">Reset</button><div id="chargeVerdict" class="sim-verdict"></div></div><div class="viz"><div class="battery-shell"><div class="battery-fill" id="batteryFill"></div><div class="battery-label" id="batterySoc">20%</div></div><svg class="charge-curve" id="chargeCurve" viewBox="0 0 600 145" aria-label="Krzywa ładowania"><path d="M35 118 H580 M35 118 V14" stroke="currentColor" opacity=".2" fill="none"/><path id="chargePath" d="" stroke="#00b97c" stroke-width="5" fill="none" stroke-linecap="round"/><circle id="chargePoint" r="6" fill="#d70a72" cx="0" cy="0"/></svg><div class="metric-row"><div class="metric-box"><strong id="chargeEffective">46 W</strong><small>moc efektywna</small></div><div class="metric-box" style="--c:var(--brand-2)"><strong id="chargePhase">CC</strong><small>faza</small></div><div class="metric-box" style="--c:var(--amber)"><strong id="chargeTime">47 min</strong><small>do celu</small></div><div class="metric-box" style="--c:var(--magenta)"><strong id="chargeHealth">dobre</strong><small>obciążenie ogniwa</small></div></div></div></div></div>
+</section>
+
+<section id="security" class="section-card"><div class="section-head"><div><div class="kicker">11 · Zaufanie</div><h2>TrustZone, Secure Enclave i Chain of Trust</h2></div></div><p class="lead">Łańcuch zaufania zaczyna się w niezmiennym kodzie ROM. Każdy etap weryfikuje podpis następnego. Klucze i dane biometryczne pozostają w izolowanym środowisku wykonania.</p>
+<div class="chapter-guide" aria-label="Proste objaśnienie rozdziału"><div class="teaching-card" style="--c:var(--brand)"><span class="tag">W prostych słowach</span><p>Telefon nie ufa automatycznie uruchamianemu kodowi. Każdy etap startu sprawdza podpis następnego, tworząc łańcuch zaufania od pamięci ROM do systemu.</p></div><div class="teaching-card" style="--c:var(--brand-2)"><span class="tag">Gdzie są klucze?</span><p>Najważniejsze klucze i szablony biometryczne trafiają do izolowanego TEE lub Secure Enclave. Zwykła aplikacja nie może ich odczytać.</p></div><div class="teaching-card" style="--c:var(--amber)"><span class="tag">Przykład</span><p>Aplikacja bankowa prosi system o potwierdzenie biometrii. Otrzymuje odpowiedź „zaakceptowano”, ale nie dostaje obrazu twarzy ani wzorca odcisku.</p></div></div>
+<div class="lab" id="securityLab"><div class="lab-head"><div><h3>Weryfikowany start urządzenia</h3><p>Wprowadź modyfikację na wybranym etapie. Rozruch zatrzyma się dokładnie tam, gdzie podpis lub integralność przestają być zgodne.</p></div><div class="lab-actions"><span class="lab-badge">AVB 2.0 · TEE</span></div></div><div class="controls" style="grid-template-columns:1fr auto;align-items:end"><div class="control"><label>Zmodyfikowany etap</label><select id="tamperStage"><option value="none">brak - prawidłowy start</option><option value="1">XBL / LLB</option><option value="2">bootloader</option><option value="3">kernel</option><option value="4">system / vendor</option><option value="5">aplikacja</option></select></div><button class="primary" id="bootDevice">Uruchom urządzenie</button></div><div class="viz" style="margin-top:12px"><div class="chain" id="bootChain"><div class="chain-stage"><b>Boot ROM</b><small>immutable root key</small></div><div class="chain-stage"><b>XBL / LLB</b><small>inicjalizacja DRAM</small></div><div class="chain-stage"><b>Bootloader</b><small>AVB / iBoot</small></div><div class="chain-stage"><b>Kernel</b><small>Linux / XNU</small></div><div class="chain-stage"><b>System</b><small>framework + HAL</small></div><div class="chain-stage"><b>Aplikacja</b><small>sandbox + podpis</small></div></div><div id="bootVerdict" class="sim-verdict">Uruchom symulację, aby prześledzić kolejne ogniwa.</div><div class="metric-row"><div class="metric-box"><strong id="bootTrust">0/6</strong><small>zweryfikowane etapy</small></div><div class="metric-box" style="--c:var(--brand-2)"><strong id="bootState">OFF</strong><small>stan urządzenia</small></div><div class="metric-box" style="--c:var(--amber)"><strong id="bootKeys">zamknięte</strong><small>klucze użytkownika</small></div><div class="metric-box" style="--c:var(--magenta)"><strong id="bootWarning">brak</strong><small>ostrzeżenie</small></div></div></div></div>
+</section>
+
+<section id="stack" class="section-card"><div class="section-head"><div><div class="kicker">12 · Stos systemowy</div><h2>Android AOSP, iOS XNU, HAL i IPC</h2></div></div><p class="lead">Aplikacja nie steruje bezpośrednio kamerą ani modemem. Żądanie przechodzi przez framework, usługę systemową, IPC, HAL lub sterownik. Separacja warstw ogranicza zależność od konkretnego układu.</p>
+<div class="chapter-guide" aria-label="Proste objaśnienie rozdziału"><div class="teaching-card" style="--c:var(--brand)"><span class="tag">W prostych słowach</span><p>Kod aplikacji nie steruje sprzętem bezpośrednio. Wywołanie przechodzi przez API, usługę systemową, komunikację IPC, warstwę HAL i sterownik.</p></div><div class="teaching-card" style="--c:var(--brand-2)"><span class="tag">Po co tyle warstw?</span><p>Warstwy oddzielają aplikację od konkretnego modelu kamery lub modemu. Producent może zmienić podzespoły, a publiczne API pozostaje podobne.</p></div><div class="teaching-card" style="--c:var(--amber)"><span class="tag">Przykład</span><p>Gdy aplikacja prosi o zdjęcie, Camera API kontaktuje się z usługą systemową, ta z HAL, a sterownik programuje sensor i ISP.</p></div></div>
+<div class="lab" id="stackLab"><div class="lab-head"><div><h3>Ścieżka wywołania API</h3><p>Wybierz system i usługę. Podświetlane warstwy pokazują drogę żądania od kodu aplikacji do sprzętu oraz odpowiedzi zwrotnej.</p></div><div class="lab-actions"><span class="lab-badge">Binder / XPC</span></div></div><div class="sim-grid"><div class="controls"><div class="control"><label>System</label><select id="osSelect"><option value="android">Android AOSP</option><option value="ios">iOS</option></select></div><div class="control"><label>Żądanie</label><select id="apiRequest"><option value="camera">otwarcie kamery</option><option value="location">pozycja GNSS</option><option value="ml">inference AI</option><option value="storage">zapis pliku</option></select></div><button class="primary" id="callApi">Wywołaj API</button><div id="stackVerdict" class="sim-verdict"></div></div><div class="viz"><div class="stack-viz" id="stackViz"></div><div class="metric-row"><div class="metric-box"><strong id="ipcName">Binder</strong><small>mechanizm IPC</small></div><div class="metric-box" style="--c:var(--brand-2)"><strong id="stackHops">6</strong><small>warstwy</small></div><div class="metric-box" style="--c:var(--amber)"><strong id="stackLatency">3.2 ms</strong><small>narzut sterowania</small></div><div class="metric-box" style="--c:var(--magenta)"><strong id="stackIsolation">wysoka</strong><small>izolacja</small></div></div></div></div></div>
+</section>
+
+
+<section id="background" class="section-card"><div class="section-head"><div><div class="kicker">13 · Polityka systemu</div><h2>Doze, WorkManager i iOS Background Tasks</h2></div></div><p class="lead">System mobilny nie pozwala aplikacji wykonywać dowolnej pracy w tle. Zadania są grupowane w okna, uzależniane od sieci i ładowania oraz opóźniane, gdy urządzenie jest nieruchome lub ma niski poziom energii.</p>
+<div class="explain-grid"><div class="teaching-card"><span class="tag">Android</span><b>Doze ogranicza sieć, alarmy i wakelocki</b><p>WorkManager opisuje wymagania zadania, a system wybiera moment wykonania zgodny z ograniczeniami energetycznymi.</p></div><div class="teaching-card" style="--c:var(--brand-2)"><span class="tag">iOS</span><b>BGTaskScheduler traktuje czas jako wskazówkę</b><p>Aplikacja deklaruje najwcześniejszy termin, ale system uwzględnia ładowanie, sieć, historię użycia i stan cieplny.</p></div><div class="teaching-card" style="--c:var(--amber)"><span class="tag">Zasada</span><b>Nie walcz z planistą systemu</b><p>Częste timery i wymuszanie pracy zwiększają pobór energii. Zadanie powinno być idempotentne i odporne na przerwanie.</p></div></div>
+<div class="lab" id="backgroundLab"><div class="lab-head"><div><h3>Planista zadania w tle</h3><p>Wybierz system, warunki urządzenia i typ pracy. Oś czasu pokazuje, kiedy zadanie może zostać uruchomione oraz kiedy system je odkłada.</p></div><div class="lab-actions"><span class="lab-badge">Doze · BGTask</span></div></div><div class="sim-grid"><div class="controls"><div class="control"><label>System</label><select id="bgOs"><option value="android">Android</option><option value="ios">iOS</option></select></div><div class="control"><label>Stan ekranu</label><select id="screenState"><option value="on">włączony</option><option value="off">wyłączony</option></select></div><div class="control"><label>Ruch urządzenia</label><select id="motionState"><option value="moving">porusza się</option><option value="still">nieruchome</option></select></div><div class="control"><label>Typ zadania</label><select id="bgTask"><option value="sync">synchronizacja danych</option><option value="upload">wysyłanie zdjęć</option><option value="ml">lokalne uczenie / ML</option><option value="push">obsługa push</option></select></div><div class="control"><label><span>Urządzenie ładowane</span><span class="switch"><input id="charging" type="checkbox"><span></span></span></label></div><div class="control"><label><span>Sieć dostępna</span><span class="switch"><input id="networkAvailable" type="checkbox" checked><span></span></span></label></div><button class="primary" id="scheduleBg">Zaplanuj zadanie</button><div id="bgVerdict" class="sim-verdict"></div></div><div class="viz"><div class="bg-timeline" id="bgTimeline"></div><div class="policy-flow" id="policyFlow"><div class="policy-step">1. Żądanie</div><div class="policy-step">2. Ocena constraints</div><div class="policy-step">3. Okno systemowe</div><div class="policy-step">4. Wykonanie / retry</div></div><div class="metric-row"><div class="metric-box"><strong id="bgMode">foreground</strong><small>polityka</small></div><div class="metric-box" style="--c:var(--brand-2)"><strong id="bgDelay">0 min</strong><small>oczekiwane opóźnienie</small></div><div class="metric-box" style="--c:var(--amber)"><strong id="bgBudget">30 s</strong><small>budżet wykonania</small></div><div class="metric-box" style="--c:var(--magenta)"><strong id="bgEnergy">średnia</strong><small>energia</small></div></div></div></div></div>
+</section>
+
+<section id="thermal" class="section-card"><div class="section-head"><div><div class="kicker">13 · Ograniczenia fizyczne</div><h2>Termika, mechanika i technologia produkcji</h2></div></div><p class="lead">Telefon nie ma aktywnego chłodzenia. Komora parowa i grafit rozprowadzają ciepło, lecz przy długim obciążeniu system musi obniżyć moc. Mniejszy węzeł technologiczny poprawia efektywność, ale nie usuwa ograniczeń obudowy.</p>
+<div class="chapter-guide" aria-label="Proste objaśnienie rozdziału"><div class="teaching-card" style="--c:var(--brand)"><span class="tag">W prostych słowach</span><p>Każdy wat pobranej mocy ostatecznie zmienia się w ciepło. Cienka obudowa telefonu może je tylko rozprowadzić i oddać do otoczenia.</p></div><div class="teaching-card" style="--c:var(--brand-2)"><span class="tag">Czym jest throttling?</span><p>Gdy temperatura rośnie zbyt wysoko, system obniża taktowanie i napięcie. Chroni użytkownika oraz podzespoły, ale zmniejsza wydajność.</p></div><div class="teaching-card" style="--c:var(--amber)"><span class="tag">Dlaczego benchmark bywa mylący?</span><p>Telefon może być bardzo szybki przez pierwszą minutę, a później zwolnić. Dla gier i AI ważna jest wydajność utrzymywana, nie tylko wynik chwilowy.</p></div></div>
+<div class="lab" id="thermalLab"><div class="lab-head"><div><h3>Budżet cieplny telefonu</h3><p>Ustaw długotrwałe obciążenie, chłodzenie i proces technologiczny. Obserwuj temperaturę obudowy, throttling i wydajność utrzymywaną.</p></div><div class="lab-actions"><span class="lab-badge">DTPM</span></div></div><div class="sim-grid"><div class="controls"><div class="control"><label>Obciążenie <output id="thermalLoadOut">70%</output></label><input id="thermalLoad" type="range" min="10" max="100" value="70"></div><div class="control"><label>Czas <output id="thermalTimeOut">10 min</output></label><input id="thermalTime" type="range" min="1" max="30" value="10"></div><div class="control"><label>Chłodzenie</label><select id="cooling"><option value="basic">grafit</option><option value="vapor" selected>komora parowa</option><option value="active">wentylator gamingowy</option></select></div><div class="control"><label>Węzeł SoC</label><select id="node"><option value="5">5 nm</option><option value="3" selected>3 nm</option><option value="2">2 nm</option></select></div><div id="thermalVerdict" class="sim-verdict"></div></div><div class="viz"><div class="thermal-phone"><div class="heatmap" id="heatmap"></div><div class="vapor"></div><div class="graphite"></div><div class="temp-badge" id="tempBadge">41°C</div></div><div class="metric-row"><div class="metric-box"><strong id="surfaceTemp">41°C</strong><small>obudowa</small></div><div class="metric-box" style="--c:var(--brand-2)"><strong id="sustainedPerf">88%</strong><small>wydajność utrzymana</small></div><div class="metric-box" style="--c:var(--amber)"><strong id="thermalThrottle">12%</strong><small>throttling</small></div><div class="metric-box" style="--c:var(--magenta)"><strong id="thermalPower">6.2 W</strong><small>moc cieplna</small></div></div></div></div></div>
+</section>
+
+<section id="devices" class="section-card"><div class="section-head"><div><div class="kicker">14 · Form factors</div><h2>Smartfon nie jest jedynym urządzeniem mobilnym</h2></div></div><p class="lead">Wearable, tablet, urządzenie rugged i składany smartfon mają odmienne budżety energii, interfejsy, sensory i mechanikę. Architektura aplikacji powinna uwzględniać te ograniczenia.</p>
+<div class="chapter-guide" aria-label="Proste objaśnienie rozdziału"><div class="teaching-card" style="--c:var(--brand)"><span class="tag">W prostych słowach</span><p>„Urządzenie mobilne” obejmuje telefon, zegarek, tablet, składany ekran i sprzęt przemysłowy. Każda forma ma inny ekran, baterię, sensory i sposób użycia.</p></div><div class="teaching-card" style="--c:var(--brand-2)"><span class="tag">Po co projektować adaptacyjnie?</span><p>Interfejs z telefonu nie powinien być tylko powiększony na tablet. Zegarek wymaga krótkich interakcji, a urządzenie rugged dużych elementów i pracy w rękawicach.</p></div><div class="teaching-card" style="--c:var(--amber)"><span class="tag">Przykład</span><p>Ta sama aplikacja magazynowa może używać aparatu w telefonie, wbudowanego skanera w terminalu rugged i podzielonego widoku na tablecie.</p></div></div>
+<div class="lab" id="deviceLab"><div class="lab-head"><div><h3>Porównywarka klas urządzeń</h3><p>Wybierz kategorię i sprawdź, jak zmieniają się priorytety sprzętowe oraz konsekwencje dla aplikacji.</p></div><div class="lab-actions"><span class="lab-badge">phone · watch · tablet · fold · rugged</span></div></div><div class="device-grid" id="deviceButtons"></div><div class="device-detail"><div><h3 id="deviceTitle">Smartfon flagowy</h3><p id="deviceDesc" class="lead"></p><div class="metric-row" id="deviceMetrics" style="grid-template-columns:1fr 1fr"></div></div><div><h3>Konsekwencje projektowe</h3><div class="constraint-list" id="deviceConstraints"></div></div></div></div>
+</section>
+
+<section id="future" class="section-card"><div class="section-head"><div><div class="kicker">15 · Kierunek rozwoju</div><h2>AI Phone, modele lokalne i nowe formy urządzeń</h2></div></div><p class="lead">Wydajniejszy NPU i kwantyzacja przesuwają część przetwarzania z chmury na urządzenie. Zyskiem jest prywatność i niska latencja, ale model musi zmieścić się w pamięci i budżecie cieplnym.</p>
+<div class="chapter-guide" aria-label="Proste objaśnienie rozdziału"><div class="teaching-card" style="--c:var(--brand)"><span class="tag">W prostych słowach</span><p>AI Phone wykonuje część modeli bez wysyłania danych do serwera. Mały model może rozpoznawać mowę, obraz lub intencję bez połączenia z internetem.</p></div><div class="teaching-card" style="--c:var(--brand-2)"><span class="tag">Kiedy lokalnie?</span><p>Lokalne wykonanie jest korzystne dla prywatności, pracy offline i małego opóźnienia. Ograniczają je RAM, zgodność operatorów, temperatura i czas pracy baterii.</p></div><div class="teaching-card" style="--c:var(--amber)"><span class="tag">Kiedy hybrydowo?</span><p>Telefon może lokalnie filtrować prywatne dane i wykonywać proste zadania, a tylko trudniejsze zapytania przekazywać większemu modelowi w chmurze.</p></div></div>
+<div class="lab" id="futureLab"><div class="lab-head"><div><h3>Czy model powinien działać lokalnie?</h3><p>Ustaw model, NPU, pamięć i wymagania prywatności. Symulator wybierze wykonanie lokalne, hybrydowe lub chmurowe.</p></div><div class="lab-actions"><span class="lab-badge">edge AI</span></div></div><div class="sim-grid"><div class="controls"><div class="control"><label>Rozmiar modelu <output id="futureModelOut">3B</output></label><input id="futureModel" type="range" min="1" max="14" value="3"></div><div class="control"><label>NPU <output id="futureTopsOut">50 TOPS</output></label><input id="futureTops" type="range" min="10" max="120" value="50"></div><div class="control"><label>Pamięć aplikacji <output id="futureRamOut">6 GB</output></label><input id="futureRam" type="range" min="2" max="16" value="6"></div><div class="control"><label>Prywatność</label><select id="privacy"><option value="high">wysoka - dane nie opuszczają urządzenia</option><option value="medium">hybrydowa</option><option value="low">niska - chmura dozwolona</option></select></div><div class="control"><label>Łączność</label><select id="futureNetwork"><option value="offline">brak sieci</option><option value="slow">niestabilna</option><option value="fast">szybka</option></select></div><div id="futureVerdict" class="sim-verdict"></div></div><div class="viz"><div class="ai-meter"><h3>Dopasowanie do urządzenia</h3><div class="ai-fit"><span id="aiFitBar"></span><em id="aiFitText">72%</em></div></div><div class="metric-row"><div class="metric-box"><strong id="futureMode">lokalnie</strong><small>miejsce wykonania</small></div><div class="metric-box" style="--c:var(--purple)"><strong id="futureTokens">42 tok/s</strong><small>generowanie</small></div><div class="metric-box" style="--c:var(--brand-2)"><strong id="futureTtft">220 ms</strong><small>czas do 1. tokenu</small></div><div class="metric-box" style="--c:var(--amber)"><strong id="futureEnergy">5.1 W</strong><small>moc obliczeń</small></div></div><div class="note" style="margin-top:14px"><b>Interpretacja:</b> wykonanie lokalne nie zawsze jest najlepsze. Duży model może zwiększyć temperaturę, skrócić czas pracy i obniżyć responsywność innych funkcji.</div></div></div></div>
+</section>
+
+<section id="quiz" class="section-card"><div class="section-head"><div><div class="kicker">16 · Autoweryfikacja</div><h2>Sprawdzenie rozumienia architektury urządzenia</h2></div></div><p class="lead">W pytaniach może występować więcej niż jedna poprawna odpowiedź.</p>
+<div class="chapter-guide" aria-label="Proste objaśnienie rozdziału"><div class="teaching-card" style="--c:var(--brand)"><span class="tag">Jak korzystać?</span><p>Najpierw odpowiedz bez wracania do tekstu. Następnie sprawdź wynik i przeczytaj wyjaśnienie przy każdym pytaniu.</p></div><div class="teaching-card" style="--c:var(--brand-2)"><span class="tag">Co jest sprawdzane?</span><p>Pytania dotyczą zależności między warstwami, energią, wydajnością i bezpieczeństwem, a nie wyłącznie zapamiętania nazw technologii.</p></div><div class="teaching-card" style="--c:var(--amber)"><span class="tag">Jak poprawić wynik?</span><p>Wróć do symulatora odpowiadającego błędnej odpowiedzi i zmień parametry. Obserwacja skutków zwykle lepiej utrwala pojęcie niż ponowne czytanie definicji.</p></div></div><div id="quizList"></div><div class="control-row"><button class="primary" id="gradeQuiz">Sprawdź odpowiedzi</button><button class="secondary" id="resetQuiz">Wyczyść</button><strong id="quizScore"></strong></div></section>
+</main></div>
+<footer class="footer">Programowanie aplikacji mobilnych · Wykład 2 · Architektura i budowa urządzeń mobilnych · Katedra Informatyki i Automatyki</footer>
+
+
+<script>
+(()=>{
+  const $=(s,r=document)=>r.querySelector(s), $$=(s,r=document)=>[...r.querySelectorAll(s)];
+  const sleep=ms=>new Promise(r=>setTimeout(r,ms));
+  const clamp=(v,a,b)=>Math.min(b,Math.max(a,v));
+  const fmt=(v,n=0)=>Number(v).toFixed(n);
+
+  // UI ogólne
+  const themeBtn=$('#themeBtn');
+  let saved=null; try{saved=localStorage.getItem('pam-w02-theme');}catch(_){} if(saved)document.documentElement.dataset.theme=saved;
+  themeBtn.addEventListener('click',()=>{const n=document.documentElement.dataset.theme==='dark'?'light':'dark';document.documentElement.dataset.theme=n;try{localStorage.setItem('pam-w02-theme',n);}catch(_){}});
+  const sections=$$('main section[id]'),tocLinks=$$('.toc a');
+  const navObs=new IntersectionObserver(es=>{es.forEach(e=>{if(e.isIntersecting)tocLinks.forEach(a=>a.classList.toggle('active',a.getAttribute('href')==='#'+e.target.id));});},{rootMargin:'-25% 0px -65% 0px'});sections.forEach(s=>navObs.observe(s));
+  addEventListener('scroll',()=>{const h=document.documentElement.scrollHeight-innerHeight;$('#readingProgress').style.width=(h?scrollY/h*100:0)+'%';},{passive:true});
+
+  // Automatyczne prezentacje. Ręczna ingerencja wyłącza auto tylko w obrębie danego laboratorium.
+  const autoControllers=new Map();
+  const autoInteractiveSelector='button,input,select,textarea,[role="button"],.era-node,.device-btn';
+  function makeAutoControl(id,label){const el=document.createElement('div');el.className='auto-control';el.dataset.state='waiting';el.innerHTML=`<span class="auto-indicator"></span><div class="auto-control-copy"><strong>Tryb auto</strong><small data-auto-status>Włączony · czeka na widoczność</small></div><label class="switch auto-switch" title="Włącz lub wyłącz tryb automatyczny"><input id="auto-${id}" type="checkbox" checked aria-label="Tryb auto: ${label}"><span></span></label>`;return el;}
+  function createAutoController({id,label,container,runner}){
+    if(!container||autoControllers.has(id))return;const control=makeAutoControl(id,label),toggle=$('input',control),status=$('[data-auto-status]',control);let mount=$('.lab-actions',container);if(!mount){mount=document.createElement('div');mount.className='auto-toolbar';container.prepend(mount);}mount.append(control);
+    let enabled=true,visible=false,revision=0,loopPromise=null;
+    const setVisual=(state,msg)=>{control.dataset.state=state;status.textContent=msg;};
+    const disable=manual=>{enabled=false;toggle.checked=false;revision++;setVisual('off',manual?'Wyłączony po ręcznej zmianie':'Wyłączony');};
+    const wait=async(ms,token)=>{const end=performance.now()+ms;while(performance.now()<end&&enabled&&visible&&token===revision)await sleep(Math.min(90,Math.max(16,end-performance.now())));};
+    const schedule=()=>{if(!enabled||!visible||loopPromise)return;const token=revision;loopPromise=(async()=>{while(enabled&&visible&&token===revision){setVisual('running','Aktywny · prezentacja w pętli');const ctx={active:()=>enabled&&visible&&token===revision,wait:ms=>wait(ms,token),status:m=>token===revision&&setVisual('running',m)};try{await runner(ctx);}catch(e){console.error(e);disable(false);break;}if(!ctx.active())break;setVisual('waiting','Włączony · ponowienie za chwilę');await wait(900,token);}})().finally(()=>{loopPromise=null;if(enabled&&visible)schedule();else if(enabled)setVisual('waiting','Włączony · czeka na widoczność');});};
+    ['pointerdown','click','input','change'].forEach(type=>container.addEventListener(type,e=>{if(!e.isTrusted||control.contains(e.target)||!(e.target instanceof Element)||!e.target.closest(autoInteractiveSelector))return;disable(true);},true));
+    toggle.addEventListener('change',e=>{revision++;enabled=e.target.checked;if(enabled){setVisual(visible?'running':'waiting',visible?'Aktywny · start':'Włączony · czeka na widoczność');schedule();}else setVisual('off','Wyłączony');});
+    const obs=new IntersectionObserver(es=>{const near=es.some(e=>e.isIntersecting);if(near===visible)return;visible=near;revision++;if(enabled){setVisual(near?'running':'waiting',near?'Aktywny · start':'Włączony · czeka na widoczność');schedule();}},{rootMargin:'-12% 0px -12% 0px',threshold:.05});obs.observe(container);autoControllers.set(id,{disable});
+  }
+
+  // 1. Historia
+  const history=[
+    {y:1992,t:'IBM Simon',d:'Pierwszy smartfon z ekranem dotykowym. Urządzenie łączyło telefon, notatnik i modem, lecz ważyło ponad pół kilograma.',m:['1 MB RAM','2400 baud','510 g','stylus']},
+    {y:1996,t:'Palm Pilot',d:'PDA spopularyzował mobilne zarządzanie informacją, synchronizację i rozpoznawanie pisma Graffiti.',m:['128 KB RAM','IR sync','PDA','5 mln+']},
+    {y:2000,t:'Nokia 3310',d:'Masowy telefon komórkowy: nacisk na niezawodność, długi czas pracy i prostą komunikację.',m:['4 MB','2G','feature phone','400 mln+']},
+    {y:2007,t:'iPhone',d:'Multi-touch i pełna przeglądarka zmieniły model interakcji. Interfejs stał się programowalną powierzchnią aplikacji.',m:['128 MB RAM','620 MHz','160 ppi','multi-touch']},
+    {y:2008,t:'Android 1.0',d:'Otwarta platforma sprzętowo-systemowa umożliwiła powstanie wielu rodzin urządzeń i producentów.',m:['192 MB RAM','ARM926','open source','G1']},
+    {y:2013,t:'64-bit mobile',d:'Apple A7 zapoczątkował migrację mobilnego ekosystemu do 64 bitów i większej przestrzeni adresowej.',m:['ARMv8','64 bit','2× perf','A7']},
+    {y:2019,t:'Era 5G',d:'Nowe modemy zwiększyły przepustowość i obniżyły opóźnienia, ale podniosły złożoność RF i zużycie energii.',m:['sub-6','mmWave','SA/NSA','X50']},
+    {y:2022,t:'AI on-device',d:'NPU stał się standardowym blokiem SoC. Modele obrazu, mowy i generowania zaczęły działać bez chmury.',m:['17 TOPS','CoreML','lokalna AI','prywatność']},
+    {y:2024,t:'Spatial computing',d:'Zestawy kamer, eye tracking, mapowanie przestrzeni i wyspecjalizowane układy łączą świat fizyczny z cyfrowym.',m:['R1','12 ms','AR/VR','sensor fusion']},
+    {y:2025,t:'AI Phone',d:'NPU 50–80 TOPS, modele 1–7B i hybrydowe wykonanie lokalne/chmurowe stają się elementem systemu.',m:['80 TOPS','INT4','LLM 7B','edge AI']}
+  ];
+  let historyIndex=0;
+  $('#eraNodes').innerHTML=history.map((h,i)=>`<button class="era-node" data-i="${i}" aria-label="${h.y} ${h.t}"><i class="era-dot"></i><span>${h.y}</span></button>`).join('');
+  function setHistory(i){historyIndex=i;const h=history[i];$$('.era-node').forEach((n,j)=>n.classList.toggle('active',j===i));$('#historyProgress').style.width=(i/(history.length-1)*100)+'%';$('#historyYear').textContent=h.y;$('#historyTitle').textContent=h.t;$('#historyDesc').textContent=h.d;$('#historyMetrics').innerHTML=h.m.map((x,j)=>`<div class="metric-box" style="--c:${['var(--brand)','var(--brand-2)','var(--purple)','var(--amber)'][j]}"><strong>${x}</strong><small>cecha epoki</small></div>`).join('');}
+  $$('.era-node').forEach(n=>n.addEventListener('click',()=>setHistory(+n.dataset.i)));setHistory(0);
+
+  // 2. SoC
+  const socData={
+    ui:{blocks:['cpu','gpu','mem','io'],perf:42,power:2.1,lat:8,heat:34,n:'CPU obsługuje logikę i zdarzenia, GPU kompozycję, a pamięć przechowuje drzewo i bufory klatek.'},
+    game:{blocks:['cpu','gpu','mem','io'],perf:91,power:7.4,lat:16,heat:44,n:'CPU przygotowuje scenę, GPU rasteryzację, a LPDDR dostarcza tekstury i bufory. To obciążenie termicznie długotrwałe.'},
+    camera:{blocks:['cpu','gpu','npu','isp','mem','io'],perf:78,power:5.8,lat:180,heat:41,n:'ISP realizuje pipeline obrazu, NPU redukcję szumu i segmentację, GPU/CPU scalanie oraz zapis.'},
+    ai:{blocks:['cpu','npu','mem','io'],perf:84,power:5.0,lat:220,heat:40,n:'CPU zarządza grafem, NPU wykonuje GEMM, a LPDDR dostarcza wagi i aktywacje. Przepustowość pamięci może ograniczyć TOPS.'},
+    payment:{blocks:['cpu','sec','io'],perf:24,power:1.1,lat:280,heat:31,n:'Biometria i klucze pozostają w TEE/Secure Enclave. Aplikacja otrzymuje wynik autoryzacji, nie surowy szablon.'},
+    call:{blocks:['cpu','gpu','npu','isp','mem','modem','io'],perf:73,power:6.2,lat:35,heat:42,n:'Kamera i ISP tworzą obraz, kodek wykorzystuje CPU/GPU, NPU poprawia tło, a modem przesyła strumień.'}
+  };
+  function updateSoc(){const k=$('#socWorkload').value,p=+$('#socPriority').value,d=socData[k],mult=[.8,1,1.18][p];$$('.soc-block').forEach(b=>b.classList.toggle('active',d.blocks.includes(b.dataset.block)));$('#socPriorityOut').value=['energia','zrównoważony','wydajność'][p];$('#socPerf').textContent=Math.round(clamp(d.perf*mult,0,100))+'%';$('#socPower').textContent=fmt(d.power*mult,1)+' W';$('#socLatency').textContent=Math.round(d.lat/mult)+' ms';$('#socHeat').textContent=Math.round(d.heat+(mult-1)*18)+'°C';$('#socNarrative').textContent=d.n;}
+  ['socWorkload','socPriority'].forEach(id=>$('#'+id).addEventListener('input',updateSoc));updateSoc();
+
+  // 3. CPU
+  $('#coreGrid').innerHTML=[...Array(8)].map((_,i)=>`<div class="core ${i<2?'p':'e'}"><div class="core-fill"></div><span>${i<2?'P':'E'}${i<2?i+1:i-1}</span></div>`).join('');
+  function updateCpu(){const task=$('#cpuTask').value,l=+$('#cpuLoad').value,a=+$('#ambient').value;$('#cpuLoadOut').value=l+'%';$('#ambientOut').value=a+'°C';let pShare={ui:.72,background:.12,compile:.65,codec:.45,mixed:.5}[task],simd=task==='codec'?1.35:1;let temp=a+7+l*.18+(task==='compile'?5:0),throttle=clamp((temp-44)*5,0,55),freq=(1.2+3.2*l/100)*(1-throttle/160),ipc=(2.1+3.2*pShare)*simd,time=(36-l*.18)/(ipc/3)*(1+throttle/80),energy=(l*.22+4)*(freq/3.5);$$('.core').forEach((c,i)=>{let load=i<2?l*pShare*(i?0.83:1):l*(1-pShare)/6*(1+(i%3)*.12);c.querySelector('.core-fill').style.height=clamp(load,4,100)+'%';});$('#freqBar').style.width=clamp(freq/4.5*100,0,100)+'%';$('#ipcBar').style.width=clamp(ipc/6*100,0,100)+'%';$('#cpuTempBar').style.width=clamp(temp/60*100,0,100)+'%';$('#freqOut').value=fmt(freq,1);$('#ipcOut').value=fmt(ipc,1);$('#cpuTempOut').value=Math.round(temp)+'°';$('#cpuTime').textContent=fmt(time,1)+' ms';$('#cpuEnergy').textContent=Math.round(energy)+' mJ';$('#cpuThrottle').textContent=Math.round(throttle)+'%';$('#cpuFrame').textContent=time<16.7?'60 fps':time<33?'30–60 fps':'<30 fps';$('#cpuVerdict').textContent=throttle>10?'Budżet termiczny ogranicza częstotliwość. Przeniesienie pracy na wszystkie rdzenie nie gwarantuje liniowego przyspieszenia.':task==='background'?'Planista preferuje rdzenie E, aby ograniczyć energię i nie zakłócać interakcji użytkownika.':'Krótka praca interaktywna trafia głównie na rdzenie P.';}
+  ['cpuTask','cpuLoad','ambient'].forEach(id=>$('#'+id).addEventListener('input',updateCpu));updateCpu();
+
+  // 4. GPU
+  $('#tileGrid').innerHTML=[...Array(64)].map((_,i)=>`<i class="tile ${(i%9<4||i>37&&i<55)?'object':''} ${(i%13===0||i%17===0)?'hidden':''}"></i>`).join('');
+  function gpuMetrics(){const c=+$('#sceneComplexity').value,t=$('#renderMode').value,hs=$('#hsr').checked;$('#sceneOut').value=c+'%';let alu=c*(t==='tbdr'?0.78:1.05)*(hs?.72:1),bw=c*(t==='tbdr'?.38:1.0)*(hs?.8:1),energy=.7+alu*.035+bw*.02,fps=clamp(130-energy*10,18,120);$('#gpuAlu').textContent=Math.round(alu)+'%';$('#gpuBw').textContent=fmt(bw*.7,1)+' GB/s';$('#gpuEnergy').textContent=fmt(energy,1)+' W';$('#gpuFrames').textContent=Math.round(fps)+' fps';$('#gpuPhaseText').textContent=t==='tbdr'?'TBDR utrzymuje kolor i głębokość kafelka w pamięci on-chip, dzięki czemu ogranicza zapis do DRAM.':'IMR przetwarza prymitywy w kolejności i częściej odczytuje/zapisuje framebuffer w DRAM.';}
+  let gpuRunning=false;
+  async function renderGpu(){if(gpuRunning)return;gpuRunning=true;const tiles=$$('.tile');tiles.forEach(t=>t.classList.remove('processing','done'));const mode=$('#renderMode').value,hs=$('#hsr').checked;const order=mode==='tbdr'?tiles:[...tiles].sort(()=>Math.random()-.5);for(let i=0;i<order.length;i++){const t=order[i];t.classList.add('processing');if(hs&&t.classList.contains('hidden')){await sleep(18);t.classList.remove('processing');continue;}await sleep(mode==='tbdr'?24:32);t.classList.remove('processing');t.classList.add('done');}gpuRunning=false;gpuMetrics();}
+  ['sceneComplexity','renderMode','hsr'].forEach(id=>$('#'+id).addEventListener('input',gpuMetrics));$('#renderOnce').addEventListener('click',renderGpu);gpuMetrics();
+
+  // 5. NPU
+  $('#systolic').innerHTML=[...Array(64)].map((_,i)=>`<i class="pe" data-pe="${i}"></i>`).join('');
+  const npuState={activePE:64,waveWidth:10,waveStep:1,phase:0,accelerator:'npu',fits:true,running:false,speed:24};
+  let npuLastTick=0;
+  function animateNpu(ts){
+    if(ts-npuLastTick>Math.max(55,260-npuState.speed*3.2)){
+      npuLastTick=ts;npuState.phase=(npuState.phase+npuState.waveStep)%80;
+      $$('.pe').forEach((p,i)=>{const enabled=i<npuState.activePE;const row=Math.floor(i/8),col=i%8;const wave=(row+col+npuState.phase)%Math.max(5,npuState.waveWidth);p.classList.toggle('enabled',enabled);p.classList.toggle('hot',enabled&&wave<2);});
+    }
+    requestAnimationFrame(animateNpu);
+  }
+  requestAnimationFrame(animateNpu);
+  function buildModelSlices(params,bits){
+    const count=Math.round(clamp(params*1.8,5,28));
+    const heightBase=38+clamp(params/7*30,0,30);
+    $('#modelVisual').innerHTML=[...Array(count)].map((_,i)=>`<i class="model-slice" style="height:${Math.round(heightBase-(i%5)*3)}px;opacity:${.55+(32/bits)*.055}"></i>`).join('');
+  }
+  function setNpuFlow(state,failAt=null){
+    const order=['load','quant','memory','dispatch','infer'];
+    $$('#npuFlow .deployment-step').forEach((el,i)=>{el.classList.remove('done','active','error');const pos=order.indexOf(state);if(i<pos)el.classList.add('done');else if(i===pos)el.classList.add(failAt===state?'error':'active');});
+  }
+  function updateNpu(){
+    const params=+$('#modelSize').value/10,bits=+$('#precision').value,acc=$('#accelerator').value,ram=+$('#deviceRam').value;
+    $('#modelSizeOut').value=fmt(params,1)+'B';$('#ramOut').value=ram+' GB';
+    const weights=params*bits/8;
+    const activations=.45+params*(bits<=8?.13:.2);
+    const kvCache=.35+params*.09;
+    const total=weights+activations+kvCache;
+    const systemReserve=Math.max(2,ram*.24);
+    const safeBudget=ram-systemReserve;
+    const fitRatio=total/safeBudget;
+    const supported=acc!=='npu'||bits<=16;
+    const base={cpu:7,gpu:38,npu:95}[acc];
+    const precisionGain={32:.45,16:.72,8:1,4:1.45}[bits];
+    const speed=base*precisionGain/Math.pow(params,0.72);
+    const power={cpu:6.1,gpu:7.4,npu:3.7}[acc]*Math.pow(bits/8,.22)*(1+params/80);
+    const drop=bits===4?'1–3%':bits===8?'<1%':bits===16?'~0%':'0%';
+    const activeBase={cpu:10,gpu:38,npu:64}[acc];
+    const activePE=Math.round(clamp(activeBase*(.62+params/18)*(bits<=8?1:.72),6,64));
+    npuState.activePE=activePE;npuState.waveWidth=bits===4?6:bits===8?8:bits===16?11:14;npuState.waveStep=acc==='npu'?2:1;npuState.accelerator=acc;npuState.fits=fitRatio<=1;npuState.speed=speed;
+    buildModelSlices(params,bits);
+    $('#modelPackageLabel').textContent=`${fmt(params,1)}B · ${bits===32?'FP32':bits===16?'FP16':'INT'+bits}`;
+    const fill=clamp(total/ram*100,0,100);
+    $('#npuMemoryFill').style.width=fill+'%';$('#npuMemoryFill').classList.toggle('warn',fitRatio>1);
+    $('#npuReserveMarker').style.left=clamp((ram-systemReserve)/ram*100,0,100)+'%';
+    $('#npuMemorySummary').textContent=`${fmt(total,1)} / ${ram} GB`;
+    $('#npuMemoryText').textContent=`wagi ${fmt(weights,1)} GB + aktywacje/cache ${fmt(activations+kvCache,1)} GB`;
+    $('#npuReserveText').textContent=`bezpieczny budżet aplikacji ${fmt(safeBudget,1)} GB`;
+    $$('.accelerator-unit').forEach(x=>{x.classList.toggle('active',x.dataset.acc===acc);x.classList.toggle('fallback',x.dataset.acc==='npu'&&acc==='npu'&&!supported);});
+    $('#npuArrayLabel').textContent=`Macierz PE: ${acc.toUpperCase()} · ${bits} bit`;
+    $('#npuUtilLabel').textContent=`${activePE} / 64 aktywnych`;
+    $('#modelMemory').textContent=fmt(total,1)+' GB';$('#modelSpeed').textContent=fmt(speed,0)+' tok/s';$('#modelPower').textContent=fmt(power,1)+' W';$('#accuracyDrop').textContent=drop;
+    const fits=fitRatio<=1;
+    let verdict,explain;
+    if(!fits){verdict='Model przekracza bezpieczny budżet RAM. Inferencja może zostać przerwana przez system lub wywołać intensywny swap.';explain=`Model potrzebuje ${fmt(total,1)} GB, a po rezerwie systemowej pozostaje około ${fmt(safeBudget,1)} GB. Zmniejsz model albo liczbę bitów.`;setNpuFlow('memory','memory');}
+    else if(!supported){verdict='Wybrana precyzja nie jest typowym trybem NPU. Część grafu może zostać wykonana na GPU lub CPU.';explain='Fallback obniża przewidywalność czasu i energii. Przed wdrożeniem trzeba sprawdzić, które operatory kompilator deleguje do NPU.';setNpuFlow('dispatch');}
+    else if(acc==='npu'){verdict='Model mieści się w RAM i może korzystać z NPU. Najlepszy wynik wymaga pełnego delegowania operatorów.';explain=`Kwantyzacja do ${bits} bit zmniejsza transfer wag, dlatego macierz może przetwarzać dane szybciej przy mniejszej mocy.`;setNpuFlow('infer');}
+    else if(acc==='gpu'){verdict='Model mieści się w pamięci. GPU jest szybkie, lecz zwykle pobiera więcej energii niż NPU.';explain='GPU jest dobrym mechanizmem awaryjnym dla operatorów niewspieranych przez NPU, ale dłuższa praca szybciej nagrzewa telefon.';setNpuFlow('dispatch');}
+    else {verdict='Model mieści się w pamięci, ale CPU zapewni najmniejszą przepustowość i najwyższy koszt energii na operację.';explain='CPU jest uniwersalne i łatwe do uruchomienia, lecz duże mnożenia macierzy nie są jego najbardziej efektywnym zadaniem.';setNpuFlow('dispatch');}
+    $('#npuVerdict').textContent=verdict;
+    $('#npuLiveExplanation').innerHTML='<b>Interpretacja:</b> '+explain;
+  }
+  async function runNpuInference(active=()=>true){
+    if(npuState.running)return;npuState.running=true;
+    $$('.pe').forEach(p=>p.classList.remove('burst'));
+    const stages=['load','quant','memory','dispatch','infer'];
+    for(const stage of stages){
+      if(!active())break;
+      if(stage==='memory'&&!npuState.fits){setNpuFlow('memory','memory');$('#npuLiveExplanation').innerHTML='<b>Inferencja zatrzymana:</b> alokacja pamięci przekroczyła bezpieczny budżet aplikacji.';await sleep(700);break;}
+      setNpuFlow(stage);if(stage==='infer')$$('.pe.enabled').forEach(p=>p.classList.add('burst'));
+      await sleep(stage==='infer'?900:420);
+    }
+    $$('.pe').forEach(p=>p.classList.remove('burst'));
+    if(npuState.fits)setNpuFlow('infer');npuState.running=false;
+  }
+  ['modelSize','precision','accelerator','deviceRam'].forEach(id=>$('#'+id).addEventListener('input',updateNpu));
+  $('#runNpuOnce').addEventListener('click',()=>runNpuInference());
+  updateNpu();
+
+  // 6. Pamięć
+  let memRunning=false;
+  function memoryTarget(){const t=$('#accessType').value,l=+$('#locality').value,p=+$('#ramPressure').value;$('#localityOut').value=l+'%';$('#pressureOut').value=p+'%';if(t==='swap'||p>88)return 4;if(t==='app')return 3;if(l>85)return 0;if(l>60)return 1;if(l>28)return 2;return 3;}
+  function memMetric(idx){const data=[['1 ns','3 TB/s','1×','L1 hit'],['4 ns','1 TB/s','2×','L2 hit'],['12 ns','400 GB/s','4×','SLC hit'],['100 ns','136 GB/s','15×','LPDDR'],['80 µs','4.2 GB/s','1000×','UFS / swap']][idx];['memLatency','memBw','memEnergy','memHit'].forEach((id,i)=>$('#'+id).textContent=data[i]);$('#memoryVerdict').textContent=idx===4?'Swap do UFS jest tysiące razy wolniejszy od cache i wielokrotnie wolniejszy od LPDDR. „Wirtualny RAM” nie zwiększa fizycznej przepustowości.':idx===3?'Dane opuszczają cache i trafiają do LPDDR. Koszt energii rośnie głównie przez transfer na dłuższych połączeniach.':'Lokalność danych pozwala obsłużyć żądanie blisko rdzenia.';}
+  async function runMemory(){if(memRunning)return;memRunning=true;const target=memoryTarget(),nodes=$$('.mem-node');nodes.forEach(n=>n.classList.remove('active'));for(let i=0;i<=target;i++){nodes[i].classList.add('active');await sleep(270);if(i<target)nodes[i].classList.remove('active');}memMetric(target);memRunning=false;}
+  ['accessType','locality','ramPressure'].forEach(id=>$('#'+id).addEventListener('input',()=>{memoryTarget();memMetric(memoryTarget());}));$('#memoryRequest').addEventListener('click',runMemory);memMetric(memoryTarget());
+
+  // 7. Display
+  function updateDisplay(){const content=$('#displayContent').value,b=+$('#brightness').value,mode=$('#refreshMode').value,pwm=+$('#pwm').value;$('#brightnessOut').value=b+'%';$('#pwmOut').value=pwm+' Hz';const native={reading:10,video:60,scroll:120,aod:1}[content],hz=mode==='adaptive'?native:+mode;let dark={reading:.15,video:.28,scroll:.2,aod:.95}[content],power=.25+b/100*2.3*(1-dark)+hz/120*.7;const visual=$('#displayVisual');visual.className='display-content '+(content==='scroll'?'video':content);$('#displayTitle').textContent={reading:'Czytanie',video:'HDR video',scroll:'Scroll 120 Hz',aod:'12:45'}[content];$('#displaySubtitle').textContent={reading:'statyczny tekst',video:'jasne sceny P3',scroll:'płynny interfejs',aod:'1 Hz · czarne piksele'}[content];visual.style.filter=`brightness(${.35+b/100*.9})`;$('#refreshPulse').style.animationDuration=(Math.max(.18,10/hz))+'s';$('#displayHz').textContent=hz+' Hz';$('#displayPower').textContent=fmt(power,1)+' W';$('#displayFrame').textContent=fmt(1000/hz,1)+' ms';$('#flickerRisk').textContent=pwm<360&&b<30?'wysokie':pwm<720?'średnie':'niskie';$('#displayVerdict').textContent=mode==='adaptive'?'LTPO dopasowuje odświeżanie do treści. Statyczny obraz nie wymaga 120 pełnych odświeżeń na sekundę.':'Stałe odświeżanie upraszcza zachowanie, ale może zużywać energię bez korzyści wizualnej.';const duty=clamp(b,5,100),bars=42;$('#pwmWave').innerHTML=[...Array(bars)].map((_,i)=>`<i style="height:${i%10<duty/10?100:8}%"></i>`).join('');}
+  ['displayContent','brightness','refreshMode','pwm'].forEach(id=>$('#'+id).addEventListener('input',updateDisplay));updateDisplay();
+
+  // 8. Kamera
+  let cameraRunning=false;
+  function cameraMetrics(){const light=+$('#light').value,shake=+$('#shake').value,stab=$('#stabilization').value,mode=$('#photoMode').value;$('#lightOut').value=light+'%';$('#shakeOut').value=shake+'%';let stabGain={none:0,ois:32,hybrid:53}[stab],modeGain={raw:0,hdr:18,night:35}[mode],sharp=clamp(50+light*.28-shake*.42+stabGain,5,100),noise=clamp(95-light*.7-modeGain,2,95),time={raw:.08,hdr:.45,night:1.2}[mode],crop=stab==='hybrid'?1.2:stab==='ois'?1.0:1.0;$('#cameraSharp').textContent=Math.round(sharp)+'%';$('#cameraNoise').textContent=Math.round(noise)+'%';$('#cameraTime').textContent=fmt(time,2)+' s';$('#cameraCrop').textContent=fmt(crop,1)+'×';const p=$('#cameraPreview');p.classList.toggle('shake',shake>25&&stab==='none');p.classList.toggle('stabilized',shake>25&&stab!=='none');p.style.filter=`brightness(${.45+light/100}) blur(${Math.max(0,(100-sharp)/45)}px)`;$('#cameraVerdict').textContent=mode==='night'?'Tryb nocny zbiera wiele klatek, wyrównuje ruch, redukuje szum i wykonuje tone mapping. Wymaga jednak czasu i może tworzyć artefakty ruchu.':mode==='raw'?'RAW zachowuje dane sensora, lecz pozostawia odszumianie i barwę do obróbki.':'HDR rozszerza zakres tonalny przez połączenie różnych ekspozycji.';}
+  async function takePhoto(){if(cameraRunning)return;cameraRunning=true;const stages=$$('.pipe-stage');stages.forEach(s=>s.classList.remove('active'));for(const s of stages){s.classList.add('active');await sleep(210);s.classList.remove('active');}cameraMetrics();cameraRunning=false;}
+  ['light','shake','stabilization','photoMode'].forEach(id=>$('#'+id).addEventListener('input',cameraMetrics));$('#takePhoto').addEventListener('click',takePhoto);cameraMetrics();
+
+  // 9. Radio
+  const radioMap={download:'wifi',audio:'bt',payment:'nfc',finding:'uwb',navigation:'gps',emergency:'cell'};
+  function updateRadio(){const task=$('#radioTask').value,d=+$('#distance').value,o=+$('#obstacles').value,p=$('#radioPriority').value;$('#distanceOut').value=d+' m';$('#obstacleOut').value=o+'%';let r=radioMap[task];if(task==='download'&&(d>60||o>65))r='cell';$$('.radio-label').forEach(x=>x.classList.toggle('active',x.dataset.radio===r));const cfg={wifi:[4600,4,1.4,50],cell:[900,22,2.3,5000],bt:[2,.012,.05,20],nfc:[.4,.001,.02,.05],uwb:[27,.004,.12,80],gps:[.001,30,.18,20000]}[r];let loss=clamp(1-d/cfg[3]*.55-o/180,.08,1);let speed=cfg[0]*loss,lat=cfg[1]/loss,pow=cfg[2]*(p==='battery'?.75:p==='speed'?1.2:1);$('#radioSpeed').textContent=speed>=1000?fmt(speed/1000,1)+' Gb/s':speed>=1?fmt(speed,1)+' Mb/s':fmt(speed*1000,0)+' kb/s';$('#radioLatency').textContent=lat<1?fmt(lat*1000,0)+' µs':fmt(lat,1)+' ms';$('#radioPower').textContent=fmt(pow,2)+' W';$('#radioRange').textContent=cfg[3]+' m';$('#radioVerdict').textContent=`Wybrano ${$(`.radio-label[data-radio="${r}"]`).textContent}. System uwzględnia wymagany zasięg, typ danych i koszt energetyczny. W rzeczywistym urządzeniu moduły współdzielą anteny i czas radiowy.`;}
+  ['radioTask','distance','obstacles','radioPriority'].forEach(id=>$('#'+id).addEventListener('input',updateRadio));updateRadio();
+
+  // 10. Bateria
+  let soc=20;
+  function chargeCalc(){const charger=+$('#chargerPower').value,temp=+$('#batteryTemp').value,cap=+$('#capacity').value,limit=$('#chargeLimit').checked?80:100;$('#chargerOut').value=charger+' W';$('#batteryTempOut').value=temp+'°C';let safety=temp<5||temp>45?0:temp>40?.45:temp>36?.72:1,phase=soc<70?'CC':soc<92?'CV':'trickle',phaseF=phase==='CC'?1:phase==='CV'?clamp((100-soc)/30,.18,1):.12,effective=Math.min(charger,cap/1000*12)*safety*phaseF;let remain=Math.max(0,limit-soc),minutes=effective?remain*cap*3.8/100/effective*60:Infinity;$('#batteryFill').style.width=soc+'%';$('#batterySoc').textContent=Math.round(soc)+'%';$('#chargeEffective').textContent=fmt(effective,1)+' W';$('#chargePhase').textContent=phase.toUpperCase();$('#chargeTime').textContent=isFinite(minutes)?Math.ceil(minutes)+' min':'STOP';$('#chargeHealth').textContent=temp>40||charger>150?'wysokie zużycie':charger>80?'umiarkowane':'dobre';$('#chargeVerdict').textContent=safety===0?'BMS zatrzymał ładowanie z powodu temperatury poza bezpiecznym zakresem.':soc>=limit?'Osiągnięto ustawiony limit. Utrzymywanie ogniwa poniżej 100% może zmniejszyć jego degradację.':phase==='CV'?'W fazie CV prąd stopniowo maleje, dlatego ostatnie procenty trwają znacznie dłużej.':'W fazie CC układ dostarcza możliwie stały prąd ograniczony temperaturą i możliwościami ogniwa.';const pts=[];for(let x=0;x<=100;x+=4){let y=x<70?x*.92:64+(x-70)*.45;pts.push([35+x*5.3,118-y]);}$('#chargePath').setAttribute('d','M'+pts.map(p=>p.join(' ')).join(' L'));$('#chargePoint').setAttribute('cx',35+soc*5.3);$('#chargePoint').setAttribute('cy',118-(soc<70?soc*.92:64+(soc-70)*.45));return {effective,limit};}
+  function chargeTen(){const {effective,limit}=chargeCalc();soc=clamp(soc+effective/3.8/(+$('#capacity').value/1000)*10/60*100,0,limit);chargeCalc();}
+  ['chargerPower','batteryTemp','capacity','chargeLimit'].forEach(id=>$('#'+id).addEventListener('input',chargeCalc));$('#chargeStep').addEventListener('click',chargeTen);$('#chargeReset').addEventListener('click',()=>{soc=20;chargeCalc();});chargeCalc();
+
+  // 11. Bezpieczeństwo
+  let bootRunning=false;
+  async function boot(){if(bootRunning)return;bootRunning=true;const tamper=$('#tamperStage').value,stages=$$('.chain-stage');stages.forEach(s=>s.className='chain-stage');let ok=0;$('#bootState').textContent='BOOTING';$('#bootWarning').textContent='brak';for(let i=0;i<stages.length;i++){stages[i].classList.add('checking');await sleep(460);stages[i].classList.remove('checking');if(tamper!=='none'&&i===+tamper){stages[i].classList.add('fail');$('#bootState').textContent='STOP';$('#bootWarning').textContent='integralność';$('#bootKeys').textContent='zamknięte';$('#bootVerdict').textContent=`Weryfikacja zatrzymała start na etapie ${stages[i].querySelector('b').textContent}. Kolejne komponenty nie otrzymują zaufania ani dostępu do kluczy.`;break;}stages[i].classList.add('ok');ok++;$('#bootTrust').textContent=ok+'/6';}if(ok===6){$('#bootState').textContent='READY';$('#bootKeys').textContent='odblokowane po auth';$('#bootVerdict').textContent='Cały łańcuch został zweryfikowany. Klucze plików mogą zostać udostępnione dopiero po poprawnym uwierzytelnieniu użytkownika.';}bootRunning=false;}
+  $('#bootDevice').addEventListener('click',boot);
+
+  // 12. Stos
+  const stacks={android:[['Aplikacja','Kotlin / APK','--brand'],['Framework','CameraManager · LocationManager','--brand-2'],['System Service','CameraService · LocationService','--magenta'],['Binder IPC','/dev/binder','--purple'],['HAL / AIDL','vendor implementation','--amber'],['Kernel / Hardware','driver · SoC · sensor','--ok']],ios:[['Aplikacja','Swift / IPA','--brand'],['Cocoa Touch','UIKit · SwiftUI','--brand-2'],['Core Services','AVFoundation · CoreLocation','--magenta'],['XPC','service boundary','--purple'],['Darwin / XNU','IOKit · DriverKit','--amber'],['Hardware','ANE · SEP · camera','--ok']]};
+  function renderStack(){const os=$('#osSelect').value;$('#stackViz').innerHTML=stacks[os].map((x,i)=>`<div class="stack-layer" style="--c:var(${x[2]})" data-layer="${i}"><div><b>${x[0]}</b><small>${x[1]}</small></div><span>${i<5?'↓':'●'}</span></div>`).join('');$('#ipcName').textContent=os==='android'?'Binder':'XPC';$('#stackVerdict').textContent=os==='android'?'Project Treble separuje /system od /vendor, a stabilne AIDL wersjonuje interfejsy HAL.':'Sandbox, entitlements i XPC ograniczają zakres usług dostępnych aplikacji.';}
+  let stackRunning=false;
+  async function callStack(){if(stackRunning)return;stackRunning=true;const layers=$$('.stack-layer');for(const l of layers){l.classList.add('active');await sleep(330);}await sleep(250);for(const l of [...layers].reverse()){l.classList.remove('active');await sleep(130);}const req=$('#apiRequest').value;$('#stackLatency').textContent=({camera:5.8,location:12,ml:3.2,storage:2.5}[req])+' ms';stackRunning=false;}
+  $('#osSelect').addEventListener('input',renderStack);$('#apiRequest').addEventListener('input',renderStack);$('#callApi').addEventListener('click',callStack);renderStack();
+
+
+  // 13. Praca w tle
+  $('#bgTimeline').innerHTML=[...Array(12)].map((_,i)=>`<div class="bg-slot" data-slot="${i}">${i*10}m</div>`).join('');
+  let bgRunning=false;
+  function backgroundPolicy(){const os=$('#bgOs').value,screen=$('#screenState').value,motion=$('#motionState').value,task=$('#bgTask').value,charging=$('#charging').checked,network=$('#networkAvailable').checked;let mode='foreground',delay=0,budget=30,energy='średnia',windows=[];
+    if(screen==='off'){if(os==='android'&&motion==='still'){mode='Deep Doze';delay=60;budget=60;windows=[5,11];energy='niska';}else if(os==='android'){mode='Light Doze';delay=20;budget=90;windows=[3,7,11];energy='niska';}else{mode=task==='ml'?'BGProcessingTask':'BGAppRefresh';delay=task==='push'?1:35;budget=task==='ml'?600:30;windows=task==='push'?[1,5,9]:[4,10];energy='niska';}}
+    else {windows=[0,1,2,3,4,5,6,7,8,9,10,11];delay=0;budget=task==='ml'?300:60;}
+    if(!network&&['sync','upload','push'].includes(task)){delay=Math.max(delay,90);windows=[];mode+=' · brak sieci';}
+    if(task==='ml'&&!charging){delay=Math.max(delay,120);windows=[];mode+=' · oczekuje ładowania';}
+    $$('.bg-slot').forEach((s,i)=>{s.classList.toggle('window',windows.includes(i));s.classList.toggle('blocked',!windows.includes(i));s.classList.remove('running');});$('#bgMode').textContent=mode;$('#bgDelay').textContent=delay+' min';$('#bgBudget').textContent=budget<60?budget+' s':Math.round(budget/60)+' min';$('#bgEnergy').textContent=energy;$('#bgVerdict').textContent=windows.length?`System znalazł ${windows.length} możliwe okna. Zadanie powinno zapisać postęp i bezpiecznie wznowić się po przerwaniu.`:'Ograniczenia nie są spełnione. System zachowuje zadanie w kolejce i ponowi ocenę po zmianie sieci, ładowania lub stanu urządzenia.';return windows;}
+  async function scheduleBackground(){if(bgRunning)return;bgRunning=true;const steps=$$('.policy-step');steps.forEach(x=>x.classList.remove('active'));for(const s of steps){s.classList.add('active');await sleep(280);}const w=backgroundPolicy();if(w.length){for(const i of w){const el=$(`.bg-slot[data-slot="${i}"]`);el.classList.add('running');await sleep(180);el.classList.remove('running');}}steps.forEach(x=>x.classList.remove('active'));bgRunning=false;}
+  ['bgOs','screenState','motionState','bgTask','charging','networkAvailable'].forEach(id=>$('#'+id).addEventListener('input',backgroundPolicy));$('#scheduleBg').addEventListener('click',scheduleBackground);backgroundPolicy();
+
+  // 14. Termika
+  function updateThermal(){const l=+$('#thermalLoad').value,t=+$('#thermalTime').value,c=$('#cooling').value,n=+$('#node').value;$('#thermalLoadOut').value=l+'%';$('#thermalTimeOut').value=t+' min';const cooling={basic:0,vapor:7,active:15}[c],nodeGain={5:1.15,3:1,2:.78}[n],power=(1.5+l*.075)*nodeGain,temp=24+power*3.2*(1-Math.exp(-t/6))-cooling*.55,throttle=clamp((temp-43)*5,0,65),perf=100-throttle;$('#heatmap').style.opacity=clamp((temp-25)/35,.15,1);$('#tempBadge').textContent=Math.round(temp)+'°C';$('#surfaceTemp').textContent=Math.round(temp)+'°C';$('#sustainedPerf').textContent=Math.round(perf)+'%';$('#thermalThrottle').textContent=Math.round(throttle)+'%';$('#thermalPower').textContent=fmt(power,1)+' W';$('#thermalVerdict').textContent=throttle>10?'System obniża częstotliwość, aby utrzymać bezpieczną temperaturę obudowy. Wydajność po kilku minutach jest ważniejsza niż krótki wynik szczytowy.':c==='active'?'Aktywne chłodzenie poszerza budżet cieplny, ale zwiększa masę, hałas i zużycie energii.':'Chłodzenie pasywne utrzymuje temperaturę w bezpiecznym zakresie dla tego obciążenia.';}
+  ['thermalLoad','thermalTime','cooling','node'].forEach(id=>$('#'+id).addEventListener('input',updateThermal));updateThermal();
+
+  // 14. Klasy urządzeń
+  const devices={phone:{icon:'▯',title:'Smartfon flagowy',desc:'Uniwersalny komputer kieszonkowy. Największy nacisk na kompromis między wydajnością, fotografią, łącznością i czasem pracy.',m:[['6–8 W','budżet SoC'],['3500–5000 mAh','bateria'],['1–120 Hz','ekran'],['IP68','obudowa']],c:['Responsywny interfejs i adaptacyjne odświeżanie','Obsługa wielu aparatów i sensorów','Agresywne ograniczenia pracy w tle','Fragmentacja konfiguracji Androida']},watch:{icon:'◉',title:'Wearable / smartwatch',desc:'Urządzenie stale noszone, z baterią poniżej 500 mAh i pomiarami zdrowotnymi działającymi przez całą dobę.',m:[['<1 W','budżet'],['300 mAh','bateria'],['1 Hz','AOD'],['24/7','sensory']],c:['Minimalizacja wybudzeń i transmisji BLE','Krótkie interakcje oraz duże cele dotykowe','Przetwarzanie sensorów na ultra-low-power MCU','Ścisłe zarządzanie zgodami zdrowotnymi']},tablet:{icon:'▭',title:'Tablet',desc:'Większa powierzchnia, wyższy budżet cieplny i rozbudowane I/O. Może pełnić rolę stacji roboczej.',m:[['10–20 W','SoC'],['10000 mAh','bateria'],['13–15″','ekran'],['USB4','I/O']],c:['Wielookienkowość i adaptacyjne layouty','Klawiatura, rysik i tryb desktopowy','Większe modele AI oraz obciążenia twórcze','Orientacja i multitasking']},fold:{icon:'◇',title:'Urządzenie składane',desc:'Dwa stany geometryczne, elastyczny OLED i zawias. Aplikacja musi reagować na zmianę rozmiaru bez utraty stanu.',m:[['2 ekrany','powierzchnie'],['200k','cykle'],['UTG 30 µm','warstwa'],['IPX8','woda']],c:['Kontynuacja aktywności po złożeniu','Layouty dla wielu klas szerokości','Obsługa zawiasu i obszaru zgięcia','Testy rotacji i zmian konfiguracji']},rugged:{icon:'▣',title:'Rugged / przemysłowe',desc:'Urządzenie do pracy w trudnym środowisku. Priorytetami są odporność, skaner, długi cykl wsparcia i kontrolowane wdrożenie.',m:[['IP69K','ochrona'],['-40–71°C','zakres'],['MIL-STD','testy'],['PTT','łączność']],c:['Praca offline-first i synchronizacja kolejki','Obsługa skanera, PTT i rękawic','Długi czas wsparcia wersji Android Enterprise','Odporność na przerwanie procesu']}};
+  $('#deviceButtons').innerHTML=Object.entries(devices).map(([k,d])=>`<button class="device-btn" data-device="${k}"><span class="device-icon">${d.icon}</span><b>${d.title}</b></button>`).join('');
+  function setDevice(k){const d=devices[k];$$('.device-btn').forEach(b=>b.classList.toggle('active',b.dataset.device===k));$('#deviceTitle').textContent=d.title;$('#deviceDesc').textContent=d.desc;$('#deviceMetrics').innerHTML=d.m.map((x,i)=>`<div class="metric-box" style="--c:${['var(--brand)','var(--brand-2)','var(--purple)','var(--amber)'][i]}"><strong>${x[0]}</strong><small>${x[1]}</small></div>`).join('');$('#deviceConstraints').innerHTML=d.c.map((x,i)=>`<div class="constraint" style="--c:${['var(--brand)','var(--brand-2)','var(--purple)','var(--amber)'][i]}">${x}</div>`).join('');}
+  $$('.device-btn').forEach(b=>b.addEventListener('click',()=>setDevice(b.dataset.device)));setDevice('phone');
+
+  // 15. Future AI
+  function updateFuture(){const m=+$('#futureModel').value,t=+$('#futureTops').value,r=+$('#futureRam').value,p=$('#privacy').value,n=$('#futureNetwork').value;$('#futureModelOut').value=m+'B';$('#futureTopsOut').value=t+' TOPS';$('#futureRamOut').value=r+' GB';const mem=m*.55+1,fit=clamp(Math.min(r/mem,t/(m*8))*100,0,100),tok=t/(m*.42),ttft=180+m*22*50/t,energy=2.2+m*.28*(50/t)**.4;let mode=fit>72?'lokalnie':fit>38&&n!=='offline'?'hybrydowo':'chmura';if(p==='high'||n==='offline')mode=fit>42?'lokalnie':'model za duży';if(p==='low'&&n==='fast'&&fit<85)mode='chmura';$('#aiFitBar').style.width=fit+'%';$('#aiFitText').textContent=Math.round(fit)+'%';$('#futureMode').textContent=mode;$('#futureTokens').textContent=fmt(tok,0)+' tok/s';$('#futureTtft').textContent=Math.round(ttft)+' ms';$('#futureEnergy').textContent=fmt(energy,1)+' W';$('#futureVerdict').textContent=mode==='lokalnie'?'Model mieści się w budżecie. Dane pozostają na urządzeniu, a opóźnienie nie zależy od sieci.':mode==='hybrydowo'?'Mały model lokalny może obsługiwać intencje i prywatne dane, a trudniejsze zadania są delegowane do chmury.':mode==='chmura'?'Chmura oferuje większy model, ale wprowadza zależność od sieci, koszt i transfer danych.':'Wymaganie prywatności blokuje chmurę, a urządzenie nie ma wystarczających zasobów. Potrzebny jest mniejszy model lub silniejsza kwantyzacja.';}
+  ['futureModel','futureTops','futureRam','privacy','futureNetwork'].forEach(id=>$('#'+id).addEventListener('input',updateFuture));updateFuture();
+
+  // Auto scenariusze
+  createAutoController({id:'history',label:'historia urządzeń',container:$('#historyLab'),runner:async ctx=>{for(let i=0;i<history.length&&ctx.active();i++){setHistory(i);ctx.status(`Rok ${history[i].y} · ${history[i].t}`);await ctx.wait(1100);}}});
+  createAutoController({id:'soc',label:'dyspozytor SoC',container:$('#socLab'),runner:async ctx=>{for(const [i,k] of ['ui','game','camera','ai','payment','call'].entries()){if(!ctx.active())break;$('#socWorkload').value=k;$('#socPriority').value=i%3;updateSoc();ctx.status(`Scenariusz ${i+1}/6 · ${$('#socWorkload').selectedOptions[0].textContent}`);await ctx.wait(1250);}}});
+  createAutoController({id:'cpu',label:'planista CPU',container:$('#cpuLab'),runner:async ctx=>{const s=[['background',25,22],['ui',55,24],['codec',70,24],['compile',100,32],['mixed',82,38]];for(let i=0;i<s.length&&ctx.active();i++){[$('#cpuTask').value,$('#cpuLoad').value,$('#ambient').value]=s[i];updateCpu();ctx.status(`Etap ${i+1}/5 · ${$('#cpuTask').selectedOptions[0].textContent}`);await ctx.wait(1200);}}});
+  createAutoController({id:'gpu',label:'rendering TBDR',container:$('#gpuLab'),runner:async ctx=>{for(const mode of ['tbdr','imr']){if(!ctx.active())break;$('#renderMode').value=mode;$('#hsr').checked=mode==='tbdr';gpuMetrics();ctx.status(mode==='tbdr'?'TBDR · kafelki i HSR':'IMR · większy transfer DRAM');await renderGpu();await ctx.wait(900);}}});
+  createAutoController({id:'npu',label:'wdrożenie modelu AI',container:$('#npuLab'),runner:async ctx=>{const s=[[3,32,'cpu',8],[3,16,'gpu',8],[3,8,'npu',8],[7,4,'npu',12],[14,4,'npu',8]];for(let i=0;i<s.length&&ctx.active();i++){const [m,b,a,r]=s[i];$('#modelSize').value=m*10;$('#precision').value=b;$('#accelerator').value=a;$('#deviceRam').value=r;updateNpu();ctx.status(`Etap ${i+1}/5 · ${m}B ${b===32?'FP32':b===16?'FP16':'INT'+b} na ${a.toUpperCase()}`);await runNpuInference(ctx.active);await ctx.wait(650);}}});
+  createAutoController({id:'memory',label:'hierarchia pamięci',container:$('#memoryLab'),runner:async ctx=>{const s=[['sequential',95,20],['random',65,35],['app',35,50],['swap',10,95]];for(let i=0;i<s.length&&ctx.active();i++){[$('#accessType').value,$('#locality').value,$('#ramPressure').value]=s[i];ctx.status(`Dostęp ${i+1}/4 · ${$('#accessType').selectedOptions[0].textContent}`);await runMemory();await ctx.wait(850);}}});
+  createAutoController({id:'display',label:'panel OLED LTPO',container:$('#displayLab'),runner:async ctx=>{const s=[['reading',35,'adaptive',1440],['scroll',65,'adaptive',1440],['video',90,'60',720],['aod',8,'adaptive',1920],['reading',20,'120',240]];for(let i=0;i<s.length&&ctx.active();i++){[$('#displayContent').value,$('#brightness').value,$('#refreshMode').value,$('#pwm').value]=s[i];updateDisplay();ctx.status(`Treść ${i+1}/5 · ${$('#displayContent').selectedOptions[0].textContent}`);await ctx.wait(1250);}}});
+  createAutoController({id:'camera',label:'pipeline kamery',container:$('#cameraLab'),runner:async ctx=>{const s=[[80,10,'none','raw'],[25,70,'none','raw'],[25,70,'ois','hdr'],[15,65,'hybrid','night']];for(let i=0;i<s.length&&ctx.active();i++){[$('#light').value,$('#shake').value,$('#stabilization').value,$('#photoMode').value]=s[i];cameraMetrics();ctx.status(`Scena ${i+1}/4 · ${$('#photoMode').selectedOptions[0].textContent}`);await takePhoto();await ctx.wait(800);}}});
+  createAutoController({id:'radio',label:'łączność bezprzewodowa',container:$('#radioLab'),runner:async ctx=>{const s=[['download',12,15,'speed'],['download',120,75,'speed'],['audio',8,30,'battery'],['payment',1,10,'latency'],['finding',25,25,'latency'],['navigation',400,40,'battery']];for(let i=0;i<s.length&&ctx.active();i++){[$('#radioTask').value,$('#distance').value,$('#obstacles').value,$('#radioPriority').value]=s[i];updateRadio();ctx.status(`Zadanie ${i+1}/6 · ${$('#radioTask').selectedOptions[0].textContent}`);await ctx.wait(1200);}}});
+  createAutoController({id:'power',label:'ładowanie CC-CV',container:$('#powerLab'),runner:async ctx=>{soc=12;$('#chargerPower').value=65;$('#batteryTemp').value=30;$('#chargeLimit').checked=false;chargeCalc();for(let i=0;i<9&&ctx.active();i++){chargeTen();ctx.status(`Ładowanie · ${Math.round(soc)}% · ${$('#chargePhase').textContent}`);await ctx.wait(720);}$('#batteryTemp').value=47;chargeCalc();ctx.status('Zabezpieczenie BMS · zbyt wysoka temperatura');await ctx.wait(1200);}});
+  createAutoController({id:'security',label:'łańcuch zaufania',container:$('#securityLab'),runner:async ctx=>{for(const t of ['none','3']){if(!ctx.active())break;$('#tamperStage').value=t;ctx.status(t==='none'?'Prawidłowy rozruch':'Modyfikacja kernela');await boot();await ctx.wait(1100);}}});
+  createAutoController({id:'stack',label:'wywołanie API',container:$('#stackLab'),runner:async ctx=>{const s=[['android','camera'],['android','ml'],['ios','location'],['ios','storage']];for(let i=0;i<s.length&&ctx.active();i++){[$('#osSelect').value,$('#apiRequest').value]=s[i];renderStack();ctx.status(`${s[i][0]==='android'?'Android':'iOS'} · ${$('#apiRequest').selectedOptions[0].textContent}`);await callStack();await ctx.wait(800);}}});
+
+  createAutoController({id:'background',label:'planista pracy w tle',container:$('#backgroundLab'),runner:async ctx=>{const s=[['android','on','moving','sync',false,true],['android','off','moving','sync',false,true],['android','off','still','sync',false,true],['ios','off','still','ml',false,true],['ios','off','still','ml',true,true],['android','off','still','upload',true,false]];for(let i=0;i<s.length&&ctx.active();i++){const v=s[i];$('#bgOs').value=v[0];$('#screenState').value=v[1];$('#motionState').value=v[2];$('#bgTask').value=v[3];$('#charging').checked=v[4];$('#networkAvailable').checked=v[5];backgroundPolicy();ctx.status(`Scenariusz ${i+1}/6 · ${$('#bgMode').textContent}`);await scheduleBackground();await ctx.wait(850);}}});
+  createAutoController({id:'thermal',label:'budżet cieplny',container:$('#thermalLab'),runner:async ctx=>{const s=[[35,3,'basic',5],[75,8,'basic',5],[90,15,'vapor',3],[100,20,'active',3],[85,20,'vapor',2]];for(let i=0;i<s.length&&ctx.active();i++){[$('#thermalLoad').value,$('#thermalTime').value,$('#cooling').value,$('#node').value]=s[i];updateThermal();ctx.status(`Konfiguracja ${i+1}/5 · ${$('#cooling').selectedOptions[0].textContent}`);await ctx.wait(1250);}}});
+  createAutoController({id:'devices',label:'klasy urządzeń',container:$('#deviceLab'),runner:async ctx=>{const keys=Object.keys(devices);for(let i=0;i<keys.length&&ctx.active();i++){setDevice(keys[i]);ctx.status(`Klasa ${i+1}/5 · ${devices[keys[i]].title}`);await ctx.wait(1350);}}});
+  createAutoController({id:'future',label:'decyzja edge AI',container:$('#futureLab'),runner:async ctx=>{const s=[[1,30,4,'high','offline'],[3,50,6,'high','offline'],[7,80,8,'medium','slow'],[14,50,6,'low','fast'],[7,25,4,'high','offline']];for(let i=0;i<s.length&&ctx.active();i++){[$('#futureModel').value,$('#futureTops').value,$('#futureRam').value,$('#privacy').value,$('#futureNetwork').value]=s[i];updateFuture();ctx.status(`Scenariusz ${i+1}/5 · ${$('#futureMode').textContent}`);await ctx.wait(1300);}}});
+
+  // Quiz
+  const quiz=[
+    {q:'Które bloki są typowo zintegrowane w SoC?',a:['CPU','GPU','NPU','mechaniczny przycisk'],c:[0,1,2],f:'SoC integruje jednostki obliczeniowe, kontrolery, ISP, modem i bloki bezpieczeństwa. Przycisk pozostaje elementem zewnętrznym.'},
+    {q:'Co ogranicza energię w architekturze big.LITTLE?',a:['Kierowanie pracy tła na rdzenie E','DVFS','Stałe maksymalne napięcie','Energy-Aware Scheduler'],c:[0,1,3],f:'Oszczędność wynika z heterogenicznych rdzeni, planowania i dynamicznego napięcia/częstotliwości.'},
+    {q:'Dlaczego TBDR jest korzystne mobilnie?',a:['Renderuje kafelki w pamięci on-chip','Zwiększa transfer DRAM','Może usuwać niewidoczne fragmenty wcześniej','Ogranicza writeback framebufferów'],c:[0,2,3],f:'TBDR minimalizuje transfer poza GPU, który jest kosztowny energetycznie.'},
+    {q:'Co daje kwantyzacja INT8/INT4?',a:['Mniejszy model','Mniejszy transfer pamięci','Zawsze zerowy spadek jakości','Więcej operacji na cykl'],c:[0,1,3],f:'Niższa precyzja zwiększa gęstość obliczeń i zmniejsza pamięć, ale może pogorszyć dokładność.'},
+    {q:'Które stwierdzenia o zRAM są poprawne?',a:['Kompresuje strony w RAM','Jest tak szybki jak L1 cache','Może opóźnić użycie UFS swap','Nie zastępuje fizycznej LPDDR'],c:[0,2,3],f:'zRAM wykorzystuje CPU i RAM do kompresji. Marketingowy „virtual RAM” nie ma parametrów LPDDR.'},
+    {q:'Co umożliwia LTPO?',a:['Adaptacyjne 1–120 Hz','AOD przy niskim odświeżaniu','Stałe podświetlenie LCD','Oszczędność przy treści statycznej'],c:[0,1,3],f:'LTPO zmienia częstotliwość panelu OLED zależnie od treści.'},
+    {q:'Jakie elementy poprawiają zdjęcie nocne?',a:['OIS','Wieloklatkowe wyrównanie','ISP i redukcja szumu','Wyłącznie więcej megapikseli'],c:[0,1,2],f:'Cały tor kamery i algorytmy są ważniejsze niż sam nominalny rozmiar zdjęcia.'},
+    {q:'Które technologie są przeznaczone do krótkiego zasięgu?',a:['NFC','UWB','GNSS','Bluetooth LE'],c:[0,1,3],f:'NFC działa na centymetry, UWB i BLE lokalnie. GNSS odbiera sygnały satelitarne.'},
+    {q:'Co dzieje się w fazie CV ładowania?',a:['Napięcie jest utrzymywane','Prąd stopniowo maleje','Ładowanie przyspiesza przy 100%','Ostatnie procenty trwają dłużej'],c:[0,1,3],f:'Faza stałego napięcia ogranicza prąd, aby bezpiecznie domknąć ładowanie.'},
+    {q:'Co należy do chain of trust?',a:['Boot ROM','Bootloader','Weryfikacja kernela','Dowolny kod bez podpisu'],c:[0,1,2],f:'Każdy zaufany etap musi być zweryfikowany przez poprzedni, zaczynając od sprzętowego korzenia.'},
+    {q:'Co zapewnia HAL?',a:['Izoluje framework od konkretnego sprzętu','Definiuje stabilne interfejsy','Zastępuje kernel','Ułatwia aktualizacje systemu'],c:[0,1,3],f:'HAL i Project Treble separują część systemową od implementacji producenta.'},
+    {q:'Co powoduje throttling?',a:['Przekroczenie budżetu cieplnego','Zbyt niska temperatura CPU zawsze','Długotrwałe wysokie obciążenie','Ograniczona zdolność oddawania ciepła'],c:[0,2,3],f:'DTPM obniża moc, gdy układ i obudowa zbliżają się do limitów temperatury.'}
+  ];
+  $('#quizList').innerHTML=quiz.map((x,qi)=>`<div class="question" data-q="${qi}"><b>${qi+1}. ${x.q}</b><div class="answers">${x.a.map((a,ai)=>`<label><input type="checkbox" value="${ai}"> <span>${String.fromCharCode(65+ai)}. ${a}</span></label>`).join('')}</div><div class="feedback">${x.f}</div></div>`).join('');
+  $('#gradeQuiz').addEventListener('click',()=>{let pts=0;$$('.question').forEach((q,qi)=>{const s=$$('input:checked',q).map(x=>+x.value).sort().join(','),c=quiz[qi].c.slice().sort().join(','),ok=s===c;q.classList.remove('correct','incorrect');q.classList.add('graded',ok?'correct':'incorrect');if(ok)pts++;});$('#quizScore').textContent=`Wynik: ${pts}/${quiz.length} (${Math.round(pts/quiz.length*100)}%)`;});
+  $('#resetQuiz').addEventListener('click',()=>{$$('.question').forEach(q=>{q.classList.remove('graded','correct','incorrect');$$('input',q).forEach(i=>i.checked=false);});$('#quizScore').textContent='';});
+})();
+</script>
+</body></html>
