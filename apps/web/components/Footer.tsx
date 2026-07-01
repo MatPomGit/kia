@@ -6,7 +6,7 @@ export function Footer() {
       <div className="footer-inner">
         <div>
           <strong>kia</strong>
-          <p>System dydaktyczny Katedry Informatyki i Automatyki.</p>
+          <p>System dydaktyczny Katedry Informatyki i Automatyki</p>
         </div>
         <div className="footer-meta">
           <span>Wersja {APP_VERSION}</span>
