@@ -15,6 +15,25 @@ const subjects = [
   { name: "Seminarium dyplomowe", href: "/kia.sd", available: true },
 ];
 
+const steps = [
+  {
+    title: "Wybierz przedmiot",
+    description: "Przejdź do kursu przypisanego do zajęć i korzystaj z materiałów przygotowanych dla Twojej grupy.",
+  },
+  {
+    title: "Korzystaj z materiałów",
+    description: "Znajdziesz tu instrukcje, zasady zaliczenia oraz odnośniki potrzebne podczas laboratoriów.",
+  },
+  {
+    title: "Rozwiązuj wejściówki",
+    description: "Krótka weryfikacja wiedzy pomaga przygotować się do zajęć i uporządkować najważniejsze pojęcia.",
+  },
+  {
+    title: "Sprawdzaj wyniki",
+    description: "Po zakończeniu testu możesz szybko zobaczyć rezultat, a prowadzący ma dostęp do zbiorczych podsumowań.",
+  },
+];
+
 export default function KiaHomePage() {
   const [isLoginOpen, setLoginOpen] = useState(false);
   const [loginError, setLoginError] = useState("");
@@ -23,6 +42,17 @@ export default function KiaHomePage() {
 
   useEffect(() => {
     if (isLoginOpen) dialogRef.current?.querySelector<HTMLInputElement>("input")?.focus();
+  }, [isLoginOpen]);
+
+  useEffect(() => {
+    if (!isLoginOpen) return;
+
+    function closeOnEscape(event: KeyboardEvent) {
+      if (event.key === "Escape") setLoginOpen(false);
+    }
+
+    window.addEventListener("keydown", closeOnEscape);
+    return () => window.removeEventListener("keydown", closeOnEscape);
   }, [isLoginOpen]);
 
   async function submitLogin(event: FormEvent<HTMLFormElement>) {
@@ -44,28 +74,84 @@ export default function KiaHomePage() {
   return (
     <div className="landing-shell">
       <main id="main" className="landing-main">
-        <header className="landing-header">
-          <span className="landing-mark" aria-hidden="true">K</span>
-          <h1>kia</h1>
-          <p>Wybierz przedmiot studiów lub przejdź do panelu prowadzącego.</p>
-        </header>
-
-        <section className="subject-grid" aria-labelledby="subjects-heading">
-          <h2 id="subjects-heading" className="sr-only">Przedmioty studiów</h2>
-          {subjects.map((subject) => subject.available ? (
-            <Link className="subject-button" href={subject.href} key={subject.name}>
-              <span>{subject.name}</span><small>Dostępny</small>
-            </Link>
-          ) : (
-            <button className="subject-button unavailable" type="button" disabled key={subject.name}>
-              <span>{subject.name}</span><small>Wkrótce</small>
-            </button>
-          ))}
+        <section className="landing-hero" aria-labelledby="landing-heading">
+          <div className="landing-hero-content">
+            <span className="landing-mark" aria-hidden="true">K</span>
+            <p className="landing-eyebrow">Platforma kia</p>
+            <h1 id="landing-heading">Materiały, wejściówki i wyniki zajęć w jednym miejscu</h1>
+            <p>
+              kia porządkuje dostęp do kursów, instrukcji laboratoryjnych i krótkich testów kontrolnych,
+              aby studenci mogli szybciej rozpocząć pracę, a prowadzący sprawniej monitorowali postępy.
+            </p>
+            <div className="landing-actions" aria-label="Główne akcje">
+              <a className="btn" href="#courses">Przejdź do przedmiotów</a>
+              <a className="btn secondary" href="#platform-guide">Zobacz instrukcję</a>
+            </div>
+          </div>
+          <div className="landing-hero-card" aria-label="Najważniejsze funkcje platformy">
+            <strong>Start zajęć bez chaosu</strong>
+            <ul>
+              <li>kursy dostępne z jednej strony startowej,</li>
+              <li>wejściówki i wyniki w przewidywalnym przepływie,</li>
+              <li>panel prowadzącego do obsługi rezultatów.</li>
+            </ul>
+          </div>
         </section>
 
-        <button className="instructor-entry" type="button" onClick={() => setLoginOpen(true)}>
-          Panel prowadzącego
-        </button>
+        <section id="courses" className="landing-section" aria-labelledby="subjects-heading">
+          <div className="landing-section-head">
+            <p className="landing-eyebrow">Dostępne kursy</p>
+            <h2 id="subjects-heading">Wybierz przedmiot studiów</h2>
+            <p>
+              Aktywne kafelki prowadzą bezpośrednio do kursów. Pozostałe przedmioty są oznaczone jako przyszłe
+              moduły platformy.
+            </p>
+          </div>
+          <div className="subject-grid">
+            {subjects.map((subject) => subject.available ? (
+              <Link className="subject-button" href={subject.href} key={subject.name}>
+                <span>{subject.name}</span><small>Dostępny</small>
+              </Link>
+            ) : (
+              <button className="subject-button unavailable" type="button" disabled key={subject.name}>
+                <span>{subject.name}</span><small>Wkrótce</small>
+              </button>
+            ))}
+          </div>
+        </section>
+
+        <section id="platform-guide" className="landing-section" aria-labelledby="guide-heading">
+          <div className="landing-section-head">
+            <p className="landing-eyebrow">Jak działa platforma</p>
+            <h2 id="guide-heading">Od wyboru kursu do podglądu wyników</h2>
+            <p>Platforma prowadzi użytkownika przez najważniejsze etapy pracy na zajęciach.</p>
+          </div>
+          <ol className="platform-steps">
+            {steps.map((step, index) => (
+              <li className="platform-step" key={step.title}>
+                <span aria-hidden="true">{index + 1}</span>
+                <div>
+                  <h3>{step.title}</h3>
+                  <p>{step.description}</p>
+                </div>
+              </li>
+            ))}
+          </ol>
+        </section>
+
+        <section className="instructor-panel" aria-labelledby="instructor-heading">
+          <div>
+            <p className="landing-eyebrow">Dla prowadzącego</p>
+            <h2 id="instructor-heading">Panel do obsługi wejściówek i rezultatów</h2>
+            <p>
+              Zalogowany prowadzący może przejść do panelu, w którym dostępne są narzędzia administracyjne,
+              podgląd wyników oraz eksport danych potrzebnych do prowadzenia zajęć.
+            </p>
+          </div>
+          <button className="instructor-entry" type="button" onClick={() => setLoginOpen(true)}>
+            Otwórz panel prowadzącego
+          </button>
+        </section>
       </main>
 
       <Footer />
