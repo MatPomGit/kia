@@ -166,7 +166,7 @@ export default function NdPPage() {
                 <h3>{simulator.title}</h3>
                 <p>{simulator.description}</p>
                 <div className="card-actions">
-                  <a className="btn secondary" href={simulator.href}>Uruchom symulator</a>
+                  <a className="btn secondary" href={simulator.href} aria-label={"Uruchom " + simulator.title}>Uruchom symulator</a>
                 </div>
               </article>
             ))}
