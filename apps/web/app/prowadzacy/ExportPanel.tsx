@@ -1,5 +1,7 @@
 "use client";
 
+import type { AttemptSummary, InstructorMetric } from "@/lib/instructor-dashboard";
+
 const basePath = process.env.NEXT_PUBLIC_BASE_PATH ?? "";
 
 const downloads = [
@@ -20,15 +22,21 @@ const downloads = [
   },
 ];
 
-export function ExportPanel() {
+type ExportPanelProps = {
+  metrics?: InstructorMetric[];
+  attempts?: AttemptSummary[];
+  isDemo?: boolean;
+};
+
+export function ExportPanel({ metrics = [], attempts = [], isDemo = true }: ExportPanelProps) {
   return (
     <section className="card export-panel" aria-labelledby="export-heading">
       <div>
         <span className="eyebrow">Eksport danych</span>
         <h2 id="export-heading">Pliki dla prowadzącego</h2>
         <p>
-          Pliki zawierają wyłącznie dane demonstracyjne. W wersji produkcyjnej eksport powinien być generowany
-          po uwierzytelnieniu i ograniczony do kursów przypisanych prowadzącemu.
+          {isDemo ? "Pliki zawierają wyłącznie dane demonstracyjne." : "Eksport powinien obejmować aktualnie pobrane dane panelu."}
+          {" "}Model eksportu jest zgodny z widocznymi metrykami ({metrics.length}) i podejściami ({attempts.length}); w wersji produkcyjnej pliki powinny być generowane po uwierzytelnieniu i ograniczone do kursów przypisanych prowadzącemu.
         </p>
       </div>
       <div className="export-actions">
