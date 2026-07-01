@@ -1,0 +1,1416 @@
+<!doctype html>
+<html lang="pl" data-theme="light">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="description" content="Interaktywny wykład: Wprowadzenie do programowania aplikacji mobilnych." />
+  <title>Wprowadzenie do programowania aplikacji mobilnych - wykład interaktywny</title>
+  <style>
+    :root {
+      --bg: #f5f7fb;
+      --surface: #ffffff;
+      --surface-2: #eef2f7;
+      --ink: #131a26;
+      --muted: #5d6878;
+      --line: #d7dee8;
+      --brand: #00b97c;
+      --brand-2: #1683d8;
+      --magenta: #d70a72;
+      --amber: #bd7b00;
+      --purple: #6d32d9;
+      --danger: #c93d4b;
+      --ok: #168a58;
+      --shadow: 0 14px 42px rgba(20, 35, 55, 0.09);
+      --radius: 18px;
+      --nav-h: 66px;
+      --max: 1240px;
+      color-scheme: light;
+    }
+    html[data-theme="dark"] {
+      --bg: #0e1420;
+      --surface: #141d2b;
+      --surface-2: #1b2738;
+      --ink: #eef4fc;
+      --muted: #a8b5c6;
+      --line: #2b3a4f;
+      --brand: #22d49a;
+      --brand-2: #55aef2;
+      --magenta: #f055a0;
+      --amber: #e4aa3c;
+      --purple: #9a78ef;
+      --danger: #ff7b86;
+      --ok: #50d49a;
+      --shadow: 0 18px 50px rgba(0,0,0,.28);
+      color-scheme: dark;
+    }
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; scroll-padding-top: calc(var(--nav-h) + 14px); }
+    body {
+      margin: 0;
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      color: var(--ink);
+      background:
+        radial-gradient(circle at 10% -10%, color-mix(in srgb, var(--brand) 15%, transparent), transparent 31%),
+        radial-gradient(circle at 95% 5%, color-mix(in srgb, var(--brand-2) 13%, transparent), transparent 28%),
+        var(--bg);
+      line-height: 1.55;
+    }
+    button, input, select { font: inherit; }
+    button { color: inherit; }
+    a { color: var(--brand-2); }
+    code, pre, .mono { font-family: "SFMono-Regular", Consolas, "Liberation Mono", monospace; }
+    .skip-link { position: fixed; left: 12px; top: -60px; z-index: 1000; background: var(--surface); padding: 10px 14px; border-radius: 9px; }
+    .skip-link:focus { top: 10px; }
+    .topbar {
+      position: sticky; top: 0; z-index: 100;
+      height: var(--nav-h);
+      backdrop-filter: blur(16px);
+      background: color-mix(in srgb, var(--surface) 83%, transparent);
+      border-bottom: 1px solid var(--line);
+    }
+    .topbar-inner { max-width: var(--max); height: 100%; margin: auto; padding: 0 20px; display: flex; align-items: center; gap: 16px; }
+    .brand-mark { display: flex; align-items: center; gap: 10px; font-weight: 800; letter-spacing: -.02em; white-space: nowrap; }
+    .brand-dot { width: 13px; height: 13px; background: var(--brand); border-radius: 50%; box-shadow: 0 0 0 7px color-mix(in srgb, var(--brand) 16%, transparent); }
+    .progress-wrap { flex: 1; height: 5px; border-radius: 8px; overflow: hidden; background: var(--surface-2); }
+    #readingProgress { height: 100%; width: 0; background: linear-gradient(90deg, var(--brand), var(--brand-2)); }
+    .icon-btn { border: 1px solid var(--line); background: var(--surface); border-radius: 12px; width: 42px; height: 42px; display: grid; place-items: center; cursor: pointer; }
+    .layout { max-width: var(--max); margin: 0 auto; padding: 30px 20px 70px; display: grid; grid-template-columns: 238px minmax(0, 1fr); gap: 28px; }
+    .sidebar { position: sticky; top: calc(var(--nav-h) + 22px); height: fit-content; }
+    .toc { background: color-mix(in srgb, var(--surface) 94%, transparent); border: 1px solid var(--line); border-radius: var(--radius); padding: 12px; box-shadow: var(--shadow); }
+    .toc-title { font-size: .78rem; text-transform: uppercase; letter-spacing: .12em; color: var(--muted); padding: 8px 10px; font-weight: 800; }
+    .toc a { display: flex; align-items: center; gap: 10px; padding: 9px 10px; margin: 2px 0; border-radius: 10px; text-decoration: none; color: var(--muted); font-size: .91rem; }
+    .toc a:hover, .toc a.active { background: var(--surface-2); color: var(--ink); }
+    .toc a.active::before { content: ""; width: 4px; align-self: stretch; background: var(--brand); border-radius: 4px; }
+    main { min-width: 0; }
+    .hero {
+      position: relative; overflow: hidden; min-height: 530px;
+      background: linear-gradient(135deg, #111a2b 0%, #0d1322 48%, #121f31 100%);
+      color: #f5f8fd; border-radius: 28px; padding: clamp(28px, 5vw, 64px);
+      box-shadow: var(--shadow); display: grid; grid-template-columns: 1.25fr .75fr; gap: 28px; align-items: center;
+    }
+    .hero::after { content: ""; position: absolute; inset: auto -80px -120px auto; width: 360px; height: 360px; border-radius: 50%; background: radial-gradient(circle, rgba(0,185,124,.34), transparent 66%); }
+    .eyebrow { color: #4ce0ae; font-weight: 800; letter-spacing: .17em; text-transform: uppercase; font-size: .82rem; }
+    h1 { font-family: Georgia, "Times New Roman", serif; font-size: clamp(2.6rem, 5.4vw, 5.4rem); line-height: .98; letter-spacing: -.045em; margin: 16px 0 22px; max-width: 850px; }
+    .hero p { color: #b9c6d8; font-size: 1.08rem; max-width: 710px; }
+    .chips { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 25px; }
+    .chip { border: 1px solid rgba(255,255,255,.18); background: rgba(255,255,255,.06); color: #dbe5f2; padding: 7px 11px; border-radius: 999px; font-size: .84rem; }
+    .phone-scene { position: relative; height: 390px; display: grid; place-items: center; }
+    .phone {
+      width: 220px; height: 430px; max-height: 100%; border-radius: 36px; border: 8px solid #26344a;
+      background: #f7fafc; box-shadow: 0 24px 70px rgba(0,0,0,.42); overflow: hidden; transform: rotate(5deg); position: relative; z-index: 2;
+    }
+    .phone-notch { width: 88px; height: 20px; background: #26344a; border-radius: 0 0 15px 15px; margin: 0 auto; }
+    .phone-screen { color: #172030; padding: 24px 18px; }
+    .app-top { width: 68%; height: 10px; background: #d9e1eb; border-radius: 10px; }
+    .app-card { margin-top: 18px; padding: 16px; border-radius: 18px; background: linear-gradient(135deg, #00b97c, #1683d8); color: #fff; }
+    .app-card strong { display: block; font-size: 1.55rem; }
+    .app-row { display: flex; gap: 10px; margin-top: 16px; }
+    .app-row span { flex: 1; height: 70px; border-radius: 14px; background: #eef2f7; border: 1px solid #d7dee8; }
+    .orbit { position: absolute; border: 1px dashed rgba(255,255,255,.18); border-radius: 50%; animation: rotate 22s linear infinite; }
+    .orbit.o1 { width: 330px; height: 330px; }
+    .orbit.o2 { width: 270px; height: 270px; animation-direction: reverse; animation-duration: 17s; }
+    .orbit span { position: absolute; width: 38px; height: 38px; display: grid; place-items: center; border-radius: 12px; background: rgba(255,255,255,.1); backdrop-filter: blur(8px); }
+    .orbit.o1 span:first-child { top: -18px; left: calc(50% - 19px); }
+    .orbit.o1 span:last-child { bottom: 10px; left: 8px; }
+    .orbit.o2 span:first-child { right: -18px; top: calc(50% - 19px); }
+    .orbit.o2 span:last-child { left: 10px; top: 16px; }
+    @keyframes rotate { to { transform: rotate(360deg); } }
+    section { margin-top: 34px; }
+    .section-card { background: color-mix(in srgb, var(--surface) 96%, transparent); border: 1px solid var(--line); border-radius: 24px; padding: clamp(22px, 4vw, 40px); box-shadow: var(--shadow); }
+    .section-head { display: flex; align-items: flex-end; justify-content: space-between; gap: 20px; margin-bottom: 24px; }
+    .kicker { display: inline-flex; align-items: center; gap: 8px; text-transform: uppercase; letter-spacing: .12em; font-size: .76rem; color: var(--brand); font-weight: 900; }
+    h2 { font-family: Georgia, "Times New Roman", serif; font-size: clamp(2rem, 3.4vw, 3.3rem); line-height: 1.08; margin: 8px 0 0; letter-spacing: -.03em; }
+    h3 { margin: 0 0 10px; font-size: 1.18rem; }
+    .lead { color: var(--muted); max-width: 800px; font-size: 1.03rem; }
+    .note { border-left: 4px solid var(--amber); background: color-mix(in srgb, var(--amber) 9%, var(--surface)); padding: 16px 18px; border-radius: 0 14px 14px 0; color: var(--muted); }
+    .grid-2 { display: grid; grid-template-columns: repeat(2, minmax(0,1fr)); gap: 16px; }
+    .grid-3 { display: grid; grid-template-columns: repeat(3, minmax(0,1fr)); gap: 16px; }
+    .grid-4 { display: grid; grid-template-columns: repeat(4, minmax(0,1fr)); gap: 14px; }
+    .mini-card { border: 1px solid var(--line); background: var(--surface); border-radius: 16px; padding: 18px; }
+    .mini-card p { color: var(--muted); margin: 6px 0 0; font-size: .93rem; }
+    .metric { border-top: 4px solid var(--c, var(--brand)); }
+    .metric strong { display: block; font-family: Georgia, serif; font-size: clamp(1.9rem, 3vw, 3rem); color: var(--c, var(--brand)); line-height: 1; }
+    .metric span { color: var(--muted); font-size: .88rem; }
+    .control-row { display: flex; flex-wrap: wrap; align-items: center; gap: 10px; margin: 14px 0 18px; }
+    .segmented { display: inline-flex; background: var(--surface-2); border: 1px solid var(--line); border-radius: 12px; padding: 4px; gap: 4px; }
+    .segmented button { border: 0; background: transparent; padding: 8px 12px; border-radius: 9px; cursor: pointer; color: var(--muted); font-weight: 700; }
+    .segmented button.active { background: var(--surface); color: var(--ink); box-shadow: 0 3px 12px rgba(0,0,0,.08); }
+    .pill-btn { border: 1px solid var(--line); background: var(--surface); border-radius: 999px; padding: 8px 13px; cursor: pointer; }
+    .pill-btn.active { border-color: var(--brand); background: color-mix(in srgb, var(--brand) 10%, var(--surface)); }
+    .chart-shell { border: 1px solid var(--line); border-radius: 18px; padding: 14px; background: var(--surface); overflow: hidden; }
+    #marketChart { width: 100%; height: 360px; display: block; }
+    .legend { display: flex; flex-wrap: wrap; gap: 15px; color: var(--muted); font-size: .86rem; }
+    .legend i { display: inline-block; width: 10px; height: 10px; border-radius: 50%; margin-right: 6px; background: var(--c); }
+    .range-label { color: var(--muted); font-size: .88rem; }
+    input[type="range"] { accent-color: var(--brand); }
+    .timeline { display: grid; gap: 10px; }
+    .timeline-item { display: grid; grid-template-columns: 74px 1fr; gap: 14px; align-items: start; }
+    .timeline-item .n { font-weight: 900; color: var(--brand); padding-top: 10px; }
+    .timeline-content { padding: 10px 14px; border-left: 2px solid var(--line); }
+    .timeline-content strong { display: block; }
+    .timeline-content span { color: var(--muted); font-size: .88rem; }
+    .decision-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; }
+    .weights { display: grid; gap: 13px; }
+    .weight-row { display: grid; grid-template-columns: minmax(150px,1fr) 160px 44px; gap: 10px; align-items: center; }
+    .weight-row output { text-align: right; font-weight: 800; }
+    .score-card { border: 1px solid var(--line); border-radius: 18px; padding: 20px; background: var(--surface-2); }
+    .score-line { display: grid; grid-template-columns: 74px 1fr 48px; gap: 10px; align-items: center; margin: 15px 0; }
+    .bar { height: 12px; background: var(--surface); border-radius: 999px; overflow: hidden; border: 1px solid var(--line); }
+    .bar > span { display: block; height: 100%; width: 0; background: var(--c); transition: width .35s ease; }
+    .verdict { margin-top: 18px; padding: 14px; border-radius: 13px; background: var(--surface); font-weight: 750; }
+    .tabs { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 18px; }
+    .tab { border: 1px solid var(--line); border-radius: 12px; background: var(--surface); padding: 9px 13px; cursor: pointer; color: var(--muted); font-weight: 800; }
+    .tab.active { color: var(--ink); border-color: var(--brand); background: color-mix(in srgb, var(--brand) 9%, var(--surface)); }
+    .tab-panel { display: none; }
+    .tab-panel.active { display: block; }
+    .tool-stack { display: grid; grid-template-columns: repeat(5,minmax(0,1fr)); gap: 10px; }
+    .tool { position: relative; min-height: 136px; padding: 15px; border: 1px solid var(--line); border-top: 4px solid var(--c); border-radius: 14px; background: var(--surface); }
+    .tool b { display: block; }
+    .tool small { color: var(--muted); }
+    .code-grid { display: grid; grid-template-columns: 1.2fr .8fr; gap: 18px; }
+    pre { margin: 0; white-space: pre-wrap; overflow-x: auto; border-radius: 16px; padding: 18px; background: #0c1423; color: #dce9f7; border: 1px solid #24344c; font-size: .85rem; line-height: 1.55; }
+    .kw { color: #63b3ff; } .str { color: #f0a8bf; } .cm { color: #89a966; } .type { color: #51d7c0; }
+    .concept-list { display: grid; gap: 9px; }
+    .concept { border-left: 4px solid var(--c); background: var(--surface); padding: 12px 14px; border-radius: 0 12px 12px 0; }
+    .concept small { color: var(--muted); }
+    .demo-box { margin-top: 14px; padding: 16px; border: 1px dashed var(--line); border-radius: 14px; background: var(--surface-2); }
+    .text-input { width: 100%; border: 1px solid var(--line); background: var(--surface); color: var(--ink); border-radius: 10px; padding: 10px 12px; }
+    .lifecycle-layout { display: grid; grid-template-columns: .9fr 1.1fr; gap: 18px; }
+    .state-machine { position: relative; min-height: 455px; border: 1px solid var(--line); border-radius: 18px; background: var(--surface-2); overflow: hidden; }
+    .state-node { position: absolute; width: 126px; min-height: 58px; display: grid; place-items: center; text-align: center; border: 2px solid var(--line); border-radius: 15px; background: var(--surface); cursor: pointer; font-weight: 800; padding: 8px; transition: .25s; z-index: 2; }
+    .state-node.active { border-color: var(--brand); box-shadow: 0 0 0 7px color-mix(in srgb, var(--brand) 13%, transparent); transform: scale(1.04); }
+    .state-node[data-i="0"] { top: 22px; left: calc(50% - 63px); }
+    .state-node[data-i="1"] { top: 104px; left: 24px; }
+    .state-node[data-i="2"] { top: 104px; right: 24px; }
+    .state-node[data-i="3"] { top: 215px; right: 24px; }
+    .state-node[data-i="4"] { top: 300px; left: calc(50% - 63px); }
+    .state-node[data-i="5"] { top: 215px; left: 24px; }
+    .state-node[data-i="6"] { bottom: 18px; left: calc(50% - 63px); }
+    .state-lines { position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; }
+    .state-lines path { stroke: var(--muted); stroke-width: 2; fill: none; stroke-dasharray: 7 7; marker-end: url(#arrow); opacity: .75; }
+    .state-info { border: 1px solid var(--line); border-radius: 18px; padding: 20px; background: var(--surface); min-height: 220px; }
+    .state-info p { color: var(--muted); }
+    .framework-grid { display: grid; grid-template-columns: repeat(4,minmax(0,1fr)); gap: 12px; }
+    .framework { border: 1px solid var(--line); border-top: 5px solid var(--c); background: var(--surface); border-radius: 16px; padding: 16px; }
+    .framework ul { padding-left: 18px; color: var(--muted); font-size: .88rem; }
+    .switch-row { display: flex; justify-content: space-between; align-items: center; gap: 16px; padding: 11px 0; border-bottom: 1px solid var(--line); }
+    .switch { position: relative; width: 48px; height: 26px; background: var(--line); border-radius: 99px; cursor: pointer; flex: 0 0 auto; }
+    .switch input { position: absolute; opacity: 0; }
+    .switch span { position: absolute; top: 4px; left: 4px; width: 18px; height: 18px; background: var(--surface); border-radius: 50%; transition: .2s; box-shadow: 0 2px 6px rgba(0,0,0,.25); }
+    .switch input:checked + span { left: 26px; background: var(--brand); }
+    .architecture-layout { display: grid; grid-template-columns: 280px 1fr; gap: 18px; }
+    .pattern-list { display: grid; gap: 8px; }
+    .pattern-btn { text-align: left; border: 1px solid var(--line); background: var(--surface); border-radius: 12px; padding: 12px 14px; cursor: pointer; }
+    .pattern-btn.active { border-color: var(--brand); background: color-mix(in srgb, var(--brand) 8%, var(--surface)); }
+    .arch-canvas { border: 1px solid var(--line); background: var(--surface-2); border-radius: 18px; min-height: 390px; padding: 18px; }
+    #archSvg { width: 100%; height: 280px; }
+    #archSvg .node { fill: var(--surface); stroke: var(--line); stroke-width: 2; }
+    #archSvg .node-accent { stroke: var(--brand); stroke-width: 3; }
+    #archSvg text { fill: var(--ink); font: 700 15px Inter, sans-serif; text-anchor: middle; dominant-baseline: middle; }
+    #archSvg path { stroke: var(--muted); stroke-width: 2; fill: none; marker-end: url(#archArrow); }
+    .offline-sim { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; }
+    .sim-phone { min-height: 330px; border: 8px solid var(--line); border-radius: 30px; padding: 22px 14px; background: var(--surface); }
+    .sim-status { display: flex; justify-content: space-between; font-size: .85rem; color: var(--muted); }
+    .article-list { display: grid; gap: 8px; margin: 16px 0; }
+    .article { display: flex; justify-content: space-between; gap: 10px; padding: 11px; border: 1px solid var(--line); border-radius: 12px; background: var(--surface-2); }
+    .sync-badge { font-size: .75rem; padding: 3px 7px; border-radius: 999px; background: color-mix(in srgb, var(--amber) 15%, var(--surface)); color: var(--amber); }
+    .sync-badge.synced { color: var(--ok); background: color-mix(in srgb, var(--ok) 12%, var(--surface)); }
+    .primary { border: 0; border-radius: 11px; background: var(--brand); color: #071711; padding: 10px 14px; cursor: pointer; font-weight: 900; }
+    .secondary { border: 1px solid var(--line); border-radius: 11px; background: var(--surface); padding: 10px 14px; cursor: pointer; }
+    .sim-log { height: 300px; overflow: auto; background: #0c1423; color: #b8c8dd; border-radius: 15px; padding: 14px; font: .81rem/1.5 monospace; }
+    .test-pyramid { width: min(500px,100%); margin: 0 auto; display: grid; gap: 8px; align-items: center; }
+    .pyr { justify-self: center; height: 74px; clip-path: polygon(50% 0, 100% 100%, 0 100%); display: grid; place-items: end center; padding-bottom: 8px; font-weight: 900; cursor: pointer; color: #fff; transition: .2s; }
+    .pyr:hover { filter: brightness(1.08); transform: translateY(-2px); }
+    .pyr.ui { width: 44%; background: var(--magenta); }
+    .pyr.int { width: 68%; background: var(--brand-2); }
+    .pyr.unit { width: 92%; background: var(--brand); }
+    .pipeline { display: grid; grid-template-columns: repeat(5,1fr); gap: 10px; }
+    .stage { border: 1px solid var(--line); border-radius: 14px; padding: 14px; min-height: 108px; background: var(--surface); position: relative; }
+    .stage::after { content: "→"; position: absolute; right: -11px; top: 36%; color: var(--muted); z-index: 4; }
+    .stage:last-child::after { display: none; }
+    .stage .status { margin-top: 10px; color: var(--muted); font-size: .82rem; }
+    .stage.running { border-color: var(--amber); box-shadow: 0 0 0 5px color-mix(in srgb, var(--amber) 10%, transparent); }
+    .stage.done { border-color: var(--ok); }
+    .stage.failed { border-color: var(--danger); }
+    .budget-grid { display: grid; grid-template-columns: repeat(4,1fr); gap: 12px; }
+    .gauge { border: 1px solid var(--line); border-radius: 14px; padding: 14px; background: var(--surface); }
+    .gauge-meter { height: 9px; background: var(--surface-2); border-radius: 99px; overflow: hidden; margin-top: 9px; }
+    .gauge-meter span { display: block; height: 100%; width: 0; background: var(--ok); transition: .3s; }
+    .locale-preview { border: 1px solid var(--line); border-radius: 18px; padding: 18px; background: var(--surface); }
+    .security-grid { display: grid; grid-template-columns: repeat(4,1fr); gap: 10px; }
+    .security { border: 1px solid var(--line); border-radius: 14px; padding: 14px; background: var(--surface); cursor: pointer; min-height: 150px; }
+    .security b { display: block; color: var(--danger); margin-bottom: 7px; }
+    .security .mitigation { display: none; margin-top: 9px; color: var(--ok); font-size: .85rem; }
+    .security.open .mitigation { display: block; }
+    .career-lanes { display: grid; grid-template-columns: repeat(4,1fr); gap: 12px; }
+    .lane { border-left: 5px solid var(--c); border-radius: 0 16px 16px 0; padding: 16px; background: var(--surface); }
+    .lane p { color: var(--muted); font-size: .88rem; }
+    .project-check { display: grid; grid-template-columns: repeat(2,1fr); gap: 8px 18px; }
+    .check-item { display: flex; gap: 10px; align-items: flex-start; padding: 9px 0; border-bottom: 1px solid var(--line); }
+    .check-item input { margin-top: 5px; accent-color: var(--brand); }
+    .check-item.done label { text-decoration: line-through; color: var(--muted); }
+    .completion { height: 12px; border: 1px solid var(--line); background: var(--surface-2); border-radius: 99px; overflow: hidden; }
+    .completion span { display: block; height: 100%; background: linear-gradient(90deg,var(--brand),var(--brand-2)); width: 0; }
+    .grade-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; }
+    .grade-result { display: grid; place-items: center; min-height: 220px; border-radius: 20px; background: linear-gradient(135deg, color-mix(in srgb,var(--brand) 12%,var(--surface)), color-mix(in srgb,var(--brand-2) 11%,var(--surface))); border: 1px solid var(--line); }
+    .grade-result strong { font-family: Georgia,serif; font-size: 4rem; line-height: 1; }
+    .quiz-list { display: grid; gap: 14px; }
+    .question { border: 1px solid var(--line); background: var(--surface); border-radius: 16px; padding: 18px; }
+    .question.correct { border-color: var(--ok); }
+    .question.incorrect { border-color: var(--danger); }
+    .answers { display: grid; gap: 8px; margin-top: 12px; }
+    .answers label { display: flex; gap: 9px; align-items: flex-start; padding: 8px 10px; border-radius: 9px; background: var(--surface-2); cursor: pointer; }
+    .feedback { display: none; margin-top: 12px; color: var(--muted); font-size: .9rem; }
+    .question.graded .feedback { display: block; }
+    .footer { max-width: var(--max); margin: 0 auto 40px; padding: 0 20px; color: var(--muted); font-size: .88rem; }
+    .footer-inner { border-top: 1px solid var(--line); padding-top: 22px; display: flex; justify-content: space-between; gap: 20px; flex-wrap: wrap; }
+    .mobile-toc { display: none; }
+    .sr-only { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0,0,0,0); white-space: nowrap; border: 0; }
+
+    /* Rozszerzenia dydaktyczne i laboratoria interaktywne */
+    .didactic-grid { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:12px; margin:18px 0 24px; }
+    .teaching-card { position:relative; border:1px solid var(--line); border-radius:15px; padding:16px 16px 16px 18px; background:var(--surface); min-height:132px; }
+    .teaching-card::before { content:""; position:absolute; inset:0 auto 0 0; width:4px; border-radius:15px 0 0 15px; background:var(--c,var(--brand)); }
+    .teaching-card b { display:block; margin-bottom:6px; }
+    .teaching-card p { margin:0; color:var(--muted); font-size:.91rem; }
+    .teaching-card .tag { display:inline-block; margin-bottom:8px; color:var(--c,var(--brand)); font-weight:900; font-size:.72rem; letter-spacing:.1em; text-transform:uppercase; }
+    .lab { margin-top:22px; border:1px solid var(--line); border-radius:18px; padding:18px; background:linear-gradient(145deg,color-mix(in srgb,var(--brand) 5%,var(--surface)),var(--surface)); }
+    .lab-head { display:flex; justify-content:space-between; align-items:flex-start; gap:18px; margin-bottom:14px; }
+    .lab-head h3 { margin:0; }
+    .lab-head h3 + p { margin:9px 0 0; color:var(--muted); max-width:760px; font-size:.92rem; }
+    .lab-badge { white-space:nowrap; border-radius:999px; padding:5px 9px; background:color-mix(in srgb,var(--brand) 11%,var(--surface)); color:var(--brand); font-weight:850; font-size:.74rem; }
+    .lab-actions { display:flex; flex-wrap:wrap; justify-content:flex-end; align-items:center; gap:8px; }
+    .auto-toolbar { display:flex; justify-content:flex-end; align-items:center; margin:10px 0 16px; }
+    .auto-control { display:flex; align-items:center; gap:9px; min-width:218px; padding:7px 9px 7px 11px; border:1px solid var(--line); border-radius:14px; background:var(--surface); box-shadow:0 5px 18px rgba(20,35,55,.06); }
+    .auto-control-copy { min-width:0; flex:1; line-height:1.15; }
+    .auto-control-copy strong { display:flex; align-items:center; gap:7px; font-size:.82rem; }
+    .auto-control-copy small { display:block; margin-top:4px; color:var(--muted); font-size:.69rem; line-height:1.25; }
+    .auto-indicator { width:8px; height:8px; border-radius:50%; background:var(--muted); flex:0 0 auto; }
+    .auto-control[data-state="running"] .auto-indicator { background:var(--brand); box-shadow:0 0 0 5px color-mix(in srgb,var(--brand) 14%,transparent); animation:autoPulse 1.25s ease-in-out infinite; }
+    .auto-control[data-state="waiting"] .auto-indicator { background:var(--amber); }
+    .auto-control[data-state="off"] .auto-indicator { background:var(--muted); box-shadow:none; animation:none; }
+    .auto-switch { width:44px; height:24px; }
+    .auto-switch span { width:16px; height:16px; }
+    .auto-switch input:checked + span { left:24px; }
+    @keyframes autoPulse { 50% { transform:scale(1.22); opacity:.68; } }
+    .offline-sim > .auto-toolbar { grid-column:1 / -1; margin:0 0 2px; }
+    .lifecycle-layout .auto-control { margin-bottom:12px; }
+    .sim-grid { display:grid; grid-template-columns:1fr 1fr; gap:16px; }
+    .sim-controls { display:grid; gap:12px; }
+    .slider-row { display:grid; grid-template-columns:minmax(150px,1fr) minmax(130px,220px) 62px; gap:10px; align-items:center; }
+    .slider-row output { text-align:right; font-weight:850; }
+    .explain-box { border:1px solid var(--line); border-radius:14px; padding:15px; background:var(--surface); color:var(--muted); }
+    .explain-box strong { color:var(--ink); }
+    .factor-bars { display:grid; gap:10px; }
+    .factor-bar { display:grid; grid-template-columns:125px 1fr 50px; gap:9px; align-items:center; font-size:.86rem; }
+    .factor-bar .track { height:11px; border-radius:999px; background:var(--surface-2); overflow:hidden; border:1px solid var(--line); }
+    .factor-bar .track span { display:block; height:100%; width:0; background:var(--c,var(--brand)); transition:.3s; }
+    .scenario-presets { display:flex; flex-wrap:wrap; gap:8px; margin:10px 0 18px; }
+    .process-flow { display:grid; grid-template-columns:repeat(5,1fr); gap:9px; align-items:stretch; }
+    .process-node { min-height:106px; border:1px solid var(--line); border-radius:14px; background:var(--surface); padding:13px; position:relative; transition:.25s; }
+    .process-node:not(:last-child)::after { content:"→"; position:absolute; right:-12px; top:38%; color:var(--muted); z-index:2; }
+    .process-node small { display:block; color:var(--muted); margin-top:6px; }
+    .process-node.active { border-color:var(--brand); box-shadow:0 0 0 5px color-mix(in srgb,var(--brand) 11%,transparent); transform:translateY(-2px); }
+    .process-node.done { border-color:var(--ok); background:color-mix(in srgb,var(--ok) 6%,var(--surface)); }
+    .process-node.error { border-color:var(--danger); background:color-mix(in srgb,var(--danger) 7%,var(--surface)); }
+    .console { min-height:116px; max-height:190px; overflow:auto; border-radius:13px; padding:12px; background:#0c1423; color:#b8c8dd; font:.8rem/1.5 monospace; }
+    .thread-lane { position:relative; border:1px solid var(--line); border-radius:14px; padding:12px; background:var(--surface); overflow:hidden; }
+    .thread-track { display:flex; gap:4px; height:42px; margin-top:9px; }
+    .thread-block { min-width:18px; flex:1; border-radius:7px; background:var(--surface-2); border:1px solid var(--line); transition:.2s; }
+    .thread-block.work { background:var(--brand-2); border-color:transparent; }
+    .thread-block.blocked { background:var(--danger); border-color:transparent; }
+    .thread-block.frame-drop { outline:3px solid color-mix(in srgb,var(--danger) 30%,transparent); }
+    .event-grid { display:grid; grid-template-columns:repeat(4,1fr); gap:8px; }
+    .event-btn { min-height:82px; display:flex; flex-direction:column; justify-content:center; border:1px solid var(--line); border-radius:12px; background:var(--surface); padding:11px 12px; cursor:pointer; text-align:left; transition:.2s; }
+    .event-btn b { display:block; margin-bottom:7px; line-height:1.2; }
+    .event-btn small { display:block; color:var(--muted); line-height:1.35; }
+    .event-btn:hover { border-color:var(--brand); transform:translateY(-1px); }
+    .event-btn.active { border-color:var(--brand); background:color-mix(in srgb,var(--brand) 8%,var(--surface)); box-shadow:0 0 0 4px color-mix(in srgb,var(--brand) 10%,transparent); }
+    .event-btn:disabled { cursor:wait; opacity:.68; transform:none; }
+    .resource-panel { display:flex; flex-wrap:wrap; gap:8px; margin-top:12px; }
+    .resource-chip { padding:7px 10px; border-radius:999px; border:1px solid var(--line); background:var(--surface-2); color:var(--muted); font-size:.82rem; transition:.25s; }
+    .resource-chip.on { color:var(--ok); border-color:var(--ok); background:color-mix(in srgb,var(--ok) 8%,var(--surface)); }
+    .resource-chip.warn { color:var(--danger); border-color:var(--danger); background:color-mix(in srgb,var(--danger) 7%,var(--surface)); }
+    .event-sim-dashboard { display:grid; grid-template-columns:.9fr 1.1fr; gap:14px; margin-top:14px; }
+    .event-state-card { border:1px solid var(--line); border-radius:15px; padding:14px; background:var(--surface); }
+    .event-state-card h4 { margin:3px 0 12px; font-size:1rem; }
+    .system-state-grid { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:8px; }
+    .system-state { border:1px solid var(--line); border-radius:11px; padding:10px; background:var(--surface-2); }
+    .system-state span { display:block; color:var(--muted); font-size:.72rem; text-transform:uppercase; letter-spacing:.06em; margin-bottom:4px; }
+    .system-state strong { display:block; font-size:.92rem; overflow-wrap:anywhere; }
+    .callback-timeline { display:grid; gap:7px; max-height:250px; overflow:auto; padding-right:3px; }
+    .callback-step { display:grid; grid-template-columns:26px 1fr; gap:9px; align-items:start; border:1px solid var(--line); border-radius:10px; padding:8px 9px; color:var(--muted); background:var(--surface-2); transition:.22s; }
+    .callback-step .step-no { display:grid; place-items:center; width:24px; height:24px; border-radius:50%; background:var(--surface); border:1px solid var(--line); font-weight:850; font-size:.75rem; }
+    .callback-step b { display:block; color:var(--ink); margin-bottom:3px; }
+    .callback-step small { display:block; line-height:1.35; }
+    .callback-step.active { border-color:var(--brand); background:color-mix(in srgb,var(--brand) 8%,var(--surface)); transform:translateX(3px); }
+    .callback-step.done { border-color:color-mix(in srgb,var(--ok) 55%,var(--line)); }
+    .callback-step.done .step-no { background:var(--ok); color:white; border-color:var(--ok); }
+    .energy-meter { height:12px; margin-top:8px; overflow:hidden; border:1px solid var(--line); border-radius:999px; background:var(--surface-2); }
+    .energy-meter span { display:block; width:0; height:100%; border-radius:inherit; background:var(--ok); transition:.3s; }
+    .event-assessment { min-height:48px; margin:10px 0 0; color:var(--muted); font-size:.88rem; }
+    .render-lab { display:grid; grid-template-columns:.8fr 1.2fr; gap:16px; }
+    .mock-ui { border:7px solid var(--line); border-radius:25px; background:var(--surface); padding:16px; min-height:260px; transition:.25s; }
+    .mock-ui.dark-preview { background:#111827; color:#eef4fc; }
+    .mock-row { display:flex; justify-content:space-between; align-items:center; gap:12px; padding:12px; border:1px solid var(--line); border-radius:12px; margin-top:9px; }
+    .tree { display:grid; gap:8px; }
+    .tree-node { border:1px solid var(--line); border-radius:10px; padding:9px 11px; background:var(--surface); transition:.25s; }
+    .tree-node.indent-1 { margin-left:22px; }
+    .tree-node.indent-2 { margin-left:44px; }
+    .tree-node.recomposed { border-color:var(--magenta); background:color-mix(in srgb,var(--magenta) 8%,var(--surface)); animation:pulseNode .55s ease; }
+    @keyframes pulseNode { 50% { transform:scale(1.02); } }
+    .trace { display:flex; flex-wrap:wrap; gap:8px; align-items:center; margin-top:12px; }
+    .trace-step { border:1px solid var(--line); border-radius:11px; padding:9px 11px; background:var(--surface); color:var(--muted); font-size:.85rem; transition:.25s; }
+    .trace-step.active { color:var(--ink); border-color:var(--brand); background:color-mix(in srgb,var(--brand) 8%,var(--surface)); }
+    .trace-arrow { color:var(--muted); }
+    #archSvg g.flow-active rect { stroke:var(--magenta); stroke-width:4; filter:drop-shadow(0 0 5px color-mix(in srgb,var(--magenta) 45%,transparent)); }
+    .sync-dashboard { display:grid; grid-template-columns:repeat(4,1fr); gap:10px; margin-top:14px; }
+    .sync-stat { border:1px solid var(--line); border-radius:13px; padding:12px; background:var(--surface); }
+    .sync-stat strong { display:block; font-size:1.45rem; }
+    .conflict-row { display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-top:10px; }
+    .version-card { border:1px solid var(--line); border-radius:13px; padding:12px; background:var(--surface); }
+    .version-card.conflict { border-color:var(--danger); }
+    .test-mix { display:grid; grid-template-columns:1fr 1fr; gap:16px; }
+    .test-stack { display:flex; flex-direction:column-reverse; height:280px; border:1px solid var(--line); border-radius:15px; overflow:hidden; background:var(--surface-2); }
+    .test-stack div { flex:0 0 var(--size,33.333%); min-height:0; display:grid; place-items:center; color:white; font-weight:850; transition:flex-basis .35s ease, opacity .25s ease, filter .25s ease; text-align:center; padding:0 8px; overflow:hidden; }
+    .test-stack div.zero { opacity:.18; filter:saturate(.25); }
+    .test-stack .unit { background:var(--brand); }
+    .test-stack .integration { background:var(--brand-2); }
+    .test-stack .ui { background:var(--magenta); }
+    .metric-table { display:grid; gap:8px; }
+    .metric-row { display:flex; justify-content:space-between; gap:15px; border-bottom:1px solid var(--line); padding:8px 0; }
+    .frame-sim { display:grid; grid-template-columns:1fr 1fr; gap:16px; }
+    .frames { display:grid; grid-template-columns:repeat(20,1fr); gap:4px; align-items:end; height:150px; padding:12px; border:1px solid var(--line); border-radius:14px; background:var(--surface); }
+    .frame { min-height:6px; border-radius:5px 5px 2px 2px; background:var(--ok); transition:.2s; position:relative; }
+    .frame.slow { background:var(--danger); }
+    .frame::after { content:attr(data-ms); position:absolute; bottom:100%; left:50%; transform:translateX(-50%); font-size:.62rem; color:var(--muted); opacity:0; pointer-events:none; }
+    .frame:hover::after { opacity:1; }
+    .a11y-preview { transition:.2s; }
+    .a11y-preview.high-contrast { filter:contrast(1.55); }
+    .attack-grid { display:grid; grid-template-columns:1fr 1fr; gap:16px; }
+    .risk-meter { height:18px; border:1px solid var(--line); border-radius:99px; overflow:hidden; background:var(--surface-2); }
+    .risk-meter span { display:block; height:100%; width:0; transition:.3s; background:linear-gradient(90deg,var(--ok),var(--amber),var(--danger)); }
+    .skill-lab { display:grid; grid-template-columns:260px 1fr; gap:18px; }
+    .skill-bars { display:grid; gap:10px; }
+    .skill-bar { display:grid; grid-template-columns:140px 1fr 40px; gap:9px; align-items:center; }
+    .skill-bar .barline { height:12px; border-radius:99px; background:var(--surface-2); overflow:hidden; }
+    .skill-bar .barline span { display:block; height:100%; background:var(--c,var(--brand)); width:0; transition:.35s; }
+    .kanban { display:grid; grid-template-columns:repeat(3,1fr); gap:12px; }
+    .kanban-col { border:1px solid var(--line); border-radius:15px; padding:12px; background:var(--surface-2); min-height:220px; }
+    .kanban-col h4 { margin:0 0 10px; display:flex; justify-content:space-between; }
+    .task-card { border:1px solid var(--line); border-radius:11px; background:var(--surface); padding:10px; margin:8px 0; cursor:pointer; }
+    .task-card small { color:var(--muted); display:block; margin-top:4px; }
+    .task-card.blocked { border-color:var(--danger); }
+    .sim-hint { margin-top:10px; color:var(--muted); font-size:.84rem; }
+
+    /* Spójny odstęp między tytułem a opisem we wszystkich kafelkach */
+    .mini-card > h3,
+    .mini-card > h4,
+    .mini-card > b,
+    .mini-card:not(.metric) > strong,
+    .tool > b,
+    .concept > b,
+    .process-node > b,
+    .thread-lane > b,
+    .version-card > b,
+    .security > b,
+    .task-card > b,
+    .task-card > strong {
+      display: block;
+      margin: 0 0 8px;
+      line-height: 1.25;
+    }
+    .teaching-card > b { margin-bottom: 8px; line-height: 1.3; }
+    .framework > h3,
+    .lane > h3,
+    .score-card > h3,
+    .state-info > h3 { margin-bottom: 10px; line-height: 1.25; }
+    .tool > small,
+    .concept > small,
+    .process-node > small,
+    .thread-lane > small,
+    .task-card > small {
+      display: block;
+      margin-top: 0;
+      line-height: 1.45;
+    }
+    .mini-card > p,
+    .lane > p,
+    .version-card > p,
+    .security > p,
+    .question > p {
+      margin-top: 0;
+      line-height: 1.5;
+    }
+    .framework > ul { margin-top: 0; }
+    .metric > strong { margin-bottom: 9px; }
+    .sync-stat > span { display: block; margin-bottom: 6px; color: var(--muted); }
+    .sync-stat > strong { line-height: 1.15; }
+
+    @media (max-width: 1050px) {
+      .layout { grid-template-columns: 1fr; }
+      .sidebar { display: none; }
+      .mobile-toc { display: block; margin-bottom: 16px; }
+      .mobile-toc select { width: 100%; border: 1px solid var(--line); border-radius: 12px; background: var(--surface); color: var(--ink); padding: 11px; }
+      .tool-stack, .framework-grid { grid-template-columns: repeat(2,1fr); }
+      .security-grid, .career-lanes { grid-template-columns: repeat(2,1fr); }
+      .didactic-grid, .sync-dashboard { grid-template-columns:repeat(2,1fr); }
+      .skill-lab { grid-template-columns:1fr; }
+    }
+    @media (max-width: 760px) {
+      .brand-mark span:last-child { display: none; }
+      .hero { grid-template-columns: 1fr; min-height: auto; }
+      .phone-scene { height: 330px; }
+      .phone { width: 180px; height: 340px; }
+      .grid-2, .grid-3, .grid-4, .decision-grid, .code-grid, .lifecycle-layout, .architecture-layout, .offline-sim, .grade-grid { grid-template-columns: 1fr; }
+      .didactic-grid, .sim-grid, .render-lab, .test-mix, .frame-sim, .attack-grid, .conflict-row, .kanban, .sync-dashboard { grid-template-columns:1fr; }
+      .process-flow { grid-template-columns:1fr; }
+      .process-node:not(:last-child)::after { content:"↓"; right:50%; top:auto; bottom:-18px; }
+      .event-grid { grid-template-columns:repeat(2,1fr); }
+      .event-sim-dashboard { grid-template-columns:1fr; }
+      .slider-row { grid-template-columns:1fr 120px 56px; }
+      .tool-stack, .framework-grid, .security-grid, .career-lanes, .budget-grid { grid-template-columns: 1fr; }
+      .pipeline { grid-template-columns: 1fr; }
+      .stage::after { content: "↓"; right: 50%; top: auto; bottom: -19px; }
+      .project-check { grid-template-columns: 1fr; }
+      .weight-row { grid-template-columns: 1fr 125px 36px; }
+      .state-machine { min-height: 470px; }
+      .section-card { border-radius: 18px; }
+      .section-head { align-items: flex-start; flex-direction: column; }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after { animation-duration: .01ms !important; animation-iteration-count: 1 !important; scroll-behavior: auto !important; transition-duration: .01ms !important; }
+    }
+    @media print {
+      .topbar, .sidebar, .mobile-toc, button, .control-row { display: none !important; }
+      .layout { display: block; max-width: none; padding: 0; }
+      body { background: #fff; color: #000; }
+      .hero, .section-card { box-shadow: none; break-inside: avoid; }
+    }
+  </style>
+</head>
+<body>
+<a class="skip-link" href="#main">Przejdź do treści</a>
+<header class="topbar">
+  <div class="topbar-inner">
+    <div class="brand-mark"><span class="brand-dot"></span><span>PAM - Wykład 1</span></div>
+    <div class="progress-wrap" aria-label="Postęp czytania"><div id="readingProgress"></div></div>
+    <button class="icon-btn" id="themeBtn" aria-label="Zmień motyw" title="Zmień motyw">◐</button>
+  </div>
+</header>
+<div class="layout">
+  <aside class="sidebar" aria-label="Nawigacja po wykładzie">
+    <nav class="toc">
+      <div class="toc-title">Spis treści</div>
+      <a href="#start">Start</a>
+      <a href="#plan">Plan kursu</a>
+      <a href="#market">Rynek i ekosystem</a>
+      <a href="#platforms">Android vs iOS</a>
+      <a href="#tools">Narzędzia i języki</a>
+      <a href="#lifecycle">Cykl życia</a>
+      <a href="#frameworks">Frameworki UI</a>
+      <a href="#architecture">Architektura</a>
+      <a href="#data">Dane i sieć</a>
+      <a href="#testing">Testy i CI/CD</a>
+      <a href="#quality">Jakość i bezpieczeństwo</a>
+      <a href="#career">Kariera i trendy</a>
+      <a href="#project">Projekt semestralny</a>
+      <a href="#quiz">Sprawdź wiedzę</a>
+    </nav>
+  </aside>
+  <main id="main">
+    <div class="mobile-toc">
+      <label class="sr-only" for="mobileNav">Przejdź do sekcji</label>
+      <select id="mobileNav"><option value="">Przejdź do sekcji...</option></select>
+    </div>
+
+    <section id="start" class="hero">
+      <div>
+        <div class="eyebrow">Wykład 1 · Programowanie aplikacji mobilnych</div>
+        <h1>Wprowadzenie do programowania aplikacji mobilnych</h1>
+        <p>Interaktywny przewodnik po ekosystemach Android i iOS, językach Kotlin i Swift, frameworkach wieloplatformowych, architekturze, testowaniu, dystrybucji oraz wymaganiach projektu semestralnego.</p>
+        <div class="chips"><span class="chip">Android</span><span class="chip">iOS</span><span class="chip">Kotlin</span><span class="chip">Swift</span><span class="chip">Flutter</span><span class="chip">React Native</span></div>
+      </div>
+      <div class="phone-scene" aria-hidden="true">
+        <div class="orbit o1"><span>⌁</span><span>AI</span></div>
+        <div class="orbit o2"><span>⌘</span><span>∞</span></div>
+        <div class="phone"><div class="phone-notch"></div><div class="phone-screen"><div class="app-top"></div><div class="app-card"><small>Mobilny ekosystem</small><strong>9,1 mld</strong><span>aktywnych urządzeń</span></div><div class="app-row"><span></span><span></span></div><div class="app-row"><span></span><span></span></div></div></div>
+      </div>
+    </section>
+
+    <section id="plan" class="section-card">
+      <div class="section-head"><div><div class="kicker">01 · Kontekst dydaktyczny</div><h2>Plan kursu i cele wykładu</h2></div></div>
+      <p class="lead">Cykl obejmuje pełną ścieżkę od projektu aplikacji, przez architekturę urządzeń, UI/UX i programowanie natywne, po sensory, IoT, XR, gry oraz autonomiczne roboty i drony.</p>
+      <div class="grid-3" style="margin:22px 0">
+        <div class="mini-card"><h3>Po wykładzie student potrafi</h3><p>Porównać Android i iOS, rozpoznać ich toolchain oraz świadomie dobrać technologię.</p></div>
+        <div class="mini-card"><h3>Rozumie</h3><p>Cykl życia aplikacji, podstawowe wzorce architektoniczne, persystencję i komunikację sieciową.</p></div>
+        <div class="mini-card"><h3>Planuje</h3><p>Testy, pipeline CI/CD, publikację sklepową i wymagania jakościowe projektu.</p></div>
+      </div>
+      <details>
+        <summary><strong>Pokaż plan 13 spotkań</strong></summary>
+        <div class="timeline" id="courseTimeline" style="margin-top:16px"></div>
+      </details>
+    </section>
+
+    <section id="market" class="section-card">
+      <div class="section-head"><div><div class="kicker">02 · Rynek i ekosystem</div><h2>Mobilność jako dominujący kanał oprogramowania</h2></div></div>
+      <div class="note"><strong>Uwaga metodologiczna.</strong> Wykresy absolwentów w materiale dotyczą próby n = 45 i nie powinny być generalizowane na całą populację. Wykres wydatków 2005-2026 należy traktować jako syntezę dydaktyczną, dopóki nie zostaną udostępnione surowe szeregi danych i metodologia agregacji.</div>
+      <div class="didactic-grid">
+        <div class="teaching-card" style="--c:var(--brand)"><span class="tag">Czym jest ekosystem</span><b>Więcej niż system operacyjny</b><p>Ekosystem obejmuje urządzenia, sklep, narzędzia, model płatności, zasady prywatności, użytkowników oraz sieć usług współpracujących z aplikacją.</p></div>
+        <div class="teaching-card" style="--c:var(--brand-2)"><span class="tag">Dlaczego mobile rośnie</span><b>Urządzenie jest stale przy użytkowniku</b><p>Smartfon łączy komunikację, sensory, płatności i dostęp do usług. Skraca drogę od potrzeby użytkownika do wykonania działania.</p></div>
+        <div class="teaching-card" style="--c:var(--magenta)"><span class="tag">Jak interpretować dane</span><b>Trend nie wyjaśnia przyczyny</b><p>Rosnąca linia pokazuje zmianę w czasie, lecz przyczynę należy wiązać z penetracją urządzeń, jakością sieci, sklepami i modelami biznesowymi.</p></div>
+      </div>
+      <div class="grid-4" style="margin:20px 0">
+        <div class="mini-card metric" style="--c:var(--brand)"><strong>9,1 mld</strong><span>aktywnych urządzeń mobilnych</span></div>
+        <div class="mini-card metric" style="--c:var(--brand-2)"><strong>257 mld</strong><span>pobrań aplikacji rocznie (2024)</span></div>
+        <div class="mini-card metric" style="--c:var(--magenta)"><strong>$935 mld</strong><span>przychodów App Economy (2025)</span></div>
+        <div class="mini-card metric" style="--c:var(--amber)"><strong>72%</strong><span>ruchu internetowego z mobile</span></div>
+      </div>
+      <h3>Interaktywny trend wydatków na rozwój oprogramowania</h3>
+      <div class="control-row">
+        <button class="pill-btn active market-toggle" data-series="mobile">Mobilne</button>
+        <button class="pill-btn active market-toggle" data-series="web">Webowe</button>
+        <button class="pill-btn active market-toggle" data-series="desktop">Desktopowe</button>
+        <span class="range-label">Rok końcowy: <output id="yearOut">2026</output></span>
+        <input id="yearRange" type="range" min="2010" max="2026" value="2026" />
+      </div>
+      <div class="chart-shell"><svg id="marketChart" role="img" aria-label="Wykres trendu wydatków na aplikacje mobilne, webowe i desktopowe"></svg></div>
+      <div class="legend" style="margin-top:10px"><span><i style="--c:#156fe5"></i>mobilne</span><span><i style="--c:#15934d"></i>webowe</span><span><i style="--c:#dc3342"></i>desktopowe</span></div>
+      <div class="lab" id="growthLab">
+        <div class="lab-head"><div><h3>Laboratorium: co napędza rynek mobilny?</h3><p>Zmieniaj trzy czynniki. Model jest dydaktyczny: pokazuje zależność kierunkową, a nie prognozę ekonomiczną. Wysoki wynik powstaje wtedy, gdy urządzenia, łączność i dystrybucja wzajemnie się wzmacniają.</p></div><span class="lab-badge">model przyczynowy</span></div>
+        <div class="sim-grid">
+          <div class="sim-controls">
+            <div class="slider-row"><label for="adoption">Penetracja smartfonów</label><input id="adoption" type="range" min="10" max="100" value="85"><output id="adoptionOut">85%</output></div>
+            <div class="slider-row"><label for="connectivity">Jakość i dostępność sieci</label><input id="connectivity" type="range" min="10" max="100" value="78"><output id="connectivityOut">78%</output></div>
+            <div class="slider-row"><label for="distribution">Dojrzałość sklepów i płatności</label><input id="distribution" type="range" min="10" max="100" value="82"><output id="distributionOut">82%</output></div>
+          </div>
+          <div>
+            <div class="factor-bars"><div class="factor-bar"><span>Zasięg rynku</span><div class="track"><span id="reachBar" style="--c:var(--brand)"></span></div><output id="reachOut">0</output></div><div class="factor-bar"><span>Częstotliwość użycia</span><div class="track"><span id="usageBar" style="--c:var(--brand-2)"></span></div><output id="usageOut">0</output></div><div class="factor-bar"><span>Potencjał przychodu</span><div class="track"><span id="revenueBar" style="--c:var(--magenta)"></span></div><output id="revenueOut">0</output></div></div>
+            <div class="explain-box" id="growthExplanation" style="margin-top:12px"></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="platforms" class="section-card">
+      <div class="section-head"><div><div class="kicker">03 · Platformy</div><h2>Android czy iOS? Model decyzji wielokryterialnej</h2></div></div>
+      <p class="lead">Wybór platformy zależy od rynku, zasobów, wymagań sprzętowych, modelu dystrybucji i oczekiwanej monetyzacji. Zmień wagi kryteriów, aby zobaczyć, jak zmienia się rekomendacja.</p>
+      <div class="didactic-grid">
+        <div class="teaching-card" style="--c:var(--brand)"><span class="tag">Zasada</span><b>Nie istnieje platforma najlepsza ogólnie</b><p>Istnieje platforma najlepiej dopasowana do konkretnego rynku, zespołu, budżetu i funkcji produktu.</p></div>
+        <div class="teaching-card" style="--c:var(--brand-2)"><span class="tag">Koszt ukryty</span><b>Fragmentacja zwiększa macierz testów</b><p>Więcej wersji systemu, ekranów i producentów oznacza więcej kombinacji, które trzeba zbudować, uruchomić i zweryfikować.</p></div>
+        <div class="teaching-card" style="--c:var(--amber)"><span class="tag">Decyzja</span><b>Wagi są ważniejsze od surowych ocen</b><p>To samo porównanie może dać inny wynik dla aplikacji masowej, premium, medycznej lub prototypu akademickiego.</p></div>
+      </div>
+      <div class="scenario-presets" aria-label="Gotowe scenariusze wyboru platformy"><button class="pill-btn platform-preset" data-preset="mass">Aplikacja masowa</button><button class="pill-btn platform-preset" data-preset="premium">FinTech premium</button><button class="pill-btn platform-preset" data-preset="lab">Projekt studencki</button><button class="pill-btn platform-preset" data-preset="device">Aplikacja sprzętowa</button></div>
+      <div class="decision-grid">
+        <div class="weights" id="platformWeights"></div>
+        <div class="score-card">
+          <h3>Wynik ważony</h3>
+          <div class="score-line"><b>Android</b><div class="bar"><span id="androidBar" style="--c:var(--brand)"></span></div><output id="androidScore">0</output></div>
+          <div class="score-line"><b>iOS</b><div class="bar"><span id="iosBar" style="--c:var(--brand-2)"></span></div><output id="iosScore">0</output></div>
+          <div class="verdict" id="platformVerdict"></div>
+        </div>
+      </div>
+      <div class="grid-2" style="margin-top:20px">
+        <div class="mini-card" style="border-top:4px solid var(--brand)"><h3>Android</h3><p>Kotlin, Android Studio, Jetpack Compose, Google Play i sideloading. Duży udział globalny, silna fragmentacja i szeroki zakres urządzeń.</p></div>
+        <div class="mini-card" style="border-top:4px solid var(--brand-2)"><h3>iOS</h3><p>Swift, Xcode, SwiftUI, App Store. Mniejsza fragmentacja, zwykle wyższy ARPU i silniej kontrolowany proces dystrybucji.</p></div>
+      </div>
+    </section>
+
+    <section id="tools" class="section-card">
+      <div class="section-head"><div><div class="kicker">04 · Toolchain i języki</div><h2>Od IDE do kodu produkcyjnego</h2></div></div>
+      <div class="didactic-grid">
+        <div class="teaching-card" style="--c:var(--brand)"><span class="tag">Toolchain</span><b>Kod jest tylko wejściem procesu</b><p>IDE edytuje kod, system budowania pobiera zależności i kompiluje, emulator uruchamia aplikację, a profiler pokazuje koszt wykonania.</p></div>
+        <div class="teaching-card" style="--c:var(--brand-2)"><span class="tag">Debugowanie</span><b>Najpierw obserwuj, potem zgaduj</b><p>Logi, breakpointy, inspekcja pamięci i ślad CPU pozwalają odróżnić błąd logiki od problemu wydajności lub konfiguracji.</p></div>
+        <div class="teaching-card" style="--c:var(--magenta)"><span class="tag">Asynchroniczność</span><b>Wątek UI nie może czekać</b><p>Operacje sieciowe i dyskowe wykonuje się poza wątkiem głównym, a wynik bezpiecznie publikuje w stanie obserwowanym przez interfejs.</p></div>
+      </div>
+      <div class="tabs" role="tablist" aria-label="Platforma narzędziowa">
+        <button class="tab active" data-tabgroup="tools" data-target="androidTools">Android</button>
+        <button class="tab" data-tabgroup="tools" data-target="iosTools">iOS</button>
+      </div>
+      <div id="androidTools" class="tab-panel active" data-tabpanel="tools"><div class="tool-stack">
+        <div class="tool" style="--c:var(--brand)"><b>Android Studio</b><small>IDE oparte na IntelliJ, Live Edit, profiler, integracja AI.</small></div>
+        <div class="tool" style="--c:var(--brand-2)"><b>SDK + Gradle</b><small>Build, zależności, warianty, podpisywanie i automatyzacja.</small></div>
+        <div class="tool" style="--c:var(--magenta)"><b>AVD</b><small>Emulacja urządzeń, wersji API i konfiguracji sprzętowych.</small></div>
+        <div class="tool" style="--c:var(--amber)"><b>ADB</b><small>Instalacja, logcat, shell, przekierowanie portów i debug Wi-Fi.</small></div>
+        <div class="tool" style="--c:var(--purple)"><b>Profiler + Lint</b><small>CPU, pamięć, sieć i statyczna analiza kodu.</small></div>
+      </div></div>
+      <div id="iosTools" class="tab-panel" data-tabpanel="tools"><div class="tool-stack">
+        <div class="tool" style="--c:var(--brand-2)"><b>Xcode</b><small>IDE Apple, SwiftUI Preview, Simulator i podpisywanie.</small></div>
+        <div class="tool" style="--c:var(--brand)"><b>iOS SDK</b><small>Frameworki systemowe, Simulator i Accessibility Inspector.</small></div>
+        <div class="tool" style="--c:var(--magenta)"><b>SPM</b><small>Swift Package Manager i wersjonowanie zależności.</small></div>
+        <div class="tool" style="--c:var(--amber)"><b>Instruments</b><small>Time Profiler, Allocations, Leaks i Core Animation.</small></div>
+        <div class="tool" style="--c:var(--purple)"><b>TestFlight + Cloud</b><small>Dystrybucja beta, testy i CI/CD w ekosystemie Apple.</small></div>
+      </div></div>
+
+      <div class="tabs" style="margin-top:28px" role="tablist" aria-label="Język programowania">
+        <button class="tab active" data-tabgroup="lang" data-target="kotlinPanel">Kotlin</button>
+        <button class="tab" data-tabgroup="lang" data-target="swiftPanel">Swift</button>
+      </div>
+      <div id="kotlinPanel" class="tab-panel active" data-tabpanel="lang">
+        <div class="code-grid"><pre><span class="cm">// Null safety i wartości domyślne</span>
+<span class="kw">val</span> surname: <span class="type">String?</span> = <span class="kw">null</span>
+<span class="kw">val</span> len = surname?.length ?: 0
+
+<span class="cm">// Data class</span>
+<span class="kw">data class</span> <span class="type">User</span>(<span class="kw">val</span> id: Int, <span class="kw">val</span> name: String)
+
+<span class="cm">// Coroutine i dispatcher IO</span>
+<span class="kw">suspend fun</span> fetchUser(id: Int) =
+  withContext(Dispatchers.IO) { api.getUser(id) }</pre>
+          <div class="concept-list"><div class="concept" style="--c:var(--brand)"><b>Null safety</b><small>Typy nullable, operator bezpiecznego wywołania i Elvis.</small></div><div class="concept" style="--c:var(--brand-2)"><b>Coroutines i Flow</b><small>Asynchroniczność, structured concurrency i reaktywne strumienie.</small></div><div class="concept" style="--c:var(--magenta)"><b>Interop z Javą</b><small>Stopniowa migracja istniejących aplikacji.</small></div></div>
+        </div>
+        <div class="demo-box"><label for="nullableName"><strong>Symulator operatora Elvis <code>?:</code></strong></label><input id="nullableName" class="text-input" placeholder="Wpisz imię lub pozostaw puste" /><p>Wynik: <code id="nullableResult">Gość</code></p></div>
+      </div>
+      <div id="swiftPanel" class="tab-panel" data-tabpanel="lang">
+        <div class="code-grid"><pre><span class="cm">// Optionals</span>
+<span class="kw">let</span> upper = username?.uppercased()
+<span class="kw">let</span> name = username ?? <span class="str">"Gość"</span>
+<span class="kw">guard let</span> user = username <span class="kw">else</span> { <span class="kw">return</span> }
+
+<span class="cm">// Async/await</span>
+<span class="kw">func</span> fetchProfile(id: UUID) <span class="kw">async throws</span> -> Profile {
+  <span class="kw">let</span> (data, _) = <span class="kw">try await</span> URLSession.shared.data(from: url)
+  <span class="kw">return try</span> JSONDecoder().decode(Profile.self, from: data)
+}</pre>
+          <div class="concept-list"><div class="concept" style="--c:var(--brand-2)"><b>Optionals</b><small>Jawne modelowanie braku wartości.</small></div><div class="concept" style="--c:var(--brand)"><b>Protocols</b><small>Kontrakty, kompozycja i testowalność.</small></div><div class="concept" style="--c:var(--magenta)"><b>Swift concurrency</b><small>async/await, Task i bezpieczne anulowanie.</small></div></div>
+        </div>
+      </div>
+      <div class="lab">
+        <div class="lab-head"><div><h3>Laboratorium toolchainu: od zmiany kodu do diagnozy</h3><p>Uruchom kolejne kroki ręcznie albo wykonaj cały przebieg. Wprowadzenie błędu pokazuje, że etap kompilacji blokuje dalsze uruchamianie. Profilowanie ma sens dopiero dla działającego builda.</p></div><span class="lab-badge">build → run → profile</span></div>
+        <div class="process-flow" id="toolchainFlow"><div class="process-node" data-step="edit"><b>1. Kod</b><small>Edycja Kotlin/Swift i zasobów.</small></div><div class="process-node" data-step="deps"><b>2. Zależności</b><small>Gradle lub SPM rozwiązuje wersje.</small></div><div class="process-node" data-step="build"><b>3. Kompilacja</b><small>Powstaje APK/AAB lub .app.</small></div><div class="process-node" data-step="run"><b>4. Uruchomienie</b><small>Emulator albo urządzenie fizyczne.</small></div><div class="process-node" data-step="profile"><b>5. Profilowanie</b><small>CPU, pamięć, sieć i klatki.</small></div></div>
+        <div class="control-row"><button class="primary" id="runToolchain">Uruchom cały proces</button><button class="secondary" id="stepToolchain">Wykonaj kolejny krok</button><label><input id="compileError" type="checkbox"> błąd składni</label></div>
+        <div class="console" id="toolchainConsole" aria-live="polite">$ Projekt gotowy do budowania.</div>
+        <div class="sim-grid" style="margin-top:16px"><div class="thread-lane"><b>Wątek UI - operacja blokująca</b><div class="thread-track" id="blockingTrack"></div><small>Jeżeli pojedyncza praca przekracza budżet 16,7 ms, interfejs może zgubić klatkę.</small></div><div class="thread-lane"><b>Coroutine / async-await</b><div class="thread-track" id="asyncTrack"></div><small>Praca I/O jest zawieszana poza UI, a główny wątek pozostaje dostępny dla renderowania.</small></div></div>
+        <div class="control-row"><button class="secondary" id="simulateThreads">Porównaj wykonanie</button><span id="threadVerdict" class="range-label"></span></div>
+      </div>
+    </section>
+
+    <section id="lifecycle" class="section-card">
+      <div class="section-head"><div><div class="kicker">05 · Model wykonania</div><h2>Cykl życia ekranu jako maszyna stanów</h2></div></div>
+      <div class="didactic-grid">
+        <div class="teaching-card" style="--c:var(--brand)"><span class="tag">Czym jest</span><b>Kontrakt między systemem a ekranem</b><p>System informuje aplikację, kiedy ekran powstaje, staje się widoczny, traci fokus, znika i jest niszczony.</p></div>
+        <div class="teaching-card" style="--c:var(--amber)"><span class="tag">Po co</span><b>Zasoby muszą żyć tak krótko, jak potrzeba</b><p>Kamera, lokalizacja, animacja lub timer uruchomione w złym stanie zużywają energię i mogą powodować wycieki.</p></div>
+        <div class="teaching-card" style="--c:var(--magenta)"><span class="tag">Pułapka</span><b>Zmiana konfiguracji nie musi oznaczać utraty danych</b><p>Stan UI należy oddzielić od obiektu widoku i przechowywać w ViewModelu lub modelu obserwowalnym.</p></div>
+      </div>
+      <div class="tabs"><button class="tab active lifecycle-tab" data-os="android">Android Activity</button><button class="tab lifecycle-tab" data-os="ios">iOS ViewController</button></div>
+      <div class="lifecycle-layout">
+        <div class="state-machine" id="stateMachine">
+          <svg class="state-lines" viewBox="0 0 500 455" preserveAspectRatio="none"><defs><marker id="arrow" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto"><path d="M0,0 L0,6 L9,3 z" fill="currentColor"></path></marker></defs><path d="M250 80 L120 110"></path><path d="M250 80 L380 110"></path><path d="M380 165 L380 218"></path><path d="M365 270 L270 315"></path><path d="M230 315 L135 270"></path><path d="M120 218 L120 165"></path><path d="M250 362 L250 405"></path></svg>
+        </div>
+        <div>
+          <div class="state-info" id="stateInfo"></div>
+          <div class="demo-box"><strong>Eksperyment</strong><p id="lifecycleScenario">Kliknij kolejne stany i obserwuj, gdzie należy uruchamiać lub zatrzymywać zasoby.</p><button class="primary" id="autoLifecycle">Odtwórz jeden przebieg</button></div>
+        </div>
+      </div>
+      <div class="lab">
+        <div class="lab-head"><div><h3>Symulator zdarzeń systemowych</h3><p>Wybierz zdarzenie lub gotowy scenariusz. Symulator pokazuje sekwencję callbacków, widoczność ekranu, stan procesu, zasoby oraz koszt błędnego utrzymywania kamery i lokalizacji w tle.</p></div><span class="lab-badge">event → callback → zasoby</span></div>
+        <div class="control-row"><label>Scenariusz: <select id="systemScenario" class="text-input"><option value="normal">Uruchomienie → tło → powrót</option><option value="interrupt">Chwilowe przerwanie</option><option value="rotation">Zmiana konfiguracji</option><option value="restore">Zabicie i odtworzenie procesu</option></select></label><button class="secondary" id="runSystemScenario">Uruchom scenariusz</button><button class="secondary" id="resetSystemEvents">Resetuj</button><label><input id="resourceLeakMode" type="checkbox"> zasymuluj błąd: zasoby pozostają aktywne w tle</label></div>
+        <div class="event-grid" id="lifecycleEvents"><button class="event-btn" data-event="launch"><b>Uruchom aplikację</b><small>zimny start</small></button><button class="event-btn" data-event="home"><b>Naciśnij Home</b><small>przejście do tła</small></button><button class="event-btn" data-event="return"><b>Wróć do aplikacji</b><small>ponowne uaktywnienie</small></button><button class="event-btn" data-event="interrupt"><b>Połączenie przychodzące</b><small>chwilowa utrata fokusu</small></button><button class="event-btn" data-event="rotate"><b>Obróć urządzenie</b><small>rekreacja widoku</small></button><button class="event-btn" data-event="back"><b>Zamknij ekran</b><small>usunięcie ze stosu</small></button><button class="event-btn" data-event="memory"><b>Presja pamięci</b><small>zwalnianie cache</small></button><button class="event-btn" data-event="process"><b>Zabicie procesu</b><small>odtworzenie stanu</small></button></div>
+        <div class="resource-panel"><span class="resource-chip" id="resCamera">Kamera: wyłączona</span><span class="resource-chip" id="resLocation">Lokalizacja: wyłączona</span><span class="resource-chip" id="resAnimation">Animacje: zatrzymane</span><span class="resource-chip" id="resData">Stan danych: zachowany</span></div>
+        <div class="event-sim-dashboard">
+          <div class="event-state-card"><div class="kicker">Bieżący stan systemu</div><h4 id="eventHeadline">Symulacja oczekuje na zdarzenie</h4><div class="system-state-grid"><div class="system-state"><span>Callback</span><strong id="eventCurrentState">—</strong></div><div class="system-state"><span>Widoczność</span><strong id="eventVisibility">niewidoczny</strong></div><div class="system-state"><span>Proces</span><strong id="eventProcess">aktywny</strong></div><div class="system-state"><span>Stan UI</span><strong id="eventDataState">zachowany</strong></div></div><div style="margin-top:12px"><strong>Szacowane obciążenie zasobów</strong><div class="energy-meter" aria-label="Obciążenie zasobów"><span id="eventEnergyBar"></span></div><p class="event-assessment" id="eventAssessment">Na pierwszym planie zasoby mogą być aktywne. Po utracie widoczności należy je zatrzymać.</p></div></div>
+          <div class="event-state-card"><div class="kicker">Sekwencja callbacków</div><h4 id="eventTimelineTitle">Brak aktywnej sekwencji</h4><div class="callback-timeline" id="eventTimeline"><div class="callback-step"><span class="step-no">1</span><div><b>Wybierz zdarzenie</b><small>Tutaj pojawią się kolejne wywołania systemowe i zalecane działania.</small></div></div></div></div>
+        </div>
+        <div class="console" id="lifecycleLog" style="margin-top:12px">Wybierz zdarzenie systemowe.</div>
+      </div>
+    </section>
+
+    <section id="frameworks" class="section-card">
+      <div class="section-head"><div><div class="kicker">06 · UI i cross-platform</div><h2>Cztery podejścia do warstwy interfejsu</h2></div></div>
+      <div class="didactic-grid">
+        <div class="teaching-card" style="--c:var(--brand)"><span class="tag">Deklaratywność</span><b>UI jest funkcją stanu</b><p>Zamiast ręcznie zmieniać każdy widok, opisujemy rezultat dla danego stanu. Zmiana stanu uruchamia aktualizację potrzebnych fragmentów.</p></div>
+        <div class="teaching-card" style="--c:var(--magenta)"><span class="tag">Cross-platform</span><b>Wspólny kod nie oznacza braku kodu natywnego</b><p>Pluginy, uprawnienia, usługi w tle i nowe API systemowe często wymagają mostu do Kotlin/Swift.</p></div>
+        <div class="teaching-card" style="--c:var(--purple)"><span class="tag">Dobór</span><b>Technologia powinna pasować do ryzyka projektu</b><p>Najważniejsze są kompetencje zespołu, zakres platform, wymagania sprzętowe i koszt długoterminowego utrzymania.</p></div>
+      </div>
+      <div class="framework-grid">
+        <div class="framework" style="--c:var(--brand)"><h3>Jetpack Compose</h3><ul><li>deklaratywny UI w Kotlinie</li><li>rekompozycja zależna od stanu</li><li>natywny Android</li></ul></div>
+        <div class="framework" style="--c:var(--brand-2)"><h3>SwiftUI</h3><ul><li>jeden model UI dla platform Apple</li><li>property wrappers i Observation</li><li>natywny ekosystem Apple</li></ul></div>
+        <div class="framework" style="--c:var(--magenta)"><h3>Flutter</h3><ul><li>Dart i własny silnik renderowania</li><li>pixel-perfect i szybki hot reload</li><li>wiele platform z jednej bazy kodu</li></ul></div>
+        <div class="framework" style="--c:var(--purple)"><h3>React Native</h3><ul><li>TypeScript i React</li><li>natywne komponenty systemu</li><li>dobry wybór dla zespołów webowych</li></ul></div>
+      </div>
+      <div class="grid-2" style="margin-top:22px">
+        <div class="mini-card"><h3>Asystent wyboru frameworka</h3><div class="switch-row"><span>Zespół zna React/TypeScript</span><label class="switch"><input id="knowWeb" type="checkbox"><span></span></label></div><div class="switch-row"><span>Wymagany identyczny wygląd na platformach</span><label class="switch"><input id="pixelPerfect" type="checkbox"><span></span></label></div><div class="switch-row"><span>Krytyczny dostęp do nowych API systemowych</span><label class="switch"><input id="nativeApis" type="checkbox"><span></span></label></div><div class="switch-row"><span>Docelowo Android, iOS, web i desktop</span><label class="switch"><input id="manyPlatforms" type="checkbox"><span></span></label></div></div>
+        <div class="score-card"><h3>Rekomendacja</h3><div id="frameworkVerdict" class="verdict">Włącz kryteria, aby uzyskać rekomendację.</div><p class="lead" id="frameworkReason"></p></div>
+      </div>
+      <div class="lab">
+        <div class="lab-head"><div><h3>Symulator deklaratywnego UI i rekompozycji</h3><p>Zmieniaj stan aplikacji. Po prawej zaznaczane są tylko elementy drzewa UI, które muszą zostać przeliczone. To intuicja stojąca za Compose, SwiftUI, Flutterem i Reactem.</p></div><span class="lab-badge">UI = f(state)</span></div>
+        <div class="render-lab">
+          <div><div class="mock-ui" id="mockUi"><b>Panel użytkownika</b><div class="mock-row"><span>Licznik</span><strong id="uiCounter">0</strong></div><div class="mock-row"><span>Status</span><strong id="uiStatus">Gotowe</strong></div><button class="primary" id="uiAction" style="margin-top:12px;width:100%">Zwiększ licznik</button></div><div class="control-row"><button class="secondary" id="toggleUiTheme">Zmień motyw</button><button class="secondary" id="toggleLoading">Przełącz loading</button><button class="secondary" id="resetUiState">Reset</button></div></div>
+          <div><h3>Drzewo renderowania</h3><div class="tree" id="renderTree"><div class="tree-node" data-node="root">App</div><div class="tree-node indent-1" data-node="screen">UserScreen</div><div class="tree-node indent-2" data-node="title">Title</div><div class="tree-node indent-2" data-node="counter">CounterText</div><div class="tree-node indent-2" data-node="status">StatusText</div><div class="tree-node indent-2" data-node="button">ActionButton</div></div><div class="explain-box" id="renderExplanation" style="margin-top:12px"><strong>Stan początkowy.</strong> Zmiana licznika powinna odświeżyć tekst licznika, a nie cały ekran.</div></div>
+        </div>
+      </div>
+    </section>
+
+    <section id="architecture" class="section-card">
+      <div class="section-head"><div><div class="kicker">07 · Architektura</div><h2>Wzorce jako kontrola sprzężenia i przepływu danych</h2></div></div>
+      <div class="didactic-grid">
+        <div class="teaching-card" style="--c:var(--brand)"><span class="tag">Cel</span><b>Architektura ogranicza koszt zmiany</b><p>Dobra separacja pozwala zmienić API, bazę lub UI bez przepisywania całej aplikacji.</p></div>
+        <div class="teaching-card" style="--c:var(--brand-2)"><span class="tag">Testowalność</span><b>Logika nie powinna wymagać emulatora</b><p>ViewModel, Presenter, reducer i use case można testować jako zwykłe obiekty, jeżeli zależą od interfejsów.</p></div>
+        <div class="teaching-card" style="--c:var(--danger)"><span class="tag">Antywzorzec</span><b>„Massive View Controller”</b><p>Gdy ekran pobiera sieć, zapisuje bazę, waliduje i renderuje, każda zmiana zwiększa ryzyko regresji.</p></div>
+      </div>
+      <div class="architecture-layout">
+        <div class="pattern-list" id="patternList"></div>
+        <div class="arch-canvas"><svg id="archSvg" viewBox="0 0 700 280" aria-label="Diagram wybranego wzorca architektonicznego"><defs><marker id="archArrow" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto"><path d="M0,0 L0,6 L9,3 z" fill="currentColor"></path></marker></defs></svg><div id="archDescription" class="note"></div></div>
+      </div>
+      <div class="lab">
+        <div class="lab-head"><div><h3>Śledzenie przepływu: użytkownik naciska „Odśwież”</h3><p>Symulacja przechodzi przez elementy wybranego wzorca. Wariant z błędem sieciowym pokazuje, gdzie błąd powinien zostać zamieniony na stan prezentacji.</p></div><span class="lab-badge">event → state</span></div>
+        <div class="control-row"><button class="primary" id="runArchFlow">Symuluj poprawne żądanie</button><button class="secondary" id="runArchError">Symuluj błąd sieci</button></div>
+        <div class="trace" id="archTrace"></div>
+        <div class="explain-box" id="archFlowExplanation" style="margin-top:12px">Wybierz wzorzec i uruchom przepływ.</div>
+      </div>
+    </section>
+
+    <section id="data" class="section-card">
+      <div class="section-head"><div><div class="kicker">08 · Dane i komunikacja</div><h2>Offline-first: aplikacja ma działać także bez sieci</h2></div></div>
+      <p class="lead">Lokalna baza danych pełni rolę źródła prawdy. Zmiany użytkownika są rejestrowane lokalnie i synchronizowane, gdy połączenie wraca.</p>
+      <div class="didactic-grid">
+        <div class="teaching-card" style="--c:var(--brand)"><span class="tag">Single source of truth</span><b>UI obserwuje bazę lokalną</b><p>Sieć aktualizuje bazę, a baza aktualizuje UI. Dzięki temu ekran nie musi rozstrzygać, czy dane pochodzą z cache czy serwera.</p></div>
+        <div class="teaching-card" style="--c:var(--amber)"><span class="tag">Kolejka operacji</span><b>Offline nie oznacza tylko odczytu</b><p>Zmiany tworzone bez sieci zapisuje się trwale jako operacje oczekujące, aby można je było wysłać po ponownym uruchomieniu aplikacji.</p></div>
+        <div class="teaching-card" style="--c:var(--danger)"><span class="tag">Konflikt</span><b>Dwie wersje mogą być jednocześnie poprawne</b><p>Strategia last-write-wins jest prosta, lecz może utracić dane. Czasem potrzebne jest scalanie pól albo decyzja użytkownika.</p></div>
+      </div>
+      <div class="offline-sim">
+        <div class="sim-phone"><div class="sim-status"><span id="netState">● online</span><span>12:45</span></div><div class="article-list" id="articleList"></div><div class="control-row"><button class="primary" id="addArticle">Dodaj artykuł</button><button class="secondary" id="toggleNetwork">Wyłącz sieć</button><button class="secondary" id="syncNow">Synchronizuj</button></div></div>
+        <div><h3>Dziennik zdarzeń</h3><div class="sim-log" id="syncLog" aria-live="polite"></div></div>
+      </div>
+      <div class="lab">
+        <div class="lab-head"><div><h3>Laboratorium synchronizacji i konfliktów</h3><p>Ustaw opóźnienie sieci, utwórz dwie niezależne wersje rekordu i sprawdź trzy strategie rozwiązania konfliktu.</p></div><span class="lab-badge">local ↔ server</span></div>
+        <div class="sim-grid"><div><div class="slider-row"><label for="networkLatency">Opóźnienie sieci</label><input id="networkLatency" type="range" min="0" max="2500" step="100" value="600"><output id="networkLatencyOut">600 ms</output></div><div class="control-row"><button class="secondary" id="createConflict">Utwórz konflikt</button><select id="conflictStrategy" class="text-input" style="max-width:240px"><option value="server">Serwer wygrywa</option><option value="local">Lokalna wersja wygrywa</option><option value="merge">Scal pola</option></select><button class="primary" id="resolveConflict">Rozwiąż konflikt</button></div><div class="conflict-row"><div class="version-card" id="localVersion"><b>Wersja lokalna</b><p>Tytuł: Architektura mobilna</p><small>v1</small></div><div class="version-card" id="serverVersion"><b>Wersja serwerowa</b><p>Tytuł: Architektura aplikacji</p><small>v1</small></div></div></div><div><div class="sync-dashboard"><div class="sync-stat"><span>Kolejka</span><strong id="queueCount">0</strong></div><div class="sync-stat"><span>Wersja lokalna</span><strong id="localRev">1</strong></div><div class="sync-stat"><span>Wersja serwera</span><strong id="serverRev">1</strong></div><div class="sync-stat"><span>Stan</span><strong id="conflictState">spójny</strong></div></div><div class="explain-box" id="conflictExplanation" style="margin-top:12px">Brak konfliktu. Obie strony reprezentują tę samą rewizję logiczną.</div></div></div>
+      </div>
+      <div class="grid-3" style="margin-top:18px"><div class="mini-card"><h3>Android</h3><p>Room jako ORM SQLite, DataStore dla preferencji oraz Retrofit/OkHttp dla REST.</p></div><div class="mini-card"><h3>iOS</h3><p>SwiftData dla modelu lokalnego, Keychain dla sekretów i URLSession dla sieci.</p></div><div class="mini-card"><h3>Bezpieczeństwo</h3><p>TLS, ATS/Network Security Config, krótkotrwałe tokeny i ostrożne stosowanie pinningu.</p></div></div>
+    </section>
+
+    <section id="testing" class="section-card">
+      <div class="section-head"><div><div class="kicker">09 · Weryfikacja i automatyzacja</div><h2>Testy oraz pipeline CI/CD</h2></div></div>
+      <div class="didactic-grid">
+        <div class="teaching-card" style="--c:var(--brand)"><span class="tag">Piramida</span><b>Dużo szybkich testów, mało drogich</b><p>Testy jednostkowe dają szybką informację, integracyjne sprawdzają granice modułów, a UI potwierdzają najważniejsze przepływy.</p></div>
+        <div class="teaching-card" style="--c:var(--brand-2)"><span class="tag">CI</span><b>Repozytorium samo weryfikuje zmianę</b><p>Każdy pull request powinien być zbudowany i przetestowany w powtarzalnym środowisku, niezależnie od komputera autora.</p></div>
+        <div class="teaching-card" style="--c:var(--danger)"><span class="tag">Flaky test</span><b>Niestabilny test obniża zaufanie</b><p>Test losowo przechodzący i zawodzący jest kosztem. Trzeba usuwać zależność od czasu, sieci i współdzielonego stanu.</p></div>
+      </div>
+      <div class="grid-2">
+        <div><h3>Piramida testów</h3><div class="test-pyramid"><div class="pyr ui" data-test="UI / E2E|Najmniej testów, najwyższy koszt. Sprawdzają pełne przepływy użytkownika.">UI / E2E</div><div class="pyr int" data-test="Integracyjne|Baza, sieć i współdziałanie modułów. MockWebServer, HTTPStubs, Robolectric.">Integracyjne</div><div class="pyr unit" data-test="Jednostkowe|Najwięcej testów. Logika ViewModel, use case, repozytoria i funkcje pomocnicze.">Jednostkowe</div></div><div id="testInfo" class="note" style="margin-top:14px">Kliknij poziom piramidy.</div></div>
+        <div><h3>Dlaczego automatyzować?</h3><div class="mini-card"><p>Każdy pull request powinien uruchamiać testy, lint oraz build. Wczesna detekcja błędów obniża koszt naprawy i stabilizuje pracę zespołową.</p></div><div class="mini-card" style="margin-top:10px"><b>Przykładowe narzędzia</b><p>GitHub Actions, Fastlane, Bitrise, Xcode Cloud, Firebase App Distribution, Gradle Build Scans.</p></div></div>
+      </div>
+      <div class="lab">
+        <div class="lab-head"><div><h3>Projektowanie portfela testów</h3><p>Zwiększaj liczbę testów poszczególnych typów. Model szacuje czas wykonania, koszt utrzymania i prawdopodobieństwo wykrycia regresji.</p></div><span class="lab-badge">szybkość × wiarygodność</span></div>
+        <div class="test-mix"><div class="sim-controls"><div class="slider-row"><label for="unitTests">Testy jednostkowe</label><input id="unitTests" type="range" min="0" max="120" value="60"><output id="unitTestsOut">60</output></div><div class="slider-row"><label for="integrationTests">Testy integracyjne</label><input id="integrationTests" type="range" min="0" max="40" value="12"><output id="integrationTestsOut">12</output></div><div class="slider-row"><label for="uiTests">Testy UI / E2E</label><input id="uiTests" type="range" min="0" max="20" value="4"><output id="uiTestsOut">4</output></div><div class="metric-table"><div class="metric-row"><span>Szacowany czas CI</span><strong id="testTime">0 s</strong></div><div class="metric-row"><span>Koszt utrzymania</span><strong id="testCost">0</strong></div><div class="metric-row"><span>Wykrywanie regresji</span><strong id="testConfidence">0%</strong></div></div></div><div><div class="test-stack"><div class="unit" id="unitLayer">jednostkowe</div><div class="integration" id="integrationLayer">integracyjne</div><div class="ui" id="uiLayer">UI</div></div><div class="explain-box" id="testMixExplanation" style="margin-top:10px"></div></div></div>
+      </div>
+      <h3 style="margin-top:26px">Symulacja pipeline</h3>
+      <div class="pipeline" id="pipeline"><div class="stage" data-stage="Checkout"><b>1. Checkout</b><div class="status">oczekuje</div></div><div class="stage" data-stage="Lint"><b>2. Lint</b><div class="status">oczekuje</div></div><div class="stage" data-stage="Tests"><b>3. Testy</b><div class="status">oczekuje</div></div><div class="stage" data-stage="Build"><b>4. Build</b><div class="status">oczekuje</div></div><div class="stage" data-stage="Artifact"><b>5. Artefakt</b><div class="status">oczekuje</div></div></div>
+      <div class="control-row"><button class="primary" id="runPipeline">Uruchom pipeline</button><label>Awaria: <select id="failureStage"><option value="none">brak</option><option value="1">lint</option><option value="2">testy</option><option value="3">build</option></select></label><label><input type="checkbox" id="useCache" checked> cache zależności</label><span id="pipelineTime" class="range-label">czas: 0,0 s</span><input type="checkbox" id="injectFailure" hidden></div>
+    </section>
+
+    <section id="quality" class="section-card">
+      <div class="section-head"><div><div class="kicker">10 · Jakość inżynierska</div><h2>Wydajność, dostępność i bezpieczeństwo</h2></div></div>
+      <div class="didactic-grid">
+        <div class="teaching-card" style="--c:var(--brand)"><span class="tag">Wydajność</span><b>Liczy się doświadczenie, nie tylko średnia</b><p>Pojedyncze długie klatki powodują szarpanie, nawet gdy średni czas renderowania wygląda poprawnie.</p></div>
+        <div class="teaching-card" style="--c:var(--brand-2)"><span class="tag">Dostępność</span><b>Semantyka jest częścią interfejsu</b><p>Czytnik ekranu potrzebuje roli, etykiety, stanu i logicznej kolejności fokusu, a nie tylko obrazu przycisku.</p></div>
+        <div class="teaching-card" style="--c:var(--danger)"><span class="tag">Bezpieczeństwo</span><b>Klient mobilny jest środowiskiem nieufnym</b><p>APK/IPA można analizować. Sekretów i krytycznych decyzji autoryzacyjnych nie wolno opierać wyłącznie na kodzie klienta.</p></div>
+      </div>
+      <h3>Budżet wydajności</h3>
+      <div class="budget-grid" id="budgetGrid"></div>
+      <div id="budgetVerdict" class="note" style="margin-top:14px"></div>
+      <div class="lab">
+        <div class="lab-head"><div><h3>Symulator płynności 60 Hz</h3><p>Każda kolumna reprezentuje jedną klatkę. Granica 16,7 ms wynika z 60 odświeżeń na sekundę. Zaznacz obciążenia i obserwuj jank.</p></div><span class="lab-badge">frame budget 16,7 ms</span></div>
+        <div class="frame-sim"><div><div class="switch-row"><span>Parsowanie dużego JSON na UI</span><label class="switch"><input id="loadJson" type="checkbox"><span></span></label></div><div class="switch-row"><span>Dekodowanie obrazu bez cache</span><label class="switch"><input id="loadImage" type="checkbox"><span></span></label></div><div class="switch-row"><span>Złożony cień i blur</span><label class="switch"><input id="loadEffects" type="checkbox"><span></span></label></div><div class="switch-row"><span>Aktualizacja listy z diffingiem</span><label class="switch"><input id="loadList" type="checkbox" checked><span></span></label></div></div><div><div class="frames" id="frameBars"></div><div class="metric-table" style="margin-top:10px"><div class="metric-row"><span>Klatki przekroczone</span><strong id="jankCount">0/20</strong></div><div class="metric-row"><span>95. percentyl</span><strong id="frameP95">0 ms</strong></div></div></div></div>
+      </div>
+      <div class="grid-2" style="margin-top:24px">
+        <div class="locale-preview"><h3>Podgląd lokalizacji</h3><div class="control-row"><select id="localeSelect" class="text-input" style="max-width:210px"><option value="pl">Polski</option><option value="en">English</option><option value="ar">العربية</option></select><input id="itemCount" type="range" min="1" max="12" value="3"><output id="itemCountOut">3</output></div><div id="localeCard" class="mini-card"></div></div>
+        <div class="locale-preview"><h3>Dostępność</h3><p class="lead">Semantyka kontrolki powinna przekazywać etykietę, stan i rolę. Elementy interaktywne muszą być obsługiwane klawiaturą oraz czytnikiem ekranu.</p><div class="a11y-preview" id="a11yPreview"><p><strong>Powiadomienia</strong><br><span>Masz 3 nieprzeczytane wiadomości.</span></p><button class="secondary" id="favBtn" aria-pressed="false" aria-label="Dodaj do ulubionych">♡ Dodaj do ulubionych</button></div><div class="slider-row" style="margin-top:12px"><label for="fontScale">Skala tekstu</label><input id="fontScale" type="range" min="80" max="180" value="100"><output id="fontScaleOut">100%</output></div><label><input id="highContrast" type="checkbox"> wysoki kontrast podglądu</label></div>
+      </div>
+      <h3 style="margin-top:26px">OWASP Mobile Top 10 - wybrane ryzyka</h3>
+      <div class="security-grid" id="securityGrid"></div>
+      <div class="lab">
+        <div class="lab-head"><div><h3>Model zagrożenia: skradziony telefon i przechwycony ruch</h3><p>Włącz zabezpieczenia i obserwuj zmianę ryzyka. Model pokazuje zasadę defense in depth: pojedyncza kontrola nie chroni całego systemu.</p></div><span class="lab-badge">threat modeling</span></div>
+        <div class="attack-grid"><div><div class="switch-row"><span>Token w Keychain / Keystore</span><label class="switch"><input class="security-control" data-reduction="24" type="checkbox"><span></span></label></div><div class="switch-row"><span>TLS i poprawna walidacja certyfikatu</span><label class="switch"><input class="security-control" data-reduction="28" type="checkbox"><span></span></label></div><div class="switch-row"><span>Krótkotrwały token + odświeżanie</span><label class="switch"><input class="security-control" data-reduction="18" type="checkbox"><span></span></label></div><div class="switch-row"><span>Biometria dla operacji wrażliwych</span><label class="switch"><input class="security-control" data-reduction="16" type="checkbox"><span></span></label></div><div class="switch-row"><span>Brak PII w logach</span><label class="switch"><input class="security-control" data-reduction="14" type="checkbox"><span></span></label></div></div><div><h3>Ryzyko rezydualne</h3><div class="risk-meter"><span id="riskBar"></span></div><p><strong id="riskValue">100%</strong></p><div class="explain-box" id="riskExplanation"></div></div></div>
+      </div>
+    </section>
+
+    <section id="career" class="section-card">
+      <div class="section-head"><div><div class="kicker">11 · Kariera i trendy</div><h2>Od juniora do architekta produktu mobilnego</h2></div></div>
+      <div class="career-lanes"><div class="lane" style="--c:var(--brand)"><h3>Junior Android</h3><p>Kotlin, Compose, Room, Retrofit, Coroutines/Flow, MVVM i podstawowe testy.</p></div><div class="lane" style="--c:var(--brand-2)"><h3>Junior iOS</h3><p>Swift, SwiftUI, URLSession, Codable, SwiftData, MVVM i XCTest.</p></div><div class="lane" style="--c:var(--magenta)"><h3>Cross-platform</h3><p>Flutter/Dart lub React Native/TypeScript, routing, stan, pluginy i integracja natywna.</p></div><div class="lane" style="--c:var(--purple)"><h3>Senior / Lead</h3><p>Architektura, profiling, bezpieczeństwo, CI/CD, SDK design i techniczne przywództwo.</p></div></div>
+      <div class="grid-3" style="margin-top:18px"><div class="mini-card"><h3>AI native</h3><p>Modele on-device, prywatność i inferencja bez wysyłania danych do chmury.</p></div><div class="mini-card"><h3>Spatial computing</h3><p>Interfejsy przestrzenne, visionOS, ARKit, RealityKit i nowe modele interakcji.</p></div><div class="mini-card"><h3>Edge ML i wearables</h3><p>CoreML, NNAPI, MediaPipe, zegarki, sensory zdrowotne i małe ekrany.</p></div></div>
+      <div class="lab">
+        <div class="lab-head"><div><h3>Mapa kompetencji dla wybranej roli</h3><p>Wybierz rolę. Słupki pokazują względne znaczenie obszarów na początku ścieżki. Nie są skalą rekrutacyjną, lecz pomocą w planowaniu portfolio.</p></div><span class="lab-badge">plan nauki</span></div>
+        <div class="skill-lab"><div><select id="careerRole" class="text-input"><option value="android">Junior Android</option><option value="ios">Junior iOS</option><option value="cross">Cross-platform</option><option value="lead">Senior / Lead</option></select><div class="explain-box" id="careerAdvice" style="margin-top:12px"></div></div><div class="skill-bars" id="skillBars"></div></div>
+      </div>
+    </section>
+
+    <section id="project" class="section-card">
+      <div class="section-head"><div><div class="kicker">12 · Projekt semestralny</div><h2>Produkt mobilny, nie tylko demonstrator CRUD</h2></div></div>
+      <p class="lead">Zespół trzyosobowy realizuje kompletny przepływ wytwórczy: wymagania, prototyp, aplikację Android, backend, testy, CI/CD, dokumentację oraz przygotowanie do publikacji.</p>
+      <div class="didactic-grid">
+        <div class="teaching-card" style="--c:var(--brand)"><span class="tag">Produkt mobilny</span><b>Mobilność musi być funkcją, nie dekoracją</b><p>Projekt powinien wykorzystywać aparat, lokalizację, sensory, powiadomienia, biometrię lub działanie offline w sposób uzasadniony domeną.</p></div>
+        <div class="teaching-card" style="--c:var(--brand-2)"><span class="tag">Praca zespołowa</span><b>Historia repozytorium jest dowodem procesu</b><p>Issues, branche, pull requesty, review i pipeline pokazują nie tylko wynik, lecz także sposób wytworzenia produktu.</p></div>
+        <div class="teaching-card" style="--c:var(--magenta)"><span class="tag">Definition of Done</span><b>„Działa u mnie” nie kończy zadania</b><p>Zadanie jest ukończone po testach, review, aktualizacji dokumentacji i integracji z główną gałęzią.</p></div>
+      </div>
+      <div class="completion" aria-label="Postęp checklisty"><span id="projectProgress"></span></div><p><strong id="projectProgressText">0/14</strong> wymagań oznaczonych jako wykonane.</p>
+      <div class="project-check" id="projectChecklist"></div>
+      <div class="tabs" style="margin-top:26px"><button class="tab active" data-tabgroup="roles" data-target="roleLead">Product Lead & UX</button><button class="tab" data-tabgroup="roles" data-target="roleFront">Frontend</button><button class="tab" data-tabgroup="roles" data-target="roleBack">Backend & DevOps</button></div>
+      <div id="roleLead" class="tab-panel active" data-tabpanel="roles"><div class="mini-card"><p>Minimum 15 user stories z kryteriami akceptacji, uzasadnienie mobilności, prototyp gestów i funkcji urządzenia, MVP, materiały Google Play, testy akceptacyjne, roadmapa i instrukcja użytkownika.</p></div></div>
+      <div id="roleFront" class="tab-panel" data-tabpanel="roles"><div class="mini-card"><p>Minimum 5 ekranów, 2 funkcje natywne, uprawnienia runtime, stany loading/error/offline, auth i CRUD, co najmniej 10 testów jednostkowych oraz podpisany AAB/APK.</p></div></div>
+      <div id="roleBack" class="tab-panel" data-tabpanel="roles"><div class="mini-card"><p>Minimum 5 endpointów, JWT i hashowanie haseł, model danych i migracje, testy integracyjne, CI backendu, deployment, walidacja, CORS i polityka prywatności.</p></div></div>
+      <div class="lab">
+        <div class="lab-head"><div><h3>Mini-sprint: przepływ zadań i limit WIP</h3><p>Kliknij kartę, aby przesunąć ją do następnej kolumny. Zbyt wiele równoległych zadań zwiększa czas cyklu i liczbę nieukończonych elementów.</p></div><span class="lab-badge">Kanban / GitHub Flow</span></div>
+        <div class="kanban" id="kanbanBoard"><div class="kanban-col" data-col="backlog"><h4>Backlog <span class="kanban-count">0</span></h4><div class="kanban-items"></div></div><div class="kanban-col" data-col="doing"><h4>W toku <span class="kanban-count">0</span></h4><div class="kanban-items"></div></div><div class="kanban-col" data-col="done"><h4>Gotowe <span class="kanban-count">0</span></h4><div class="kanban-items"></div></div></div><div class="control-row"><button class="secondary" id="addKanbanTask">Dodaj zadanie</button><label>Limit WIP: <input id="wipLimit" type="range" min="1" max="5" value="2"><output id="wipLimitOut">2</output></label><strong id="sprintForecast"></strong></div><p class="sim-hint">Kliknięcie: Backlog → W toku → Gotowe → Backlog. Zadanie oznaczone jako zablokowane wymaga usunięcia zależności przed zakończeniem.</p>
+      </div>
+
+      <h3 style="margin-top:28px">Kalkulator oceny końcowej</h3>
+      <div class="grade-grid"><div><label>Kolokwium (40%): <output id="examOut">70</output>%</label><input id="examScore" type="range" min="0" max="100" value="70" style="width:100%"><label>Projekt zespołowy (24%): <output id="teamOut">80</output>%</label><input id="teamScore" type="range" min="0" max="100" value="80" style="width:100%"><label>Ocena indywidualna (36%): <output id="individualOut">85</output>%</label><input id="individualScore" type="range" min="0" max="100" value="85" style="width:100%"></div><div class="grade-result"><div style="text-align:center"><span>Wynik ważony</span><strong id="gradeValue">4.0</strong><div id="gradePercent">77,8%</div></div></div></div>
+    </section>
+
+    <section id="quiz" class="section-card">
+      <div class="section-head"><div><div class="kicker">13 · Autoewaluacja</div><h2>Sprawdź rozumienie wykładu</h2></div></div>
+      <p class="lead">Pytania są wielokrotnego wyboru. Zaznacz wszystkie poprawne odpowiedzi.</p>
+      <div class="quiz-list" id="quizList"></div>
+      <div class="control-row"><button class="primary" id="gradeQuiz">Sprawdź odpowiedzi</button><button class="secondary" id="resetQuiz">Wyczyść</button><strong id="quizScore" aria-live="polite"></strong></div>
+    </section>
+  </main>
+</div>
+<footer class="footer"><div class="footer-inner"><span>Programowanie aplikacji mobilnych - wykład 1</span><span>dr inż. Mateusz Pomianek · Katedra Informatyki i Automatyki</span></div></footer>
+<script>
+(() => {
+  'use strict';
+  const $ = (s, root=document) => root.querySelector(s);
+  const $$ = (s, root=document) => [...root.querySelectorAll(s)];
+  const storage = {
+    get(key){ try { return localStorage.getItem(key); } catch { return null; } },
+    set(key,value){ try { localStorage.setItem(key,value); } catch { /* storage unavailable */ } }
+  };
+
+  // Theme and reading progress
+  const savedTheme = storage.get('pam-theme');
+  if (savedTheme) document.documentElement.dataset.theme = savedTheme;
+  $('#themeBtn').addEventListener('click', () => {
+    const next = document.documentElement.dataset.theme === 'dark' ? 'light' : 'dark';
+    document.documentElement.dataset.theme = next;
+    storage.set('pam-theme', next);
+    drawMarketChart(); drawArchitecture(currentPattern);
+  });
+  const updateProgress = () => {
+    const h = document.documentElement;
+    const p = h.scrollTop / Math.max(1, h.scrollHeight - h.clientHeight) * 100;
+    $('#readingProgress').style.width = p + '%';
+  };
+  addEventListener('scroll', updateProgress, {passive:true}); updateProgress();
+
+  // TOC and mobile navigation
+  const tocLinks = $$('.toc a');
+  const mobileNav = $('#mobileNav');
+  tocLinks.forEach(a => {
+    const opt = document.createElement('option'); opt.value = a.getAttribute('href'); opt.textContent = a.textContent; mobileNav.append(opt);
+  });
+  mobileNav.addEventListener('change', e => { if(e.target.value) location.hash = e.target.value; });
+  const sections = tocLinks.map(a => $(a.getAttribute('href'))).filter(Boolean);
+  const observer = new IntersectionObserver(entries => {
+    entries.forEach(entry => { if(entry.isIntersecting){ tocLinks.forEach(a=>a.classList.toggle('active', a.getAttribute('href') === '#' + entry.target.id)); } });
+  }, {rootMargin:'-20% 0px -65% 0px'});
+  sections.forEach(s => observer.observe(s));
+
+  // Course timeline
+  const meetings = [
+    ['04.03.2026','Wprowadzenie'],['11.03.2026','Projektowanie aplikacji'],['18.03.2026','Architektura urządzeń mobilnych'],['25.03.2026','UI/UX aplikacji'],['08.04.2026','Programowanie natywne'],['15.04.2026','Cross-platform i PWA'],['22.04.2026','Sensory'],['29.04.2026','Mobilne IoT'],['06.05.2026','Informatyka afektywna'],['13.05.2026','Mobilne XR'],['20.05.2026','Gry mobilne'],['27.05.2026','Roboty i drony'],['03.06.2026','Kolokwium']
+  ];
+  $('#courseTimeline').innerHTML = meetings.map((m,i)=>`<div class="timeline-item"><div class="n">${String(i+1).padStart(2,'0')}</div><div class="timeline-content"><strong>${m[1]}</strong><span>${m[0]} · 08:45</span></div></div>`).join('');
+
+  // Market chart
+  const years = Array.from({length:22},(_,i)=>2005+i);
+  const market = {
+    mobile:[1,2,3,4,5,7,10,15,22,30,40,55,70,85,100,120,140,160,175,190,200,210],
+    web:[9,12,14,16,18,20,23,28,32,38,48,55,63,72,80,88,95,100,105,110,115,120],
+    desktop:[40,42,43,44,45,46,47,48,48,47,46,45,44,42,41,40,39,38,37,36,35,34]
+  };
+  const seriesMeta = {mobile:{label:'Mobilne',color:'#156fe5'},web:{label:'Webowe',color:'#15934d'},desktop:{label:'Desktopowe',color:'#dc3342'}};
+  const visibleSeries = new Set(['mobile','web','desktop']);
+  $$('.market-toggle').forEach(btn=>btn.addEventListener('click',()=>{btn.classList.toggle('active'); btn.classList.contains('active') ? visibleSeries.add(btn.dataset.series) : visibleSeries.delete(btn.dataset.series); drawMarketChart();}));
+  $('#yearRange').addEventListener('input', e=>{$('#yearOut').value=e.target.value;drawMarketChart();});
+  function svgEl(name, attrs={}) { const e=document.createElementNS('http://www.w3.org/2000/svg',name); Object.entries(attrs).forEach(([k,v])=>e.setAttribute(k,v)); return e; }
+  function drawMarketChart(){
+    const svg=$('#marketChart'); svg.innerHTML=''; const W=900,H=360,p={l:58,r:18,t:18,b:42}; svg.setAttribute('viewBox',`0 0 ${W} ${H}`);
+    const end=+$('#yearRange').value, idx=Math.max(0,years.indexOf(end)), xs=years.slice(0,idx+1), maxY=220;
+    const themeDark=document.documentElement.dataset.theme==='dark'; const grid=themeDark?'#34435a':'#dbe2eb', text=themeDark?'#aebbd0':'#617085';
+    for(let y=0;y<=200;y+=50){ const py=p.t+(H-p.t-p.b)*(1-y/maxY); svg.append(svgEl('line',{x1:p.l,y1:py,x2:W-p.r,y2:py,stroke:grid,'stroke-width':1})); const t=svgEl('text',{x:p.l-10,y:py+4,fill:text,'text-anchor':'end','font-size':12});t.textContent=y;svg.append(t); }
+    [2005,2010,2015,2020,2025].filter(y=>y<=end).forEach(y=>{const x=p.l+(W-p.l-p.r)*(years.indexOf(y)/Math.max(1,idx));const t=svgEl('text',{x,y:H-14,fill:text,'text-anchor':'middle','font-size':12});t.textContent=y;svg.append(t);});
+    Object.keys(market).forEach(key=>{ if(!visibleSeries.has(key)) return; const vals=market[key].slice(0,idx+1); const pts=vals.map((v,i)=>{const x=p.l+(W-p.l-p.r)*(i/Math.max(1,idx));const y=p.t+(H-p.t-p.b)*(1-v/maxY);return [x,y];}); const path=svgEl('path',{d:pts.map((pt,i)=>(i?'L':'M')+pt[0].toFixed(1)+','+pt[1].toFixed(1)).join(' '),fill:'none',stroke:seriesMeta[key].color,'stroke-width':3,'stroke-linejoin':'round','stroke-linecap':'round'});svg.append(path);pts.forEach((pt,i)=>{if(i===pts.length-1||i%3===0){const c=svgEl('circle',{cx:pt[0],cy:pt[1],r:4,fill:seriesMeta[key].color});const title=svgEl('title');title.textContent=`${seriesMeta[key].label}: ${vals[i]} mld USD (${xs[i]})`;c.append(title);svg.append(c);}}); });
+    const ylabel=svgEl('text',{x:15,y:H/2,fill:text,'font-size':12,transform:`rotate(-90 15 ${H/2})`,'text-anchor':'middle'});ylabel.textContent='Wydatki [mld USD]';svg.append(ylabel);
+  }
+  drawMarketChart();
+
+  // Platform decision
+  const criteria=[
+    {name:'Zasięg globalny',a:5,i:3,w:4},{name:'Monetyzacja',a:3,i:5,w:3},{name:'Niski koszt wejścia',a:5,i:2,w:4},{name:'Mała fragmentacja',a:2,i:5,w:3},{name:'Otwartość dystrybucji',a:5,i:2,w:2},{name:'Dostępność na Windows',a:5,i:1,w:4}
+  ];
+  $('#platformWeights').innerHTML=criteria.map((c,i)=>`<div class="weight-row"><label for="w${i}">${c.name}</label><input id="w${i}" type="range" min="0" max="5" value="${c.w}" data-i="${i}"><output>${c.w}</output></div>`).join('');
+  $$('#platformWeights input').forEach(inp=>inp.addEventListener('input',e=>{e.target.nextElementSibling.value=e.target.value;criteria[+e.target.dataset.i].w=+e.target.value;scorePlatforms();}));
+  function scorePlatforms(){let a=0,i=0,max=0;criteria.forEach(c=>{a+=c.a*c.w;i+=c.i*c.w;max+=5*c.w;});const ap=max?a/max*100:0,ip=max?i/max*100:0;$('#androidBar').style.width=ap+'%';$('#iosBar').style.width=ip+'%';$('#androidScore').value=Math.round(ap);$('#iosScore').value=Math.round(ip);let v='Wynik jest zbliżony - decyzję powinny rozstrzygnąć wymagania domenowe.';if(ap-ip>7)v='Rekomendacja: Android - większy zasięg i niższy próg wejścia są ważniejsze w tym profilu.';if(ip-ap>7)v='Rekomendacja: iOS - monetyzacja i ograniczona fragmentacja dominują w tym profilu.';$('#platformVerdict').textContent=v;} scorePlatforms();
+
+  // Generic tabs
+  $$('.tab[data-tabgroup]').forEach(btn=>btn.addEventListener('click',()=>{const g=btn.dataset.tabgroup;$$(`.tab[data-tabgroup="${g}"]`).forEach(b=>b.classList.remove('active'));$$(`[data-tabpanel="${g}"]`).forEach(p=>p.classList.remove('active'));btn.classList.add('active');$('#'+btn.dataset.target).classList.add('active');}));
+  $('#nullableName').addEventListener('input',e=>{$('#nullableResult').textContent=e.target.value.trim()||'Gość';});
+
+  // Lifecycle simulator
+  const lifecycle={
+    android:[['onCreate','Inicjalizacja UI, ViewModel i zależności. Nie uruchamiaj tu długich operacji na głównym wątku.'],['onStart','Activity jest widoczna, ale nie musi być interaktywna.'],['onResume','Ekran jest na pierwszym planie. Uruchom kamerę, sensory i animacje.'],['onPause','Ekran częściowo traci fokus. Szybko zatrzymaj zasoby wrażliwe na baterię.'],['onStop','Ekran jest niewidoczny. Zwolnij ciężkie zasoby i zatrzymaj obserwację UI.'],['onRestart','Powrót ze stanu zatrzymania przed kolejnym onStart.'],['onDestroy','Końcowe czyszczenie zasobów widoku. ViewModel może przetrwać zmianę konfiguracji.']],
+    ios:[['viewDidLoad','Jednorazowa konfiguracja widoku i powiązań.'],['viewWillAppear','Aktualizacja UI przed każdym pojawieniem.'],['viewDidAppear','Widok jest widoczny - można rozpocząć zadania wymagające obecności użytkownika.'],['viewWillDisappear','Zatrzymaj animacje i zapisz stan przed zniknięciem.'],['viewDidDisappear','Zwolnij ciężkie zasoby, anuluj timery i sensory.'],['task / onAppear','SwiftUI uruchamia zadanie przy pojawieniu i anuluje je przy usunięciu widoku.'],['deinit','Dealokacja obiektu i końcowe anulowanie zadań lub obserwatorów.']]
+  };
+  let currentOS='android',autoTimer;
+  function renderLifecycle(){const sm=$('#stateMachine');$$('.state-node',sm).forEach(n=>n.remove());lifecycle[currentOS].forEach((x,i)=>{const b=document.createElement('button');b.className='state-node';b.dataset.i=i;b.innerHTML=`<span>${x[0]}</span>`;b.addEventListener('click',()=>selectState(i));sm.append(b);});selectState(0);}
+  function selectState(i){$$('.state-node').forEach(n=>n.classList.toggle('active',+n.dataset.i===i));const s=lifecycle[currentOS][i];$('#stateInfo').innerHTML=`<div class="kicker">Stan ${i+1}/${lifecycle[currentOS].length}</div><h3>${s[0]}</h3><p>${s[1]}</p>`;$('#lifecycleScenario').textContent=i===2?'To właściwy moment na uruchomienie interakcji i zasobów wymagających aktywnego ekranu.':i>=3&&i<=4?'Zasoby należy zatrzymać, aby ograniczyć zużycie energii i ryzyko wycieków.':'Stan służy do zarządzania inicjalizacją, przejściem lub czyszczeniem.';}
+  $$('.lifecycle-tab').forEach(b=>b.addEventListener('click',()=>{$$('.lifecycle-tab').forEach(x=>x.classList.remove('active'));b.classList.add('active');currentOS=b.dataset.os;renderLifecycle();}));
+  $('#autoLifecycle').addEventListener('click',()=>{clearInterval(autoTimer);let i=0;selectState(i);autoTimer=setInterval(()=>{i++;if(i>=lifecycle[currentOS].length){clearInterval(autoTimer);return;}selectState(i);},720);}); renderLifecycle();
+
+  // Framework advisor
+  ['knowWeb','pixelPerfect','nativeApis','manyPlatforms'].forEach(id=>$('#'+id).addEventListener('change',recommendFramework));
+  function recommendFramework(){const web=$('#knowWeb').checked,pixel=$('#pixelPerfect').checked,native=$('#nativeApis').checked,many=$('#manyPlatforms').checked;let r='Natywne (Compose + SwiftUI)',reason='Najlepsze, gdy priorytetem są najnowsze API systemowe, maksymalna wydajność i platformowe UX.';if(native){r='Natywne (Compose + SwiftUI)';}else if(web){r='React Native';reason='Zespół może wykorzystać kompetencje React/TypeScript i zachować natywne komponenty UI.';}else if(pixel||many){r='Flutter';reason='Własny silnik renderowania zapewnia spójny wygląd, a jedna baza kodu obejmuje wiele platform.';}$('#frameworkVerdict').textContent=r;$('#frameworkReason').textContent=reason;}
+
+  // Architecture diagrams
+  const patterns={
+    MVC:{desc:'Controller pośredniczy między modelem i widokiem. W dużych aplikacjach grozi powstaniem Massive View Controller.',nodes:[['Model',120,135],['View',350,55],['Controller',350,215]],edges:[[0,2],[2,0],[2,1],[1,2]]},
+    MVP:{desc:'Presenter zna interfejs View, ale nie zależy od frameworka UI. Jest testowalny, kosztem większej liczby kontraktów.',nodes:[['Model',105,135],['Presenter',350,135],['View interface',595,135]],edges:[[0,1],[1,0],[1,2],[2,1]]},
+    MVVM:{desc:'ViewModel udostępnia stan, a View obserwuje go reaktywnie. ViewModel nie zna konkretnego widoku.',nodes:[['Model / Repository',105,135],['ViewModel',350,135],['View',595,135]],edges:[[0,1],[1,0],[1,2],[2,1]]},
+    MVI:{desc:'Jednokierunkowy przepływ: Event -> Intent -> Reducer -> State -> View. Zapewnia przewidywalność i łatwe odtwarzanie stanu.',nodes:[['View',90,135],['Intent',250,55],['Reducer',440,55],['State',610,135],['Effect',350,225]],edges:[[0,1],[1,2],[2,3],[3,0],[2,4],[4,0]]},
+    Clean:{desc:'Warstwy Presentation, Domain i Data. Zależności kierują się do środka - logika domenowa nie zna frameworków ani bazy.',nodes:[['Presentation',120,135],['Domain',350,135],['Data',580,135]],edges:[[0,1],[2,1]]}
+  };
+  let currentPattern='MVVM'; $('#patternList').innerHTML=Object.keys(patterns).map(k=>`<button class="pattern-btn ${k===currentPattern?'active':''}" data-pattern="${k}"><b>${k}</b></button>`).join('');
+  $$('.pattern-btn').forEach(b=>b.addEventListener('click',()=>{currentPattern=b.dataset.pattern;$$('.pattern-btn').forEach(x=>x.classList.toggle('active',x===b));drawArchitecture(currentPattern);}));
+  function drawArchitecture(name){const svg=$('#archSvg');const defs=svg.querySelector('defs').outerHTML;svg.innerHTML=defs;const p=patterns[name];p.edges.forEach(([a,b])=>{const A=p.nodes[a],B=p.nodes[b];svg.append(svgEl('path',{d:`M${A[1]} ${A[2]} L${B[1]} ${B[2]}`}));});p.nodes.forEach((n,i)=>{const g=svgEl('g');const r=svgEl('rect',{x:n[1]-75,y:n[2]-30,width:150,height:60,rx:15,class:`node ${i===1?'node-accent':''}`});const t=svgEl('text',{x:n[1],y:n[2]});t.textContent=n[0];g.append(r,t);svg.append(g);});$('#archDescription').textContent=p.desc;} drawArchitecture(currentPattern);
+
+  // Offline-first simulator
+  let online=true,articleId=2;let articles=[{id:1,title:'Architektura MVVM',synced:true},{id:2,title:'Kotlin Coroutines',synced:true}];
+  function log(msg){const d=new Date().toLocaleTimeString('pl-PL');$('#syncLog').innerHTML+=`[${d}] ${msg}<br>`;$('#syncLog').scrollTop=$('#syncLog').scrollHeight;}
+  function renderArticles(){$('#articleList').innerHTML=articles.map(a=>`<div class="article"><span>${a.title}</span><span class="sync-badge ${a.synced?'synced':''}">${a.synced?'zsynchronizowano':'kolejka'}</span></div>`).join('');$('#netState').textContent=online?'● online':'● offline';$('#netState').style.color=online?'var(--ok)':'var(--danger)';$('#toggleNetwork').textContent=online?'Wyłącz sieć':'Włącz sieć';}
+  $('#addArticle').addEventListener('click',()=>{articleId++;articles.unshift({id:articleId,title:'Nowy wpis '+articleId,synced:online});log(online?'Zapis lokalny i wysłanie do API.':'Zapis lokalny. Operacja dodana do kolejki synchronizacji.');renderArticles();});
+  $('#toggleNetwork').addEventListener('click',()=>{online=!online;log(online?'Połączenie przywrócone.':'Połączenie utracone - aplikacja działa z lokalnej bazy.');renderArticles();});
+  $('#syncNow').addEventListener('click',()=>{if(!online){log('Synchronizacja niemożliwa - brak sieci.');return;}const q=articles.filter(a=>!a.synced);q.forEach(a=>a.synced=true);log(q.length?`Wysłano ${q.length} operacji. Lokalna baza zaktualizowana.`:'Brak oczekujących zmian.');renderArticles();});renderArticles();log('Room/SwiftData załadował dane z pamięci lokalnej.');
+
+  // Test pyramid and CI
+  $$('.pyr').forEach(p=>p.addEventListener('click',()=>{const [h,d]=p.dataset.test.split('|');$('#testInfo').innerHTML=`<strong>${h}</strong><br>${d}`;}));
+  // Obsługa pipeline została rozszerzona w laboratorium poniżej.
+
+  // Performance budget
+  const budgets=[{id:'frame',name:'Czas klatki',min:5,max:35,val:14,unit:' ms',good:16.7,lower:true},{id:'startup',name:'Cold start',min:200,max:2200,val:650,unit:' ms',good:500,lower:true},{id:'battery',name:'Bateria / h w tle',min:0,max:10,val:2.5,unit:'%',good:3,lower:true},{id:'coverage',name:'Pokrycie logiki',min:0,max:100,val:62,unit:'%',good:60,lower:false}];
+  $('#budgetGrid').innerHTML=budgets.map(b=>`<div class="gauge"><b>${b.name}</b><div><output id="${b.id}Out">${b.val}${b.unit}</output></div><input id="${b.id}" type="range" min="${b.min}" max="${b.max}" step="${b.id==='battery'?0.5:1}" value="${b.val}" style="width:100%"><div class="gauge-meter"><span id="${b.id}Meter"></span></div></div>`).join('');
+  budgets.forEach(b=>$('#'+b.id).addEventListener('input',updateBudgets));
+  function updateBudgets(){let ok=0;budgets.forEach(b=>{const v=+$('#'+b.id).value;$('#'+b.id+'Out').textContent=v+b.unit;const pass=b.lower?v<=b.good:v>=b.good;if(pass)ok++;const pct=(v-b.min)/(b.max-b.min)*100;const m=$('#'+b.id+'Meter');m.style.width=pct+'%';m.style.background=pass?'var(--ok)':'var(--danger)';});$('#budgetVerdict').innerHTML=ok===budgets.length?'<strong>Budżet spełniony.</strong> Wszystkie kluczowe metryki mieszczą się w zakładanych granicach.':`<strong>${ok}/${budgets.length} metryk spełnia budżet.</strong> Najpierw zmierz profilerem, następnie optymalizuj wąskie gardło.`;}updateBudgets();
+
+  // Localization and accessibility
+  const localeData={pl:{title:'Artykuły',add:'Dodaj artykuł',items:n=>n===1?'1 artykuł':([2,3,4].includes(n)?`${n} artykuły`:`${n} artykułów`),dir:'ltr'},en:{title:'Articles',add:'Add article',items:n=>`${n} ${n===1?'article':'articles'}`,dir:'ltr'},ar:{title:'المقالات',add:'إضافة مقال',items:n=>`${n} مقالات`,dir:'rtl'}};
+  ['localeSelect','itemCount'].forEach(id=>$('#'+id).addEventListener('input',updateLocale));
+  function updateLocale(){const l=localeData[$('#localeSelect').value],n=+$('#itemCount').value;$('#itemCountOut').value=n;const c=$('#localeCard');c.dir=l.dir;c.innerHTML=`<h3>${l.title}</h3><p>${l.items(n)}</p><button class="primary">${l.add}</button>`;}updateLocale();
+  $('#favBtn').addEventListener('click',e=>{const pressed=e.currentTarget.getAttribute('aria-pressed')==='true';e.currentTarget.setAttribute('aria-pressed',String(!pressed));e.currentTarget.setAttribute('aria-label',pressed?'Dodaj do ulubionych':'Usuń z ulubionych');e.currentTarget.textContent=pressed?'♡ Dodaj do ulubionych':'♥ Usuń z ulubionych';});
+
+  // Security cards
+  const risks=[['M1','Niewłaściwe użycie poświadczeń','Klucze API i hasła w kodzie.','Secrets w CI, Keystore/Keychain, proxy serwerowe.'],['M2','Łańcuch dostaw','Podatne lub niezaufane zależności.','Dependabot/Renovate, SBOM i pinning wersji.'],['M3','Słabe uwierzytelnianie','Długowieczne tokeny i brak bezpiecznego logowania.','OAuth 2.0 + PKCE, biometria, krótkie tokeny.'],['M4','Brak walidacji','Niebezpieczne wejścia, WebView i zapytania.','Walidacja, parametryzowane zapytania, minimalny WebView.'],['M5','Niebezpieczna komunikacja','HTTP lub niewłaściwa walidacja TLS.','TLS, ATS/Network Security Config, selektywny pinning.'],['M6','Kontrola prywatności','Nadmiar uprawnień i PII w logach.','Minimalizacja danych, consent management, redakcja logów.'],['M7','Ochrona binarna','Łatwa inżynieria wsteczna i sekrety w APK.','R8/ProGuard, hardening i brak sekretów w kliencie.'],['M8','Błędna konfiguracja','Debug lub backup w produkcji.','Profile release, debuggable=false, kontrola backupu.']];
+  $('#securityGrid').innerHTML=risks.map(r=>`<div class="security" tabindex="0"><b>${r[0]} · ${r[1]}</b><span>${r[2]}</span><div class="mitigation">Mitigacja: ${r[3]}</div></div>`).join('');
+  $$('.security').forEach(c=>{const toggle=()=>c.classList.toggle('open');c.addEventListener('click',toggle);c.addEventListener('keydown',e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();toggle();}});});
+
+  // Project checklist and grade
+  const reqs=['Działa na fizycznym smartfonie','Wykorzystuje co najmniej 2 funkcje natywne','Integruje backend i uwierzytelnianie','Realizuje przepływ end-to-end','Minimum 20 zamkniętych issues i 2 milestone','Pull requesty i code review','CI: build i testy przy każdym PR','Testy jednostkowe - co najmniej 60% logiki','Minimum 5 testów integracyjnych API','Dokumentacja OpenAPI/Swagger','Podpisany build AAB/APK','Materiały i polityka prywatności do Google Play','Próba publikacji w kanale testowym lub produkcyjnym','5-minutowe demo i prezentacja CI/CD'];
+  const savedChecks=JSON.parse(storage.get('pam-project-checks')||'[]');
+  $('#projectChecklist').innerHTML=reqs.map((r,i)=>`<div class="check-item"><input id="req${i}" type="checkbox" ${savedChecks[i]?'checked':''}><label for="req${i}">${i+1}. ${r}</label></div>`).join('');
+  $$('#projectChecklist input').forEach((c,i)=>c.addEventListener('change',()=>{const state=$$('#projectChecklist input').map(x=>x.checked);storage.set('pam-project-checks',JSON.stringify(state));updateProject();}));
+  function updateProject(){const cs=$$('#projectChecklist input'),n=cs.filter(c=>c.checked).length;cs.forEach(c=>c.parentElement.classList.toggle('done',c.checked));$('#projectProgress').style.width=n/cs.length*100+'%';$('#projectProgressText').textContent=`${n}/${cs.length}`;}updateProject();
+  ['examScore','teamScore','individualScore'].forEach(id=>$('#'+id).addEventListener('input',updateGrade));
+  function updateGrade(){const e=+$('#examScore').value,t=+$('#teamScore').value,i=+$('#individualScore').value;$('#examOut').value=e;$('#teamOut').value=t;$('#individualOut').value=i;const pct=e*.4+t*.24+i*.36;let grade=2;if(pct>=90)grade=5;if(pct>=82&&pct<90)grade=4.5;if(pct>=74&&pct<82)grade=4;if(pct>=66&&pct<74)grade=3.5;if(pct>=50&&pct<66)grade=3;$('#gradeValue').textContent=grade.toFixed(1);$('#gradePercent').textContent=pct.toFixed(1).replace('.',',')+'%';}updateGrade();
+
+
+  // Dodatkowe laboratoria dydaktyczne
+  function sleep(ms){ return new Promise(resolve=>setTimeout(resolve,ms)); }
+
+  // Model czynników wzrostu rynku
+  function updateGrowthModel(){
+    const a=+$('#adoption').value,c=+$('#connectivity').value,d=+$('#distribution').value;
+    $('#adoptionOut').value=a+'%'; $('#connectivityOut').value=c+'%'; $('#distributionOut').value=d+'%';
+    const reach=Math.round(.72*a+.18*d+.10*c);
+    const usage=Math.round(.25*a+.55*c+.20*d);
+    const revenue=Math.round(.20*a+.25*c+.55*d);
+    [['reach',reach],['usage',usage],['revenue',revenue]].forEach(([id,v])=>{ $('#'+id+'Bar').style.width=v+'%'; $('#'+id+'Out').value=v; });
+    const bottleneck=[['penetracja urządzeń',a],['łączność',c],['dystrybucja i płatności',d]].sort((x,y)=>x[1]-y[1])[0];
+    $('#growthExplanation').innerHTML=`<strong>Wąskie gardło: ${bottleneck[0]} (${bottleneck[1]}%).</strong> W ekosystemie komplementarnym niski poziom jednego elementu ogranicza wykorzystanie pozostałych. Sam szybki internet nie wystarczy bez urządzeń i sprawnej dystrybucji.`;
+  }
+  ['adoption','connectivity','distribution'].forEach(id=>$('#'+id)?.addEventListener('input',updateGrowthModel)); updateGrowthModel();
+
+  // Presety decyzji platformowej
+  const platformPresets={mass:[5,2,5,1,5,5],premium:[3,5,2,5,2,1],lab:[4,1,5,2,4,5],device:[5,2,3,1,5,4]};
+  $$('.platform-preset').forEach(btn=>btn.addEventListener('click',()=>{
+    const values=platformPresets[btn.dataset.preset];
+    values.forEach((v,i)=>{ criteria[i].w=v; const input=$('#w'+i); input.value=v; input.nextElementSibling.value=v; });
+    $$('.platform-preset').forEach(b=>b.classList.toggle('active',b===btn)); scorePlatforms();
+  }));
+
+  // Toolchain simulator
+  let toolStep=0, toolBusy=false;
+  const toolSteps=[['edit','Zapisano zmianę w kodzie źródłowym.'],['deps','Gradle/SPM rozwiązuje graf zależności i korzysta z pliku lock.'],['build','Kompilator sprawdza typy i tworzy artefakt aplikacji.'],['run','Artefakt zainstalowano na emulatorze; uruchomiono proces aplikacji.'],['profile','Profiler rejestruje CPU, pamięć, sieć i czas klatek.']];
+  function resetToolchain(){toolStep=0; $$('#toolchainFlow .process-node').forEach(n=>n.className='process-node'); $('#toolchainConsole').textContent='$ Projekt gotowy do budowania.';}
+  async function executeToolStep(){
+    if(toolBusy || toolStep>=toolSteps.length) return;
+    toolBusy=true; const [key,msg]=toolSteps[toolStep]; const node=$(`#toolchainFlow [data-step="${key}"]`); node.classList.add('active');
+    $('#toolchainConsole').textContent+=`\n> ${msg}`; await sleep(420);
+    if(key==='build' && $('#compileError').checked){ node.classList.remove('active'); node.classList.add('error'); $('#toolchainConsole').textContent+='\n! Build przerwany: Unresolved reference. Napraw kod przed uruchomieniem.'; toolStep=toolSteps.length; toolBusy=false; return; }
+    node.classList.remove('active'); node.classList.add('done'); toolStep++; toolBusy=false;
+  }
+  $('#stepToolchain')?.addEventListener('click',()=>{ if(toolStep>=toolSteps.length) resetToolchain(); executeToolStep(); });
+  $('#runToolchain')?.addEventListener('click',async()=>{ resetToolchain(); while(toolStep<toolSteps.length){ await executeToolStep(); if($('#compileError').checked && toolStep>=toolSteps.length) break; await sleep(120); } });
+  $('#compileError')?.addEventListener('change',resetToolchain);
+  function fillThreadTrack(id,mode){ const el=$('#'+id); el.innerHTML=''; for(let i=0;i<12;i++){const b=document.createElement('span');b.className='thread-block';if(mode==='blocking'&&i>=3&&i<=8)b.classList.add('blocked');else if(mode==='async'&&(i===2||i===9))b.classList.add('work');else if(i%2===0)b.classList.add('work');if(mode==='blocking'&&i>=4&&i<=8)b.classList.add('frame-drop');el.append(b);} }
+  $('#simulateThreads')?.addEventListener('click',()=>{fillThreadTrack('blockingTrack','blocking');fillThreadTrack('asyncTrack','async');$('#threadVerdict').textContent='Blokowanie utraciło 5 klatek; wariant async zachował responsywność UI.';});
+  fillThreadTrack('blockingTrack','idle'); fillThreadTrack('asyncTrack','idle');
+
+  // Zdarzenia cyklu życia
+  const lifecycleEventSequences={
+    android:{launch:[0,1,2],home:[3,4],return:[5,1,2],interrupt:[3,2],rotate:[3,4,6,0,1,2],back:[3,4,6],memory:[3,4],process:[3,4,6,0,1,2]},
+    ios:{launch:[0,1,2],home:[3,4],return:[1,2],interrupt:[3,2],rotate:[3,1,2],back:[3,4,6],memory:[3,4],process:[3,4,6,0,1,2]}
+  };
+  const lifecycleScenarios={normal:['launch','home','return'],interrupt:['launch','interrupt'],rotation:['launch','rotate'],restore:['launch','home','process']};
+  const lifecycleEventLabels={launch:'Uruchomienie aplikacji',home:'Przejście do tła',return:'Powrót do aplikacji',interrupt:'Chwilowa utrata fokusu',rotate:'Zmiana konfiguracji',back:'Zamknięcie ekranu',memory:'Presja pamięci',process:'Zabicie i odtworzenie procesu'};
+  let lifecycleEventBusy=false;
+  let eventEnergy=0;
+  function lifecycleStateMeta(i){
+    if(i===2)return {visibility:'pierwszy plan',process:'aktywny',data:'w pamięci',active:true,action:'uruchom zasoby interaktywne'};
+    if(i===1||i===3)return {visibility:'częściowo widoczny',process:'aktywny',data:'w pamięci',active:false,action:'wstrzymaj zasoby wymagające fokusu'};
+    if(i===4)return {visibility:'tło / niewidoczny',process:'aktywny',data:'zachowany',active:false,action:'zwolnij ciężkie zasoby'};
+    if(i===6)return {visibility:'brak widoku',process:'może zostać zakończony',data:'model / saved state',active:false,action:'usuń obserwatory widoku'};
+    return {visibility:'inicjalizacja / przejście',process:'aktywny',data:'zachowany',active:false,action:'nie uruchamiaj kosztownych zasobów'};
+  }
+  function setResources(active,leak=false){
+    const resourceOn=active||leak;
+    [['resCamera','Kamera'],['resLocation','Lokalizacja'],['resAnimation','Animacje']].forEach(([id,label])=>{const e=$('#'+id);e.classList.toggle('on',resourceOn&&!leak);e.classList.toggle('warn',leak);e.textContent=`${label}: ${resourceOn?(label==='Animacje'?'aktywne':'włączona'):(label==='Animacje'?'zatrzymane':'wyłączona')}`;});
+  }
+  function renderEventTimeline(seq,event){
+    $('#eventTimelineTitle').textContent=lifecycleEventLabels[event]||'Sekwencja';
+    $('#eventTimeline').innerHTML=seq.map((i,n)=>{const meta=lifecycleStateMeta(i),name=lifecycle[currentOS][i][0];return `<div class="callback-step" data-step="${n}"><span class="step-no">${n+1}</span><div><b>${name}</b><small>${meta.action}</small></div></div>`;}).join('');
+  }
+  function updateEventDashboard(i,event,leak=false){
+    const meta=lifecycleStateMeta(i),name=lifecycle[currentOS][i][0];
+    $('#eventCurrentState').textContent=name; $('#eventVisibility').textContent=meta.visibility; $('#eventProcess').textContent=meta.process; $('#eventDataState').textContent=meta.data;
+    $('#eventHeadline').textContent=lifecycleEventLabels[event]||'Zdarzenie systemowe';
+    const load=meta.active?72:(leak?92:14); eventEnergy=Math.round(eventEnergy*.55+load*.45); const bar=$('#eventEnergyBar');bar.style.width=eventEnergy+'%';bar.style.background=eventEnergy>70?'var(--danger)':eventEnergy>38?'var(--amber)':'var(--ok)';
+    if(leak){$('#eventAssessment').innerHTML='<strong>Błąd zarządzania zasobami.</strong> Ekran nie jest aktywny, ale kamera, lokalizacja lub animacje nadal pracują. Skutkiem może być zużycie baterii, naruszenie prywatności i wyciek zasobów.';}
+    else if(meta.active){$('#eventAssessment').innerHTML='<strong>Stan aktywny.</strong> Można uruchomić zasoby wymagające interakcji użytkownika, ale ich czas życia powinien być związany z tym stanem.';}
+    else{$('#eventAssessment').innerHTML='<strong>Stan nieaktywny.</strong> Zasoby kosztowne są zatrzymane, a stan domenowy pozostaje zachowany poza obiektem widoku.';}
+    $('#resData').textContent=`Stan danych: ${meta.data}`;
+  }
+  function setEventControlsDisabled(disabled){$$('#lifecycleEvents .event-btn').forEach(b=>b.disabled=disabled);$('#runSystemScenario').disabled=disabled;$('#resetSystemEvents').disabled=disabled;}
+  async function runSystemEvent(event,sourceButton=null){
+    if(lifecycleEventBusy)return; lifecycleEventBusy=true;setEventControlsDisabled(true);$$('#lifecycleEvents .event-btn').forEach(b=>b.classList.toggle('active',b===sourceButton));
+    const seq=lifecycleEventSequences[currentOS][event]||[];renderEventTimeline(seq,event);$('#lifecycleLog').textContent=`Zdarzenie: ${lifecycleEventLabels[event]}\n`;
+    for(let n=0;n<seq.length;n++){
+      const i=seq[n],meta=lifecycleStateMeta(i),leak=$('#resourceLeakMode').checked&&!meta.active&&i>=3&&i<=4;
+      $$('#eventTimeline .callback-step').forEach((el,k)=>{el.classList.toggle('active',k===n);el.classList.toggle('done',k<n);});
+      selectState(i);setResources(meta.active,leak);updateEventDashboard(i,event,leak);$('#lifecycleLog').textContent+=`→ ${lifecycle[currentOS][i][0]}: ${meta.action}${leak?' [BŁĄD: zasoby nadal aktywne]':''}\n`;await sleep(520);
+    }
+    $$('#eventTimeline .callback-step').forEach(el=>{el.classList.remove('active');el.classList.add('done');});
+    if(event==='process') $('#lifecycleLog').textContent+='→ stan ekranu odtworzony z ViewModelu / saved state\n';
+    if(event==='memory') $('#lifecycleLog').textContent+='→ cache obrazów zwolniony; dane domenowe pozostają\n';
+    setEventControlsDisabled(false);$$('#lifecycleEvents .event-btn').forEach(b=>b.classList.remove('active'));lifecycleEventBusy=false;
+  }
+  $$('#lifecycleEvents .event-btn').forEach(btn=>btn.addEventListener('click',()=>runSystemEvent(btn.dataset.event,btn)));
+  $('#runSystemScenario')?.addEventListener('click',async()=>{if(lifecycleEventBusy)return;const events=lifecycleScenarios[$('#systemScenario').value]||[];for(const event of events){await runSystemEvent(event,$(`#lifecycleEvents [data-event="${event}"]`));await sleep(260);}});
+  function resetSystemEvents(){eventEnergy=0;setResources(false,false);$('#eventEnergyBar').style.width='0%';$('#eventCurrentState').textContent='—';$('#eventVisibility').textContent='niewidoczny';$('#eventProcess').textContent='aktywny';$('#eventDataState').textContent='zachowany';$('#eventHeadline').textContent='Symulacja oczekuje na zdarzenie';$('#eventTimelineTitle').textContent='Brak aktywnej sekwencji';$('#eventTimeline').innerHTML='<div class="callback-step"><span class="step-no">1</span><div><b>Wybierz zdarzenie</b><small>Tutaj pojawią się kolejne wywołania systemowe i zalecane działania.</small></div></div>';$('#eventAssessment').textContent='Na pierwszym planie zasoby mogą być aktywne. Po utracie widoczności należy je zatrzymać.';$('#lifecycleLog').textContent='Wybierz zdarzenie systemowe.';}
+  $('#resetSystemEvents')?.addEventListener('click',resetSystemEvents);$('#resourceLeakMode')?.addEventListener('change',()=>{eventEnergy=0;$('#eventEnergyBar').style.width='0%';});resetSystemEvents();
+
+  // Deklaratywny UI
+  let uiState={count:0,loading:false,dark:false};
+  function pulseTree(nodes,message){$$('#renderTree .tree-node').forEach(n=>n.classList.remove('recomposed'));nodes.forEach(id=>$('#renderTree [data-node="'+id+'"]').classList.add('recomposed'));$('#renderExplanation').innerHTML=message;setTimeout(()=>$$('#renderTree .tree-node').forEach(n=>n.classList.remove('recomposed')),650);}
+  function renderMockUi(){ $('#uiCounter').textContent=uiState.count; $('#uiStatus').textContent=uiState.loading?'Ładowanie…':'Gotowe'; $('#mockUi').classList.toggle('dark-preview',uiState.dark); }
+  $('#uiAction')?.addEventListener('click',()=>{uiState.count++;renderMockUi();pulseTree(['counter'],'<strong>Zmieniono count.</strong> Rekomponowany jest tekst licznika. Reszta drzewa może zostać pominięta, jeżeli parametry są stabilne.');});
+  $('#toggleLoading')?.addEventListener('click',()=>{uiState.loading=!uiState.loading;renderMockUi();pulseTree(['status','button'],'<strong>Zmieniono loading.</strong> Status i dostępność akcji zależą od tego pola stanu.');});
+  $('#toggleUiTheme')?.addEventListener('click',()=>{uiState.dark=!uiState.dark;renderMockUi();pulseTree(['root','screen','title','counter','status','button'],'<strong>Zmieniono motyw.</strong> Wartość środowiskowa wpływa na całe poddrzewo, dlatego aktualizacja jest szersza.');});
+  $('#resetUiState')?.addEventListener('click',()=>{uiState={count:0,loading:false,dark:false};renderMockUi();pulseTree(['root','screen','counter','status'],'<strong>Reset stanu.</strong> UI ponownie wynika wyłącznie z aktualnego modelu.');});
+
+  // Przepływ architektoniczny
+  const archFlows={MVC:['View','Controller','Model','Controller','View'],MVP:['View interface','Presenter','Model','Presenter','View interface'],MVVM:['View','ViewModel','Model / Repository','ViewModel','View'],MVI:['View','Intent','Reducer','State','View'],Clean:['Presentation','Domain','Data','Domain','Presentation']};
+  function clearArchHighlight(){ $$('#archSvg g').forEach(g=>g.classList.remove('flow-active')); }
+  function highlightArchLabel(label){ clearArchHighlight(); const g=$$('#archSvg g').find(g=>$('text',g)?.textContent===label); if(g)g.classList.add('flow-active'); }
+  async function runArchitectureFlow(error=false){
+    const flow=archFlows[currentPattern]; $('#archTrace').innerHTML=flow.map((s,i)=>`<span class="trace-step" data-i="${i}">${s}</span>${i<flow.length-1?'<span class="trace-arrow">→</span>':''}`).join('');
+    for(let i=0;i<flow.length;i++){ $$('.trace-step').forEach(x=>x.classList.toggle('active',+x.dataset.i===i)); highlightArchLabel(flow[i]); await sleep(480); if(error && i===2){ $('#archFlowExplanation').innerHTML=`<strong>Błąd w warstwie danych.</strong> ${currentPattern==='MVI'?'Reducer tworzy stan błędu bez efektu ubocznego w View.':'Warstwa pośrednia mapuje wyjątek na stan prezentacji, zamiast przekazywać surowy błąd do UI.'}`; break; } }
+    if(!error) $('#archFlowExplanation').innerHTML='<strong>Przepływ zakończony.</strong> Odpowiedź wróciła do UI jako stan, który można wyrenderować i przetestować.';
+    setTimeout(clearArchHighlight,800);
+  }
+  $('#runArchFlow')?.addEventListener('click',()=>runArchitectureFlow(false)); $('#runArchError')?.addEventListener('click',()=>runArchitectureFlow(true));
+
+  // Konflikty synchronizacji
+  let conflict={active:false,local:1,server:1,queue:0};
+  function updateConflictUi(){ $('#networkLatencyOut').value=$('#networkLatency').value+' ms'; $('#queueCount').textContent=conflict.queue; $('#localRev').textContent=conflict.local; $('#serverRev').textContent=conflict.server; $('#conflictState').textContent=conflict.active?'konflikt':'spójny'; $('#localVersion').classList.toggle('conflict',conflict.active);$('#serverVersion').classList.toggle('conflict',conflict.active); }
+  $('#networkLatency')?.addEventListener('input',updateConflictUi);
+  $('#createConflict')?.addEventListener('click',()=>{conflict.active=true;conflict.local++;conflict.server++;conflict.queue=1;$('#localVersion p').textContent='Tytuł: Architektura offline-first';$('#serverVersion p').textContent='Tytuł: Architektura aplikacji mobilnych';$('#conflictExplanation').innerHTML='<strong>Konflikt wykryty.</strong> Lokalny użytkownik i serwer zmodyfikowali ten sam rekord od wspólnej wersji bazowej.';updateConflictUi();});
+  $('#resolveConflict')?.addEventListener('click',async()=>{if(!conflict.active){$('#conflictExplanation').textContent='Nie ma konfliktu do rozwiązania.';return;}$('#conflictExplanation').textContent='Synchronizacja…';await sleep(+$('#networkLatency').value);const s=$('#conflictStrategy').value;let title;if(s==='server')title='Architektura aplikacji mobilnych';if(s==='local')title='Architektura offline-first';if(s==='merge')title='Architektura aplikacji mobilnych offline-first';$('#localVersion p').textContent='Tytuł: '+title;$('#serverVersion p').textContent='Tytuł: '+title;conflict.active=false;conflict.queue=0;const rev=Math.max(conflict.local,conflict.server)+1;conflict.local=conflict.server=rev;$('#conflictExplanation').innerHTML=`<strong>Konflikt rozwiązany strategią: ${$('#conflictStrategy').selectedOptions[0].textContent}.</strong> Obie strony mają teraz rewizję ${rev}.`;updateConflictUi();}); updateConflictUi();
+
+  // Portfel testów
+  function updateTestMix(){
+    const u=+$('#unitTests').value,i=+$('#integrationTests').value,e=+$('#uiTests').value;
+    $('#unitTestsOut').value=u;$('#integrationTestsOut').value=i;$('#uiTestsOut').value=e;
+    const time=u*.08+i*.7+e*4.2, cost=u*.25+i*1.4+e*4.8;
+    const confidence=Math.min(98,Math.round(100*(1-Math.exp(-(u*.012+i*.045+e*.11)))));
+    $('#testTime').textContent=time.toFixed(1)+' s';$('#testCost').textContent=Math.round(cost);$('#testConfidence').textContent=confidence+'%';
+    const values=[['unitLayer',u,'jednostkowe'],['integrationLayer',i,'integracyjne'],['uiLayer',e,'UI / E2E']],total=u+i+e;
+    values.forEach(([id,value,label])=>{const layer=$('#'+id),pct=total?value/total*100:0;layer.style.setProperty('--size',pct+'%');layer.classList.toggle('zero',value===0);layer.textContent=value?`${label}: ${value} (${pct.toFixed(0)}%)`:'';layer.setAttribute('aria-label',`${label}: ${value} testów, ${pct.toFixed(1)} procent portfela`);});
+    let msg='Portfel jest zrównoważony.'; if(total===0)msg='Brak testów oznacza brak automatycznej informacji o regresjach.'; else if(e>i)msg='Za dużo testów UI: pipeline będzie wolny i bardziej podatny na niestabilność.'; else if(i===0||e===0)msg='Brakuje warstwy sprawdzającej współdziałanie lub pełny przepływ użytkownika.'; else if(u<i*2)msg='Warto zwiększyć liczbę tanich testów jednostkowych.'; else if(u>100&&i<8)msg='Duża liczba testów jednostkowych nie zastępuje weryfikacji integracji z bazą, siecią i systemem.';
+    $('#testMixExplanation').innerHTML=`<strong>Wniosek:</strong> ${msg}<br><small>Wysokość warstw pokazuje udział liczbowy testów. Czas CI i koszt utrzymania uwzględniają większy koszt testów integracyjnych oraz UI.</small>`;
+  }
+  ['unitTests','integrationTests','uiTests'].forEach(id=>$('#'+id)?.addEventListener('input',updateTestMix)); updateTestMix();
+
+  // Rozszerzony pipeline
+  const originalPipelineButton=$('#runPipeline');
+  if(originalPipelineButton){
+    const clone=originalPipelineButton.cloneNode(true); originalPipelineButton.replaceWith(clone);
+    clone.addEventListener('click',async()=>{const stages=$$('.stage');stages.forEach(s=>{s.className='stage';$('.status',s).textContent='oczekuje';});clone.disabled=true;let elapsed=0;const fail=+$('#failureStage').value;const cache=$('#useCache').checked;const durations=[350,420,850,720,310].map((v,i)=>cache&&i===0?v*.45:v);for(let i=0;i<stages.length;i++){const s=stages[i];s.classList.add('running');$('.status',s).textContent='uruchomiono';await sleep(durations[i]);elapsed+=durations[i];$('#pipelineTime').textContent='czas: '+(elapsed/1000).toFixed(1).replace('.',',')+' s';if(i===fail){s.classList.remove('running');s.classList.add('failed');$('.status',s).textContent='błąd - pipeline zatrzymany';break;}s.classList.remove('running');s.classList.add('done');$('.status',s).textContent='zakończono';}clone.disabled=false;});
+  }
+
+  // Symulator klatek
+  function updateFrames(){
+    const loads={json:$('#loadJson').checked?9:0,image:$('#loadImage').checked?7:0,effects:$('#loadEffects').checked?5:0,list:$('#loadList').checked?2:0}; const vals=[];
+    for(let i=0;i<20;i++){let ms=7+loads.list+(i%5===0?loads.image:0)+(i%4===1?loads.effects:0)+(i===7||i===8?loads.json:0)+((i*7)%5);vals.push(ms);}
+    $('#frameBars').innerHTML=vals.map(v=>`<span class="frame ${v>16.7?'slow':''}" data-ms="${v.toFixed(0)} ms" style="height:${Math.min(100,v/32*100)}%"></span>`).join('');const slow=vals.filter(v=>v>16.7).length,sorted=[...vals].sort((a,b)=>a-b),p95=sorted[Math.floor(.95*(sorted.length-1))];$('#jankCount').textContent=`${slow}/20`;$('#frameP95').textContent=p95.toFixed(1)+' ms';
+  }
+  ['loadJson','loadImage','loadEffects','loadList'].forEach(id=>$('#'+id)?.addEventListener('change',updateFrames)); updateFrames();
+  $('#fontScale')?.addEventListener('input',e=>{$('#fontScaleOut').value=e.target.value+'%';$('#a11yPreview').style.fontSize=e.target.value+'%';});
+  $('#highContrast')?.addEventListener('change',e=>$('#a11yPreview').classList.toggle('high-contrast',e.target.checked));
+
+  // Model ryzyka
+  function updateRisk(){const reduction=$$('.security-control:checked').reduce((s,e)=>s+(+e.dataset.reduction),0);const risk=Math.max(8,100-reduction);$('#riskBar').style.width=risk+'%';$('#riskValue').textContent=risk+'%';let txt=risk>70?'Ryzyko wysokie: jedna utrata urządzenia lub atak sieciowy może ujawnić sesję i dane.':risk>35?'Ryzyko średnie: istnieje kilka warstw ochrony, lecz pozostają istotne ścieżki ataku.':'Ryzyko niskie, ale niezerowe: zabezpieczenia ograniczają skutki pojedynczej awarii.';$('#riskExplanation').textContent=txt;}
+  $$('.security-control').forEach(e=>e.addEventListener('change',updateRisk)); updateRisk();
+
+  // Mapa kompetencji
+  const roleSkills={android:{vals:[90,78,72,62,48,42],advice:'Zbuduj 2 aplikacje w Kotlinie: jedną offline-first i jedną wykorzystującą sensor lub aparat.'},ios:{vals:[90,78,70,60,48,42],advice:'Pokaż SwiftUI, async/await, SwiftData oraz testy XCTest w działającym projekcie.'},cross:{vals:[82,72,68,70,58,52],advice:'Oprócz wspólnego UI pokaż co najmniej jeden moduł natywny i proces wydania na dwie platformy.'},lead:{vals:[75,92,88,90,86,82],advice:'Największą wartość mają decyzje architektoniczne, pomiary jakości, mentoring i dowody skutecznego procesu dostarczania.'}};
+  const skillNames=['Język i SDK','Architektura','Testy','CI/CD','Wydajność','Bezpieczeństwo'];
+  function updateCareer(){const r=roleSkills[$('#careerRole').value];$('#skillBars').innerHTML=skillNames.map((n,i)=>`<div class="skill-bar"><span>${n}</span><div class="barline"><span style="width:${r.vals[i]}%;--c:${i%2?'var(--brand-2)':'var(--brand)'}"></span></div><output>${r.vals[i]}</output></div>`).join('');$('#careerAdvice').innerHTML='<strong>Rekomendowane portfolio.</strong> '+r.advice;}
+  $('#careerRole')?.addEventListener('change',updateCareer); updateCareer();
+
+  // Kanban i limit WIP
+  let kanbanTasks=[{id:1,title:'Logowanie i token JWT',col:'backlog',pts:3},{id:2,title:'Ekran listy offline-first',col:'doing',pts:5},{id:3,title:'Pipeline build + test',col:'done',pts:3},{id:4,title:'Integracja aparatu',col:'backlog',pts:5,blocked:true}];let nextTaskId=5;
+  function renderKanban(){
+    ['backlog','doing','done'].forEach(col=>{const el=$(`#kanbanBoard [data-col="${col}"] .kanban-items`),items=kanbanTasks.filter(t=>t.col===col);el.innerHTML=items.map(t=>`<div class="task-card ${t.blocked?'blocked':''}" data-task="${t.id}"><b>${t.title}</b><small>${t.pts} SP${t.blocked?' · zablokowane':''}</small></div>`).join('');$(`#kanbanBoard [data-col="${col}"] .kanban-count`).textContent=items.length;});
+    $$('.task-card').forEach(card=>card.addEventListener('click',()=>moveKanban(+card.dataset.task)));
+    const doing=kanbanTasks.filter(t=>t.col==='doing').length,limit=+$('#wipLimit').value,done=kanbanTasks.filter(t=>t.col==='done').reduce((s,t)=>s+t.pts,0);$('#wipLimitOut').value=limit;$('#sprintForecast').textContent=doing>limit?'Przekroczony WIP: dokończ pracę przed rozpoczęciem następnej.':`Dostarczono ${done} SP; WIP ${doing}/${limit}.`;
+  }
+  function moveKanban(id){const t=kanbanTasks.find(x=>x.id===id);if(t.blocked&&t.col==='doing'){t.blocked=false;renderKanban();return;}const order=['backlog','doing','done'];const next=order[(order.indexOf(t.col)+1)%3];if(next==='doing'&&kanbanTasks.filter(x=>x.col==='doing').length>=+$('#wipLimit').value){$('#sprintForecast').textContent='Nie można rozpocząć: osiągnięto limit WIP.';return;}t.col=next;renderKanban();}
+  $('#addKanbanTask')?.addEventListener('click',()=>{kanbanTasks.push({id:nextTaskId,title:'Nowe zadanie '+nextTaskId,col:'backlog',pts:[2,3,5][nextTaskId%3]});nextTaskId++;renderKanban();});$('#wipLimit')?.addEventListener('input',renderKanban);renderKanban();
+
+
+  // Tryby automatyczne symulatorów
+  const autoControllers = new Map();
+  const autoInteractiveSelector = 'button,input,select,textarea,[role="button"],.state-node,.task-card,.pattern-btn,.pyr';
+
+  function makeAutoControl(id,label){
+    const el=document.createElement('div');
+    el.className='auto-control'; el.dataset.state='waiting';
+    el.innerHTML=`<span class="auto-indicator" aria-hidden="true"></span><div class="auto-control-copy"><strong>Tryb auto</strong><small data-auto-status>Włączony · czeka na widoczność</small></div><label class="switch auto-switch" title="Włącz lub wyłącz tryb automatyczny"><input id="auto-${id}" type="checkbox" checked aria-label="Tryb auto: ${label}"><span></span></label>`;
+    return el;
+  }
+  function mountLabAuto(lab,control){
+    const head=$('.lab-head',lab); if(!head){ lab.prepend(control); return; }
+    let actions=$('.lab-actions',head);
+    if(!actions){ actions=document.createElement('div');actions.className='lab-actions';const badge=$('.lab-badge',head);if(badge)actions.append(badge);head.append(actions); }
+    actions.append(control);
+  }
+  function makeAutoToolbar(afterEl=null,parent=null){
+    const bar=document.createElement('div');bar.className='auto-toolbar';
+    if(afterEl)afterEl.insertAdjacentElement('afterend',bar); else if(parent)parent.prepend(bar);
+    return bar;
+  }
+  function createAutoController({id,label,container,runner,manualRoots=[],mount}){
+    if(!container||!runner||autoControllers.has(id))return null;
+    const control=makeAutoControl(id,label),toggle=$('input',control),status=$('[data-auto-status]',control);
+    if(mount)mount(control); else mountLabAuto(container,control);
+    let enabled=true,visible=false,revision=0,loopPromise=null,manualReason=false;
+    const roots=[container,...manualRoots].filter(Boolean);
+    const setVisual=(state,message)=>{control.dataset.state=state;status.textContent=message;};
+    const isInteractive=e=>e.target instanceof Element&&!!e.target.closest(autoInteractiveSelector);
+    const disable=(reason='toggle')=>{
+      if(!enabled&&reason!=='manual')return;
+      enabled=false;toggle.checked=false;revision++;manualReason=reason==='manual';
+      setVisual('off',manualReason?'Wyłączony po ręcznej zmianie':'Wyłączony');
+    };
+    const wait=async(ms,token)=>{
+      const end=performance.now()+ms;
+      while(performance.now()<end&&enabled&&visible&&token===revision) await sleep(Math.min(90,Math.max(16,end-performance.now())));
+    };
+    const schedule=()=>{
+      if(!enabled||!visible||loopPromise)return;
+      const token=revision;
+      loopPromise=(async()=>{
+        while(enabled&&visible&&token===revision){
+          setVisual('running','Aktywny · prezentacja w pętli');
+          const ctx={active:()=>enabled&&visible&&token===revision,wait:ms=>wait(ms,token),status:msg=>{if(token===revision)setVisual('running',msg);}};
+          try{await runner(ctx);}catch(err){console.error(`Auto ${id}:`,err);setVisual('off','Błąd symulacji');enabled=false;toggle.checked=false;break;}
+          if(!ctx.active())break;
+          setVisual('waiting','Włączony · ponowienie za chwilę');
+          await wait(850,token);
+        }
+      })().finally(()=>{loopPromise=null;if(enabled&&visible)schedule();else if(enabled)setVisual('waiting','Włączony · czeka na widoczność');});
+    };
+    roots.forEach(root=>{
+      const manualHandler=e=>{if(!e.isTrusted||control.contains(e.target)||!isInteractive(e))return;disable('manual');};
+      ['pointerdown','click','input','change'].forEach(type=>root.addEventListener(type,manualHandler,true));
+    });
+    toggle.addEventListener('change',e=>{
+      revision++;enabled=e.target.checked;manualReason=false;
+      if(enabled){setVisual(visible?'running':'waiting',visible?'Aktywny · start':'Włączony · czeka na widoczność');schedule();}
+      else setVisual('off','Wyłączony');
+    });
+    const observer=new IntersectionObserver(entries=>{
+      const near=entries.some(entry=>entry.isIntersecting);
+      if(near===visible)return;visible=near;revision++;
+      if(enabled){setVisual(near?'running':'waiting',near?'Aktywny · start':'Włączony · czeka na widoczność');schedule();}
+    },{rootMargin:'-12% 0px -12% 0px',threshold:.05});
+    observer.observe(container);
+    const api={disable,enable:()=>{toggle.checked=true;enabled=true;revision++;schedule();},get enabled(){return enabled;}};
+    autoControllers.set(id,api);return api;
+  }
+  function registerLabAuto(id,anchor,label,runner,extraRoots=[]){const a=$(anchor),lab=a?.closest('.lab');if(!lab)return;createAutoController({id,label,container:lab,runner,manualRoots:extraRoots});}
+
+  // Rynek: od niskiej dojrzałości ekosystemu do fazy masowej adopcji.
+  registerLabAuto('growth','#growthLab','model wzrostu rynku',async ctx=>{
+    const stages=[
+      [[18,22,15],'Punkt początkowy · ograniczony zasięg'],
+      [[68,22,15],'Upowszechnienie smartfonów'],
+      [[68,78,15],'Rozwój łączności'],
+      [[68,78,84],'Dojrzałość sklepów i płatności'],
+      [[94,91,90],'Dojrzały ekosystem mobilny']
+    ];
+    for(let i=0;i<stages.length&&ctx.active();i++){
+      const [v,label]=stages[i];ctx.status(`Etap ${i+1}/${stages.length} · ${label}`);
+      ['adoption','connectivity','distribution'].forEach((id,k)=>$('#'+id).value=v[k]);updateGrowthModel();await ctx.wait(1050);
+    }
+  });
+
+  // Toolchain: pełny build, profilowanie, a następnie demonstracja błędu kompilacji.
+  registerLabAuto('toolchain','#runToolchain','toolchain aplikacji',async ctx=>{
+    $('#compileError').checked=false;resetToolchain();ctx.status('Etap 1/3 · poprawny build');
+    while(toolStep<toolSteps.length&&ctx.active()){await executeToolStep();await ctx.wait(130);}
+    if(!ctx.active())return;fillThreadTrack('blockingTrack','blocking');fillThreadTrack('asyncTrack','async');$('#threadVerdict').textContent='Blokowanie utraciło 5 klatek; wariant async zachował responsywność UI.';ctx.status('Etap 2/3 · porównanie wątków');await ctx.wait(1300);
+    if(!ctx.active())return;$('#compileError').checked=true;resetToolchain();ctx.status('Etap 3/3 · błąd zatrzymuje pipeline');
+    while(toolStep<toolSteps.length&&ctx.active()){await executeToolStep();await ctx.wait(130);}
+    await ctx.wait(1200);$('#compileError').checked=false;resetToolchain();
+  });
+
+  let systemAutoScenario=0;
+  registerLabAuto('system-events','#runSystemScenario','zdarzenia systemowe',async ctx=>{
+    const scenarios=['normal','interrupt','rotation','restore'],scenario=scenarios[systemAutoScenario%scenarios.length];systemAutoScenario++;
+    $('#systemScenario').value=scenario;$('#resourceLeakMode').checked=scenario==='normal'&&systemAutoScenario%2===0;resetSystemEvents();
+    const events=lifecycleScenarios[scenario];ctx.status(`Scenariusz · ${$('#systemScenario').selectedOptions[0].textContent}`);
+    for(let i=0;i<events.length&&ctx.active();i++){await runSystemEvent(events[i],$(`#lifecycleEvents [data-event="${events[i]}"]`));await ctx.wait(260);}
+    await ctx.wait(900);$('#resourceLeakMode').checked=false;
+  },[$('.tabs', $('#lifecycle'))]);
+
+  registerLabAuto('declarative-ui','#uiAction','deklaratywny interfejs',async ctx=>{
+    uiState={count:0,loading:false,dark:false};renderMockUi();pulseTree(['root','screen'],'<strong>Stan początkowy.</strong> Drzewo UI jest wynikiem modelu.');ctx.status('Etap 1/6 · stan początkowy');await ctx.wait(850);
+    if(!ctx.active())return;uiState.count=1;renderMockUi();pulseTree(['counter'],'<strong>Zmiana licznika.</strong> Aktualizowany jest tylko zależny fragment.');ctx.status('Etap 2/6 · lokalna rekompozycja');await ctx.wait(850);
+    if(!ctx.active())return;uiState.loading=true;renderMockUi();pulseTree(['status','button'],'<strong>Stan ładowania.</strong> Aktualizują się status i akcja.');ctx.status('Etap 3/6 · loading');await ctx.wait(850);
+    if(!ctx.active())return;uiState.dark=true;renderMockUi();pulseTree(['root','screen','title','counter','status','button'],'<strong>Zmiana motywu.</strong> Wartość środowiskowa wpływa na całe poddrzewo.');ctx.status('Etap 4/6 · szeroka rekompozycja');await ctx.wait(950);
+    if(!ctx.active())return;uiState.count=2;uiState.loading=false;renderMockUi();pulseTree(['counter','status','button'],'<strong>Nowy stan.</strong> UI jest ponownie wyprowadzony z modelu.');ctx.status('Etap 5/6 · zakończenie operacji');await ctx.wait(900);
+    uiState={count:0,loading:false,dark:false};renderMockUi();pulseTree(['root','screen','counter','status'],'<strong>Reset.</strong> Rozpoczyna się kolejny przebieg.');ctx.status('Etap 6/6 · reset');await ctx.wait(650);
+  });
+
+  let architectureAutoIndex=0;
+  registerLabAuto('architecture-flow','#runArchFlow','przepływ architektoniczny',async ctx=>{
+    const order=['MVC','MVP','MVVM','MVI','Clean'],pattern=order[architectureAutoIndex%order.length],error=architectureAutoIndex%3===2;architectureAutoIndex++;
+    currentPattern=pattern;$$('.pattern-btn').forEach(b=>b.classList.toggle('active',b.dataset.pattern===pattern));drawArchitecture(pattern);
+    ctx.status(`${pattern} · ${error?'obsługa błędu':'poprawne żądanie'}`);await runArchitectureFlow(error);await ctx.wait(800);
+  },[$('#patternList')]);
+
+  let conflictAutoIndex=0;
+  registerLabAuto('sync-conflict','#createConflict','konflikt synchronizacji',async ctx=>{
+    const strategies=['server','local','merge'],strategy=strategies[conflictAutoIndex%strategies.length];conflictAutoIndex++;
+    $('#networkLatency').value=[300,900,1500][conflictAutoIndex%3];updateConflictUi();
+    conflict.active=true;conflict.local++;conflict.server++;conflict.queue=1;$('#localVersion p').textContent='Tytuł: Architektura offline-first';$('#serverVersion p').textContent='Tytuł: Architektura aplikacji mobilnych';$('#conflictExplanation').innerHTML='<strong>Konflikt wykryty.</strong> Dwie strony zmieniły rekord od wspólnej wersji bazowej.';updateConflictUi();ctx.status('Etap 1/3 · wykrycie konfliktu');await ctx.wait(950);
+    if(!ctx.active())return;$('#conflictStrategy').value=strategy;$('#conflictExplanation').textContent='Synchronizacja i zastosowanie strategii…';ctx.status(`Etap 2/3 · ${$('#conflictStrategy').selectedOptions[0].textContent}`);await ctx.wait(Math.min(1500,+$('#networkLatency').value));
+    if(!ctx.active())return;let title=strategy==='server'?'Architektura aplikacji mobilnych':strategy==='local'?'Architektura offline-first':'Architektura aplikacji mobilnych offline-first';$('#localVersion p').textContent='Tytuł: '+title;$('#serverVersion p').textContent='Tytuł: '+title;conflict.active=false;conflict.queue=0;const rev=Math.max(conflict.local,conflict.server)+1;conflict.local=conflict.server=rev;updateConflictUi();$('#conflictExplanation').innerHTML=`<strong>Konflikt rozwiązany.</strong> Obie strony mają rewizję ${rev}.`;ctx.status('Etap 3/3 · spójny stan');await ctx.wait(1000);
+  });
+
+  registerLabAuto('test-portfolio','#unitTests','portfel testów',async ctx=>{
+    const stages=[
+      [[0,0,0],'brak automatycznej weryfikacji'],
+      [[80,0,0],'same testy jednostkowe'],
+      [[80,16,0],'dodanie integracji'],
+      [[80,16,5],'zrównoważona piramida'],
+      [[25,18,14],'portfel zbyt ciężki w UI']
+    ];
+    for(let i=0;i<stages.length&&ctx.active();i++){const [v,label]=stages[i];['unitTests','integrationTests','uiTests'].forEach((id,k)=>$('#'+id).value=v[k]);updateTestMix();ctx.status(`Wariant ${i+1}/${stages.length} · ${label}`);await ctx.wait(1250);}
+  });
+
+  registerLabAuto('frame-rate','#loadJson','płynność 60 Hz',async ctx=>{
+    const stages=[
+      [[0,0,0,1],'lekki ekran'],[[1,0,0,1],'JSON blokuje UI'],[[1,1,0,1],'dekodowanie obrazu'],[[1,1,1,1],'kumulacja obciążeń'],[[0,0,0,1],'optymalizacja i cache']
+    ];
+    const ids=['loadJson','loadImage','loadEffects','loadList'];
+    for(let i=0;i<stages.length&&ctx.active();i++){const [v,label]=stages[i];ids.forEach((id,k)=>$('#'+id).checked=!!v[k]);updateFrames();ctx.status(`Etap ${i+1}/${stages.length} · ${label}`);await ctx.wait(1150);}
+  });
+
+  registerLabAuto('threat-model','.security-control','model zagrożenia',async ctx=>{
+    const controls=$$('.security-control');controls.forEach(c=>c.checked=false);updateRisk();ctx.status('Etap 1/7 · brak zabezpieczeń');await ctx.wait(850);
+    for(let i=0;i<controls.length&&ctx.active();i++){controls[i].checked=true;updateRisk();ctx.status(`Etap ${i+2}/7 · warstwa ochrony ${i+1}/${controls.length}`);await ctx.wait(800);}
+    if(ctx.active()){ctx.status('Etap 7/7 · defense in depth');await ctx.wait(1050);controls.forEach(c=>c.checked=false);updateRisk();}
+  });
+
+  registerLabAuto('career-map','#careerRole','mapa kompetencji',async ctx=>{
+    const roles=['android','ios','cross','lead'];
+    for(let i=0;i<roles.length&&ctx.active();i++){const s=$('#careerRole');s.value=roles[i];updateCareer();ctx.status(`Rola ${i+1}/${roles.length} · ${s.selectedOptions[0].textContent}`);await ctx.wait(1350);}
+  });
+
+  registerLabAuto('kanban','#addKanbanTask','przepływ Kanban',async ctx=>{
+    kanbanTasks=[{id:1,title:'Logowanie i token JWT',col:'backlog',pts:3},{id:2,title:'Ekran listy offline-first',col:'doing',pts:5},{id:3,title:'Pipeline build + test',col:'done',pts:3},{id:4,title:'Integracja aparatu',col:'backlog',pts:5,blocked:true}];nextTaskId=5;$('#wipLimit').value=1;renderKanban();ctx.status('Etap 1/6 · plan sprintu');await ctx.wait(750);
+    if(!ctx.active())return;moveKanban(1);ctx.status('Etap 2/6 · rozpoczęcie zadania');await ctx.wait(800);
+    if(!ctx.active())return;moveKanban(4);ctx.status('Etap 3/6 · limit WIP blokuje nowe zadanie');await ctx.wait(950);
+    if(!ctx.active())return;moveKanban(1);ctx.status('Etap 4/6 · zakończenie pracy');await ctx.wait(750);
+    if(!ctx.active())return;moveKanban(4);ctx.status('Etap 5/6 · zadanie zablokowane w realizacji');await ctx.wait(750);moveKanban(4);await ctx.wait(650);
+    if(!ctx.active())return;moveKanban(4);ctx.status('Etap 6/6 · odblokowanie i dostarczenie');await ctx.wait(950);
+  });
+
+  // Samodzielny symulator wyboru platformy.
+  const platformToolbar=makeAutoToolbar($('.scenario-presets'));
+  createAutoController({id:'platform',label:'wybór platformy',container:$('.decision-grid'),manualRoots:[$('.scenario-presets')],mount:control=>platformToolbar.append(control),runner:async ctx=>{
+    const presets=['mass','premium','lab','device'];
+    for(let p=0;p<presets.length&&ctx.active();p++){const key=presets[p],values=platformPresets[key];values.forEach((v,i)=>{criteria[i].w=v;const input=$('#w'+i);input.value=v;input.nextElementSibling.value=v;});$$('.platform-preset').forEach(b=>b.classList.toggle('active',b.dataset.preset===key));scorePlatforms();const btn=$(`.platform-preset[data-preset="${key}"]`);ctx.status(`Scenariusz ${p+1}/${presets.length} · ${btn.textContent}`);await ctx.wait(1300);}
+  }});
+
+  // Samodzielna maszyna stanów cyklu życia.
+  const lifecycleDemo=$('#autoLifecycle').closest('.demo-box');
+  let lifecycleAutoOs=0;
+  createAutoController({id:'lifecycle-states',label:'cykl życia ekranu',container:$('.lifecycle-layout'),manualRoots:[$('.tabs',$('#lifecycle'))],mount:control=>lifecycleDemo.prepend(control),runner:async ctx=>{
+    const os=lifecycleAutoOs++%2===0?'android':'ios';currentOS=os;$$('.lifecycle-tab').forEach(b=>b.classList.toggle('active',b.dataset.os===os));renderLifecycle();
+    for(let i=0;i<lifecycle[os].length&&ctx.active();i++){selectState(i);ctx.status(`${os==='android'?'Android':'iOS'} · stan ${i+1}/${lifecycle[os].length}`);await ctx.wait(820);}
+  }});
+
+  // Samodzielny scenariusz offline-first.
+  const offlineContainer=$('.offline-sim'),offlineToolbar=makeAutoToolbar(null,offlineContainer);
+  createAutoController({id:'offline-first',label:'praca offline-first',container:offlineContainer,mount:control=>offlineToolbar.append(control),runner:async ctx=>{
+    articles=[{id:1,title:'Architektura MVVM',synced:true},{id:2,title:'Kotlin Coroutines',synced:true}];articleId=2;online=true;$('#syncLog').innerHTML='';renderArticles();log('Dane odczytano z lokalnej bazy.');ctx.status('Etap 1/6 · stan online');await ctx.wait(750);
+    if(!ctx.active())return;$('#toggleNetwork').click();ctx.status('Etap 2/6 · utrata sieci');await ctx.wait(700);
+    if(!ctx.active())return;$('#addArticle').click();$('#addArticle').click();ctx.status('Etap 3/6 · zapis do kolejki lokalnej');await ctx.wait(900);
+    if(!ctx.active())return;$('#syncNow').click();ctx.status('Etap 4/6 · synchronizacja niemożliwa');await ctx.wait(750);
+    if(!ctx.active())return;$('#toggleNetwork').click();ctx.status('Etap 5/6 · połączenie przywrócone');await ctx.wait(650);
+    if(!ctx.active())return;$('#syncNow').click();ctx.status('Etap 6/6 · opróżnienie kolejki');await ctx.wait(1100);
+  }});
+
+  // Samodzielna symulacja pipeline CI/CD.
+  const pipelineEl=$('#pipeline'),pipelineControls=pipelineEl.nextElementSibling,pipelineToolbar=makeAutoToolbar(pipelineEl.previousElementSibling);
+  let pipelineAutoFailure=false;
+  createAutoController({id:'pipeline',label:'pipeline CI/CD',container:pipelineEl,manualRoots:[pipelineControls],mount:control=>pipelineToolbar.append(control),runner:async ctx=>{
+    pipelineAutoFailure=!pipelineAutoFailure;$('#failureStage').value=pipelineAutoFailure?'2':'none';$('#useCache').checked=!pipelineAutoFailure;ctx.status(pipelineAutoFailure?'Przebieg · błąd testów':'Przebieg · build zakończony sukcesem');
+    const btn=$('#runPipeline');btn.click();while(btn.disabled&&ctx.active())await ctx.wait(120);await ctx.wait(900);
+  }});
+
+  // Quiz
+  const quiz=[
+    {q:'Które problemy są szczególnie istotne w aplikacjach mobilnych?',a:['Brak wielozadaniowości systemu','Brak systemu plików','Niestabilność połączenia sieciowego','Ograniczona dostępność energii'],c:[2,3],f:'Mobilność oznacza zmienną sieć i ścisły budżet energetyczny.'},
+    {q:'Co najsilniej wpływa na fragmentację Androida?',a:['Jedna konfiguracja sprzętowa','Różnorodność języków','Różnorodność konfiguracji sprzętowych','Wielu producentów i modyfikacje OEM'],c:[2,3],f:'Istotne są konfiguracje sprzętowe, wersje API i modyfikacje producentów.'},
+    {q:'Co zmniejsza sprzężenie między UI i logiką?',a:['Zapytania do bazy bezpośrednio z Activity','Logika w klasach widoku','MVVM','Warstwa repozytorium'],c:[2,3],f:'MVVM separuje prezentację, a repozytorium izoluje źródła danych.'},
+    {q:'Jak Android komunikuje komponenty lub aplikacje?',a:['ViewModel','Fragment transactions','Binder IPC','Intents'],c:[2,3],f:'Binder zapewnia IPC, a Intents służą do komunikacji i uruchamiania komponentów.'},
+    {q:'Co silnie zwiększa zużycie energii?',a:['Liczba bibliotek Gradle','Liczba klas','Intensywne użycie GPU','Częste operacje sieciowe'],c:[2,3],f:'GPU, radio komórkowe i częste wybudzenia są kosztowne energetycznie.'},
+    {q:'Co jest kluczowe w offline-first?',a:['Blokowanie UI bez sieci','Dane tylko w RAM','Rozwiązywanie konfliktów','Lokalna baza synchronizowana z serwerem'],c:[2,3],f:'Offline-first wymaga trwałej lokalnej bazy i strategii synchronizacji konfliktów.'},
+    {q:'Kiedy wybrać development natywny?',a:['Gdy aplikacja nie ma UI','Gdy nie publikujemy w sklepie','Gdy kluczowa jest maksymalna wydajność','Gdy potrzebne są zaawansowane API sprzętowe'],c:[2,3],f:'Natywne rozwiązanie daje najwcześniejszy dostęp do API i maksymalną kontrolę wydajności.'},
+    {q:'Co jest szczególnie ważne w mobilnym CI/CD?',a:['Ograniczona pamięć ROM','Brak wielowątkowości','Wysoka latencja sieci','Automatyczny build dla wielu architektur CPU'],c:[3],f:'Mobilny pipeline musi budować, podpisywać i testować właściwe warianty i architektury.'},
+    {q:'Jakie warstwy występują w Clean Architecture?',a:['Kernel','HAL','Data','Domain'],c:[2,3],f:'Typowy podział obejmuje Presentation, Domain i Data.'},
+    {q:'Co poprawia skalowalność i testowalność?',a:['Globalny stan','UI z bezpośrednim dostępem do bazy','Dependency injection','Separacja domain/data/presentation'],c:[2,3],f:'DI i separacja warstw umożliwiają podmianę zależności oraz testowanie izolowane.'},
+    {q:'Co ogranicza aktywność Androida w tle?',a:['Garbage collector','Fragment lifecycle','Doze mode','App Standby buckets'],c:[2,3],f:'Doze i App Standby ograniczają pracę w tle oraz dostęp do sieci.'},
+    {q:'Jak Android korzysta z kodu C/C++?',a:['Binder IPC','ART verifier','Android NDK','JNI'],c:[2,3],f:'NDK dostarcza toolchain, a JNI łączy kod JVM z bibliotekami natywnymi.'}
+  ];
+  $('#quizList').innerHTML=quiz.map((x,qi)=>`<div class="question" data-q="${qi}"><b>${qi+1}. ${x.q}</b><div class="answers">${x.a.map((a,ai)=>`<label><input type="checkbox" value="${ai}"> <span>${String.fromCharCode(65+ai)}. ${a}</span></label>`).join('')}</div><div class="feedback">${x.f}</div></div>`).join('');
+  $('#gradeQuiz').addEventListener('click',()=>{let points=0;$$('.question').forEach((qEl,qi)=>{const selected=$$('input:checked',qEl).map(x=>+x.value).sort().join(','),correct=quiz[qi].c.slice().sort().join(',');const ok=selected===correct;qEl.classList.remove('correct','incorrect');qEl.classList.add('graded',ok?'correct':'incorrect');if(ok)points++;});$('#quizScore').textContent=`Wynik: ${points}/${quiz.length} (${Math.round(points/quiz.length*100)}%)`;});
+  $('#resetQuiz').addEventListener('click',()=>{$$('.question').forEach(q=>{q.classList.remove('graded','correct','incorrect');$$('input',q).forEach(i=>i.checked=false);});$('#quizScore').textContent='';});
+})();
+</script>
+</body>
+</html>
