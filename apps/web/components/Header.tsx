@@ -6,7 +6,7 @@ type HeaderProps = {
   title?: string;
 };
 
-export function Header({ active = "dashboard", courseHref = "/kia.ndp", title = "kia.ndp" }: HeaderProps) {
+export function Header({ active = "dashboard", title = "kia.ndp", courseHref = `/${title}` }: HeaderProps) {
   return (
     <header className="topbar">
       <Link href="/" className="brand">
