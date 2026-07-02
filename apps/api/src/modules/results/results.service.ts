@@ -1,4 +1,5 @@
 import { Injectable, NotFoundException } from "@nestjs/common";
+import { AttemptStatus } from "@prisma/client";
 import { AuthService } from "../auth/auth.service";
 import { PrismaService } from "../database/prisma.service";
 
