@@ -40,36 +40,37 @@ export class AttemptsService implements OnModuleDestroy {
     this.rateLimitBuckets.clear();
   }
 
-  async saveTelemetry(attemptId: string, batch: TelemetryBatchDto) {
+  async saveTelemetry(attemptId: string, batch: TelemetryBatchDto, authorization?: string) {
     this.assertAttemptId(attemptId);
+    const user = await this.getAuthenticatedUser(authorization);
 
     if (batch.events.length > MAX_EVENTS_PER_BATCH) {
       throw new BadRequestException(`Paczka może zawierać maksymalnie ${MAX_EVENTS_PER_BATCH} zdarzeń.`);
-    }
-
-    const existingSeqStart = await this.prisma.telemetryEvent.findUnique({
-      where: { attemptId_seqNo: { attemptId, seqNo: batch.seqStart } },
-      select: { id: true }
-    });
-
-    if (existingSeqStart) {
-      return {
-        attemptId,
-        accepted: 0,
-        duplicated: true,
-        nextSequence: await this.getNextSequence(attemptId)
-      };
     }
 
     try {
       return await this.prisma.$transaction(async (tx) => {
         const attempt = await tx.attempt.findUnique({
           where: { id: attemptId },
-          select: { id: true, status: true }
+          select: { id: true, studentId: true, status: true }
         });
 
-        if (!attempt) {
+        if (!attempt || attempt.studentId !== user.id) {
           throw new NotFoundException("Nie znaleziono próby do zapisu telemetrii.");
+        }
+
+        const existingSeqStart = await tx.telemetryEvent.findUnique({
+          where: { attemptId_seqNo: { attemptId, seqNo: batch.seqStart } },
+          select: { id: true }
+        });
+
+        if (existingSeqStart) {
+          return {
+            attemptId,
+            accepted: 0,
+            duplicated: true,
+            nextSequence: await this.getNextSequenceForTransaction(tx, attemptId)
+          };
         }
 
         if (TERMINAL_ATTEMPT_STATUSES.has(attempt.status)) {
@@ -131,21 +132,23 @@ export class AttemptsService implements OnModuleDestroy {
     }
   }
 
-  async finish(attemptId: string) {
+  async finish(attemptId: string, authorization?: string) {
     this.assertAttemptId(attemptId);
+    const user = await this.getAuthenticatedUser(authorization);
 
     try {
       const existingAttempt = await this.prisma.attempt.findUnique({
         where: { id: attemptId },
         select: {
           id: true,
+          studentId: true,
           status: true,
           finishedAt: true,
           _count: { select: { telemetry: true } }
         }
       });
 
-      if (!existingAttempt) {
+      if (!existingAttempt || existingAttempt.studentId !== user.id) {
         throw new NotFoundException("Nie znaleziono próby do zakończenia.");
       }
 
@@ -162,6 +165,7 @@ export class AttemptsService implements OnModuleDestroy {
       await this.prisma.attempt.updateMany({
         where: {
           id: attemptId,
+          studentId: user.id,
           status: { in: [AttemptStatus.CREATED, AttemptStatus.IN_PROGRESS] }
         },
         data: {

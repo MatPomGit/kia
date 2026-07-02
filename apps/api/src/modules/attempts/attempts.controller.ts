@@ -10,14 +10,15 @@ export class AttemptsController {
   @Post(":attemptId/events/batch")
   saveTelemetry(
     @Param("attemptId") attemptId: string,
-    @Body() body: TelemetryBatchDto
+    @Body() body: TelemetryBatchDto,
+    @Headers("authorization") authorization?: string
   ) {
-    return this.attemptsService.saveTelemetry(attemptId, body);
+    return this.attemptsService.saveTelemetry(attemptId, body, authorization);
   }
 
   @Post(":attemptId/finish")
-  finish(@Param("attemptId") attemptId: string) {
-    return this.attemptsService.finish(attemptId);
+  finish(@Param("attemptId") attemptId: string, @Headers("authorization") authorization?: string) {
+    return this.attemptsService.finish(attemptId, authorization);
   }
 
   @Get(":attemptId")
