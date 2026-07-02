@@ -1,4 +1,4 @@
-import { BadRequestException, ConflictException, HttpException, HttpStatus, Injectable, NotFoundException } from "@nestjs/common";
+import { BadRequestException, ConflictException, HttpException, HttpStatus, Injectable, NotFoundException, OnModuleDestroy } from "@nestjs/common";
 import { AttemptStatus, Prisma } from "@prisma/client";
 import { PrismaService } from "../database/prisma.service";
 import { TelemetryBatchDto, TelemetryEventDto } from "./dto/telemetry.dto";
@@ -9,10 +9,31 @@ const MAX_EVENTS_PER_BATCH = 500;
 const MAX_EVENTS_PER_ATTEMPT = 10_000;
 const RATE_LIMIT_WINDOW_MS = 60_000;
 const MAX_BATCHES_PER_WINDOW = 120;
+const TERMINAL_ATTEMPT_STATUSES = new Set<AttemptStatus>([
+  AttemptStatus.FINISHED,
+  AttemptStatus.EXPIRED,
+  AttemptStatus.CANCELLED
+]);
+
+type RateLimitBucket = {
+  batchTimestamps: number[];
+  lastSeenAt: number;
+};
 
 @Injectable()
-export class AttemptsService {
-  constructor(private readonly prisma: PrismaService) {}
+export class AttemptsService implements OnModuleDestroy {
+  private readonly rateLimitBuckets = new Map<string, RateLimitBucket>();
+  private readonly rateLimitCleanupInterval: NodeJS.Timeout;
+
+  constructor(private readonly prisma: PrismaService) {
+    this.rateLimitCleanupInterval = setInterval(() => this.cleanupRateLimitBuckets(), RATE_LIMIT_WINDOW_MS);
+    this.rateLimitCleanupInterval.unref?.();
+  }
+
+  onModuleDestroy() {
+    clearInterval(this.rateLimitCleanupInterval);
+    this.rateLimitBuckets.clear();
+  }
 
   async saveTelemetry(attemptId: string, batch: TelemetryBatchDto) {
     this.assertAttemptId(attemptId);
@@ -46,7 +67,8 @@ export class AttemptsService {
           throw new NotFoundException("Nie znaleziono próby do zapisu telemetrii.");
         }
 
-        if (attempt.status === AttemptStatus.FINISHED) {
+        if (TERMINAL_ATTEMPT_STATUSES.has(attempt.status)) {
+          this.clearRateLimitBucket(attemptId);
           throw new ConflictException("Nie można dopisać telemetrii do zakończonej próby.");
         }
 
@@ -69,7 +91,7 @@ export class AttemptsService {
           throw new ConflictException(`Nieprawidłowy numer sekwencji. Oczekiwano ${nextSequence}.`);
         }
 
-        await this.assertRateLimit(tx, attemptId);
+        this.assertRateLimit(attemptId);
 
         const sanitizedEvents = batch.events.map((event, index) => ({
           attemptId,
@@ -108,12 +130,8 @@ export class AttemptsService {
     this.assertAttemptId(attemptId);
 
     try {
-      const attempt = await this.prisma.attempt.update({
+      const existingAttempt = await this.prisma.attempt.findUnique({
         where: { id: attemptId },
-        data: {
-          status: AttemptStatus.FINISHED,
-          finishedAt: new Date()
-        },
         select: {
           id: true,
           status: true,
@@ -122,13 +140,52 @@ export class AttemptsService {
         }
       });
 
-      return {
-        attemptId: attempt.id,
-        status: attempt.status,
-        score: null,
-        telemetryEvents: attempt._count.telemetry,
-        finishedAt: attempt.finishedAt?.toISOString()
-      };
+      if (!existingAttempt) {
+        throw new NotFoundException("Nie znaleziono próby do zakończenia.");
+      }
+
+      if (existingAttempt.status === AttemptStatus.FINISHED) {
+        this.clearRateLimitBucket(attemptId);
+        return this.formatFinishedAttempt(existingAttempt);
+      }
+
+      if (existingAttempt.status === AttemptStatus.EXPIRED || existingAttempt.status === AttemptStatus.CANCELLED) {
+        this.clearRateLimitBucket(attemptId);
+        throw new ConflictException("Nie można zakończyć próby w statusie terminalnym.");
+      }
+
+      await this.prisma.attempt.updateMany({
+        where: {
+          id: attemptId,
+          status: { in: [AttemptStatus.CREATED, AttemptStatus.IN_PROGRESS] }
+        },
+        data: {
+          status: AttemptStatus.FINISHED,
+          finishedAt: new Date()
+        }
+      });
+
+      const finishedAttempt = await this.prisma.attempt.findUnique({
+        where: { id: attemptId },
+        select: {
+          id: true,
+          status: true,
+          finishedAt: true,
+          _count: { select: { telemetry: true } }
+        }
+      });
+
+      if (!finishedAttempt) {
+        throw new NotFoundException("Nie znaleziono próby do zakończenia.");
+      }
+
+      if (finishedAttempt.status === AttemptStatus.EXPIRED || finishedAttempt.status === AttemptStatus.CANCELLED) {
+        this.clearRateLimitBucket(attemptId);
+        throw new ConflictException("Nie można zakończyć próby w statusie terminalnym.");
+      }
+
+      this.clearRateLimitBucket(attemptId);
+      return this.formatFinishedAttempt(finishedAttempt);
     } catch (error) {
       if (this.isPrismaError(error, "P2025")) {
         throw new NotFoundException("Nie znaleziono próby do zakończenia.");
@@ -154,18 +211,53 @@ export class AttemptsService {
     return lastEvent ? lastEvent.seqNo + 1 : 0;
   }
 
-  private async assertRateLimit(tx: Prisma.TransactionClient, attemptId: string): Promise<void> {
-    const windowStart = new Date(Date.now() - RATE_LIMIT_WINDOW_MS);
-    const recentEvents = await tx.telemetryEvent.count({
-      where: {
-        attemptId,
-        timestamp: { gte: windowStart }
-      }
-    });
+  private assertRateLimit(attemptId: string): void {
+    const now = Date.now();
+    const windowStart = now - RATE_LIMIT_WINDOW_MS;
+    const bucket = this.rateLimitBuckets.get(attemptId) ?? { batchTimestamps: [], lastSeenAt: now };
 
-    if (recentEvents >= MAX_BATCHES_PER_WINDOW * MAX_EVENTS_PER_BATCH) {
+    bucket.batchTimestamps = bucket.batchTimestamps.filter((timestamp) => timestamp > windowStart);
+    bucket.lastSeenAt = now;
+
+    if (bucket.batchTimestamps.length >= MAX_BATCHES_PER_WINDOW) {
+      this.rateLimitBuckets.set(attemptId, bucket);
       throw new HttpException("Przekroczono limit zapisu telemetrii dla próby.", HttpStatus.TOO_MANY_REQUESTS);
     }
+
+    bucket.batchTimestamps.push(now);
+    this.rateLimitBuckets.set(attemptId, bucket);
+    this.cleanupRateLimitBuckets(now);
+  }
+
+  private cleanupRateLimitBuckets(now = Date.now()): void {
+    const inactiveBefore = now - RATE_LIMIT_WINDOW_MS;
+
+    for (const [attemptId, bucket] of this.rateLimitBuckets) {
+      bucket.batchTimestamps = bucket.batchTimestamps.filter((timestamp) => timestamp > inactiveBefore);
+
+      if (bucket.batchTimestamps.length === 0 && bucket.lastSeenAt <= inactiveBefore) {
+        this.rateLimitBuckets.delete(attemptId);
+      }
+    }
+  }
+
+  private clearRateLimitBucket(attemptId: string): void {
+    this.rateLimitBuckets.delete(attemptId);
+  }
+
+  private formatFinishedAttempt(attempt: {
+    id: string;
+    status: AttemptStatus;
+    finishedAt: Date | null;
+    _count: { telemetry: number };
+  }) {
+    return {
+      attemptId: attempt.id,
+      status: attempt.status,
+      score: null,
+      telemetryEvents: attempt._count.telemetry,
+      finishedAt: attempt.finishedAt?.toISOString()
+    };
   }
 
   private async handlePrismaTelemetryError(error: unknown, attemptId: string, seqStart: number) {
