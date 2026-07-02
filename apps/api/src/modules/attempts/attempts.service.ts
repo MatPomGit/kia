@@ -327,7 +327,7 @@ export class AttemptsService implements OnModuleDestroy {
       select: { id: true, email: true }
     });
 
-    if (!user) throw new NotFoundException("Nie znaleziono użytkownika dla podanego tokenu.");
+    if (!user) throw new HttpException("Nie znaleziono użytkownika dla podanego tokenu.", HttpStatus.UNAUTHORIZED);
     return user;
   }
 
