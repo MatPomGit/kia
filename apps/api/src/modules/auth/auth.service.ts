@@ -1,7 +1,8 @@
 import { Injectable, UnauthorizedException } from "@nestjs/common";
 import { createHmac, scryptSync, timingSafeEqual } from "node:crypto";
+import { PrismaService } from "../database/prisma.service";
 
-interface SessionPayload {
+export interface SessionPayload {
   sub: string;
   exp: number;
 }
@@ -12,6 +13,8 @@ export class AuthService {
   private readonly passwordHash = this.requireEnv("INSTRUCTOR_PASSWORD_HASH");
   private readonly passwordSalt = this.requireEnv("INSTRUCTOR_PASSWORD_SALT");
   private readonly tokenSecret = this.requireEnv("AUTH_TOKEN_SECRET");
+
+  constructor(private readonly prisma: PrismaService) {}
 
   authenticate(login: string, password: string): string {
     const computedHash = scryptSync(password, this.passwordSalt, 64).toString("hex");
@@ -35,6 +38,22 @@ export class AuthService {
     const payload = JSON.parse(Buffer.from(payloadPart, "base64url").toString("utf8")) as SessionPayload;
     if (!payload.exp || payload.exp <= Math.floor(Date.now() / 1000)) throw new UnauthorizedException();
     return payload;
+  }
+
+  getSessionFromAuthorization(authorization?: string): SessionPayload {
+    const token = authorization?.startsWith("Bearer ") ? authorization.slice(7) : undefined;
+    if (!token) throw new UnauthorizedException();
+    return this.verifyToken(token);
+  }
+
+  async getCurrentUser(authorization?: string) {
+    const session = this.getSessionFromAuthorization(authorization);
+    const user = await this.prisma.user.findUnique({
+      where: { email: session.sub },
+      select: { id: true, email: true, role: true, createdAt: true }
+    });
+
+    return user ?? { login: session.sub };
   }
 
   private signToken(payload: SessionPayload): string {

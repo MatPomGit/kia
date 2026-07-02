@@ -1,6 +1,7 @@
 import { BadRequestException, ConflictException, HttpException, HttpStatus, Injectable, NotFoundException, OnModuleDestroy } from "@nestjs/common";
 import { AttemptStatus, Prisma } from "@prisma/client";
 import { PrismaService } from "../database/prisma.service";
+import { SaveAnswerDto } from "./dto/save-answer.dto";
 import { TelemetryBatchDto, TelemetryEventDto } from "./dto/telemetry.dto";
 
 type SanitizedPayload = TelemetryEventDto["payload"];
@@ -194,6 +195,113 @@ export class AttemptsService implements OnModuleDestroy {
     }
   }
 
+  async findOne(attemptId: string) {
+    this.assertAttemptId(attemptId);
+
+    const attempt = await this.prisma.attempt.findUnique({
+      where: { id: attemptId },
+      select: {
+        id: true,
+        quizId: true,
+        studentId: true,
+        attemptNo: true,
+        startedAt: true,
+        finishedAt: true,
+        status: true,
+        scoreTotal: true,
+        resultJson: true,
+        quiz: {
+          select: {
+            id: true,
+            title: true,
+            durationSec: true,
+            questions: {
+              orderBy: { ordinal: "asc" },
+              select: { id: true, ordinal: true, type: true, promptMd: true, optionsJson: true, points: true }
+            }
+          }
+        },
+        answers: {
+          select: { questionId: true, answerJson: true, savedAt: true, finalizedAt: true, score: true }
+        }
+      }
+    });
+
+    if (!attempt) throw new NotFoundException("Nie znaleziono próby.");
+
+    return {
+      ...attempt,
+      scoreTotal: attempt.scoreTotal?.toString() ?? null,
+      quiz: {
+        ...attempt.quiz,
+        questions: attempt.quiz.questions.map((question) => ({
+          ...question,
+          points: question.points.toString()
+        }))
+      },
+      answers: attempt.answers.map((answer) => ({
+        ...answer,
+        score: answer.score?.toString() ?? null
+      }))
+    };
+  }
+
+  async saveAnswer(attemptId: string, questionId: string, body: SaveAnswerDto) {
+    this.assertAttemptId(attemptId);
+    this.assertQuestionId(questionId);
+
+    if (!this.isJsonCompatible(body.answer)) {
+      throw new BadRequestException("Odpowiedź musi być poprawną wartością JSON.");
+    }
+
+    try {
+      return await this.prisma.$transaction(async (tx) => {
+        const attempt = await tx.attempt.findUnique({
+          where: { id: attemptId },
+          select: { id: true, quizId: true, status: true }
+        });
+        if (!attempt) throw new NotFoundException("Nie znaleziono próby.");
+        if (TERMINAL_ATTEMPT_STATUSES.has(attempt.status)) {
+          throw new ConflictException("Nie można zapisać odpowiedzi do zakończonej próby.");
+        }
+
+        const question = await tx.question.findUnique({
+          where: { id: questionId },
+          select: { id: true, quizId: true }
+        });
+        if (!question || question.quizId !== attempt.quizId) {
+          throw new NotFoundException("Nie znaleziono pytania w quizie tej próby.");
+        }
+
+        const answer = await tx.answer.upsert({
+          where: { attemptId_questionId: { attemptId, questionId } },
+          create: {
+            attemptId,
+            questionId,
+            answerJson: body.answer as Prisma.InputJsonValue
+          },
+          update: {
+            answerJson: body.answer as Prisma.InputJsonValue,
+            finalizedAt: null
+          },
+          select: { attemptId: true, questionId: true, answerJson: true, savedAt: true, finalizedAt: true, score: true }
+        });
+
+        await tx.attempt.update({
+          where: { id: attemptId },
+          data: {
+            status: attempt.status === AttemptStatus.CREATED ? AttemptStatus.IN_PROGRESS : attempt.status,
+            startedAt: attempt.status === AttemptStatus.CREATED ? new Date() : undefined
+          }
+        });
+
+        return { ...answer, score: answer.score?.toString() ?? null };
+      });
+    } catch (error) {
+      throw this.mapPrismaError(error);
+    }
+  }
+
   private async getNextSequence(attemptId: string): Promise<number> {
     return this.getNextSequenceForTransaction(this.prisma, attemptId);
   }
@@ -301,6 +409,25 @@ export class AttemptsService implements OnModuleDestroy {
     if (typeof attemptId !== "string" || !/^[a-zA-Z0-9_-]{3,80}$/.test(attemptId)) {
       throw new BadRequestException("Identyfikator próby ma nieprawidłowy format.");
     }
+  }
+
+  private assertQuestionId(questionId: string): void {
+    if (typeof questionId !== "string" || !/^[a-zA-Z0-9_-]{3,80}$/.test(questionId)) {
+      throw new BadRequestException("Identyfikator pytania ma nieprawidłowy format.");
+    }
+  }
+
+  private isJsonCompatible(value: unknown): boolean {
+    if (value === null || typeof value === "string" || typeof value === "number" || typeof value === "boolean") {
+      return typeof value !== "number" || Number.isFinite(value);
+    }
+    if (Array.isArray(value)) {
+      return value.every((item) => this.isJsonCompatible(item));
+    }
+    if (typeof value === "object") {
+      return Object.values(value as Record<string, unknown>).every((item) => this.isJsonCompatible(item));
+    }
+    return false;
   }
 
   private sanitizePayload(event: TelemetryEventDto): SanitizedPayload {

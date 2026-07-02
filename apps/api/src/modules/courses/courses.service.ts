@@ -1,11 +1,38 @@
-import { Injectable } from "@nestjs/common";
+import { BadRequestException, Injectable, NotFoundException } from "@nestjs/common";
+import { PrismaService } from "../database/prisma.service";
 
 @Injectable()
 export class CoursesService {
-  findAll() {
-    return [
-      { id: "course-1", code: "AIO", name: "Analiza i obróbka obrazów", term: "2026Z" },
-      { id: "course-2", code: "RA", name: "Robotyka afektywna", term: "2026Z" }
-    ];
+  constructor(private readonly prisma: PrismaService) {}
+
+  async findAll() {
+    return this.prisma.course.findMany({
+      orderBy: [{ term: "desc" }, { code: "asc" }],
+      select: { id: true, code: true, name: true, term: true }
+    });
+  }
+
+  async findMaterials(courseId: string) {
+    this.assertCourseId(courseId);
+
+    const course = await this.prisma.course.findUnique({
+      where: { id: courseId },
+      select: {
+        id: true,
+        materials: {
+          orderBy: [{ publishedAt: "desc" }, { title: "asc" }],
+          select: { id: true, title: true, kind: true, objectKey: true, publishedAt: true }
+        }
+      }
+    });
+
+    if (!course) throw new NotFoundException("Nie znaleziono kursu.");
+    return course.materials;
+  }
+
+  private assertCourseId(courseId: string): void {
+    if (typeof courseId !== "string" || !/^[a-zA-Z0-9_-]{3,80}$/.test(courseId)) {
+      throw new BadRequestException("Identyfikator kursu ma nieprawidłowy format.");
+    }
   }
 }
