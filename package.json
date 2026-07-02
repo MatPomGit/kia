@@ -6,6 +6,10 @@
     "apps/api"
   ],
   "scripts": {
+    "backend:ensure": "node scripts/ensure-api-backend.mjs",
+    "predev": "npm run backend:ensure",
+    "prebuild": "npm run backend:ensure",
+    "prelint": "npm run backend:ensure",
     "dev": "concurrently \"npm run dev -w apps/web\" \"npm run start:dev -w apps/api\"",
     "build": "npm run build -w apps/web && npm run build -w apps/api",
     "lint": "npm run lint -w apps/web && npm run lint -w apps/api",
