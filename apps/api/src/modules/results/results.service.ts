@@ -16,7 +16,7 @@ export class ResultsService {
     if (!user) throw new NotFoundException("Nie znaleziono użytkownika dla podanego tokenu.");
 
     const attempts = await this.prisma.attempt.findMany({
-      where: { studentId: user.id, status: "FINISHED" },
+      where: { studentId: user.id, status: AttemptStatus.FINISHED },
       orderBy: [{ finishedAt: "desc" }, { startedAt: "desc" }],
       select: {
         id: true,
