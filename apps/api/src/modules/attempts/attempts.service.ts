@@ -1,20 +1,9 @@
 import { BadRequestException, ConflictException, HttpException, HttpStatus, Injectable, NotFoundException } from "@nestjs/common";
+import { AttemptStatus, Prisma } from "@prisma/client";
+import { PrismaService } from "../database/prisma.service";
 import { TelemetryBatchDto, TelemetryEventDto } from "./dto/telemetry.dto";
 
-type AttemptStatus = "in_progress" | "finished";
 type SanitizedPayload = TelemetryEventDto["payload"];
-
-interface StoredAttempt {
-  attemptId: string;
-  events: TelemetryEventDto[];
-  nextSequence: number;
-  status: AttemptStatus;
-  receivedBatches: number;
-  recentBatchTimestamps: number[];
-  createdAt: string;
-  updatedAt: string;
-  finishedAt?: string;
-}
 
 const MAX_EVENTS_PER_BATCH = 500;
 const MAX_EVENTS_PER_ATTEMPT = 10_000;
@@ -23,126 +12,203 @@ const MAX_BATCHES_PER_WINDOW = 120;
 
 @Injectable()
 export class AttemptsService {
-  private readonly attempts = new Map<string, StoredAttempt>();
+  constructor(private readonly prisma: PrismaService) {}
 
-  saveTelemetry(attemptId: string, batch: TelemetryBatchDto) {
+  async saveTelemetry(attemptId: string, batch: TelemetryBatchDto) {
     this.assertAttemptId(attemptId);
 
     if (batch.events.length > MAX_EVENTS_PER_BATCH) {
       throw new BadRequestException(`Paczka może zawierać maksymalnie ${MAX_EVENTS_PER_BATCH} zdarzeń.`);
     }
 
-    const attempt = this.getOrCreateAttempt(attemptId, batch.seqStart);
+    const existingSeqStart = await this.prisma.telemetryEvent.findUnique({
+      where: { attemptId_seqNo: { attemptId, seqNo: batch.seqStart } },
+      select: { id: true }
+    });
 
-    if (attempt.status === "finished") {
-      throw new ConflictException("Nie można dopisać telemetrii do zakończonej próby.");
-    }
-
-    if (batch.seqStart < attempt.nextSequence) {
+    if (existingSeqStart) {
       return {
         attemptId,
         accepted: 0,
         duplicated: true,
-        nextSequence: attempt.nextSequence
+        nextSequence: await this.getNextSequence(attemptId)
       };
     }
 
-    if (batch.seqStart !== attempt.nextSequence) {
-      throw new ConflictException(`Nieprawidłowy numer sekwencji. Oczekiwano ${attempt.nextSequence}.`);
+    try {
+      return await this.prisma.$transaction(async (tx) => {
+        const attempt = await tx.attempt.findUnique({
+          where: { id: attemptId },
+          select: { id: true, status: true }
+        });
+
+        if (!attempt) {
+          throw new NotFoundException("Nie znaleziono próby do zapisu telemetrii.");
+        }
+
+        if (attempt.status === AttemptStatus.FINISHED) {
+          throw new ConflictException("Nie można dopisać telemetrii do zakończonej próby.");
+        }
+
+        const currentEventCount = await tx.telemetryEvent.count({ where: { attemptId } });
+        if (currentEventCount + batch.events.length > MAX_EVENTS_PER_ATTEMPT) {
+          throw new ConflictException(`Próba może zawierać maksymalnie ${MAX_EVENTS_PER_ATTEMPT} zdarzeń telemetrii.`);
+        }
+
+        const nextSequence = await this.getNextSequenceForTransaction(tx, attemptId);
+        if (batch.seqStart < nextSequence) {
+          return {
+            attemptId,
+            accepted: 0,
+            duplicated: true,
+            nextSequence
+          };
+        }
+
+        if (batch.seqStart !== nextSequence) {
+          throw new ConflictException(`Nieprawidłowy numer sekwencji. Oczekiwano ${nextSequence}.`);
+        }
+
+        await this.assertRateLimit(tx, attemptId);
+
+        const sanitizedEvents = batch.events.map((event, index) => ({
+          attemptId,
+          seqNo: batch.seqStart + index,
+          timestamp: new Date(event.timestamp),
+          eventType: event.type,
+          questionId: event.questionId,
+          payload: this.sanitizePayload(event) as Prisma.InputJsonValue
+        }));
+
+        if (sanitizedEvents.length > 0) {
+          await tx.telemetryEvent.createMany({ data: sanitizedEvents });
+        }
+
+        await tx.attempt.update({
+          where: { id: attemptId },
+          data: {
+            status: attempt.status === AttemptStatus.CREATED ? AttemptStatus.IN_PROGRESS : attempt.status,
+            startedAt: attempt.status === AttemptStatus.CREATED ? new Date() : undefined
+          }
+        });
+
+        return {
+          attemptId,
+          accepted: sanitizedEvents.length,
+          duplicated: false,
+          nextSequence: nextSequence + sanitizedEvents.length
+        };
+      });
+    } catch (error) {
+      return await this.handlePrismaTelemetryError(error, attemptId, batch.seqStart);
     }
-
-    this.assertRateLimit(attempt);
-
-    if (attempt.events.length + batch.events.length > MAX_EVENTS_PER_ATTEMPT) {
-      throw new ConflictException(`Próba może zawierać maksymalnie ${MAX_EVENTS_PER_ATTEMPT} zdarzeń telemetrii.`);
-    }
-
-    const sanitizedEvents = batch.events.map((event) => this.sanitizeEvent(event));
-    attempt.events.push(...sanitizedEvents);
-    attempt.nextSequence += sanitizedEvents.length;
-    attempt.receivedBatches += 1;
-    attempt.updatedAt = new Date().toISOString();
-
-    return {
-      attemptId,
-      accepted: sanitizedEvents.length,
-      duplicated: false,
-      nextSequence: attempt.nextSequence
-    };
   }
 
-  finish(attemptId: string) {
+  async finish(attemptId: string) {
     this.assertAttemptId(attemptId);
 
-    const attempt = this.attempts.get(attemptId);
-    if (!attempt) {
-      throw new NotFoundException("Nie znaleziono próby do zakończenia.");
-    }
+    try {
+      const attempt = await this.prisma.attempt.update({
+        where: { id: attemptId },
+        data: {
+          status: AttemptStatus.FINISHED,
+          finishedAt: new Date()
+        },
+        select: {
+          id: true,
+          status: true,
+          finishedAt: true,
+          _count: { select: { telemetry: true } }
+        }
+      });
 
-    if (attempt.status === "in_progress") {
-      attempt.status = "finished";
-      attempt.finishedAt = new Date().toISOString();
-      attempt.updatedAt = attempt.finishedAt;
+      return {
+        attemptId: attempt.id,
+        status: attempt.status,
+        score: null,
+        telemetryEvents: attempt._count.telemetry,
+        finishedAt: attempt.finishedAt?.toISOString()
+      };
+    } catch (error) {
+      if (this.isPrismaError(error, "P2025")) {
+        throw new NotFoundException("Nie znaleziono próby do zakończenia.");
+      }
+      throw this.mapPrismaError(error);
     }
-
-    return {
-      attemptId,
-      status: attempt.status,
-      score: null,
-      telemetryEvents: attempt.events.length,
-      telemetryBatches: attempt.receivedBatches,
-      finishedAt: attempt.finishedAt
-    };
   }
 
-  private getOrCreateAttempt(attemptId: string, seqStart: number): StoredAttempt {
-    const existingAttempt = this.attempts.get(attemptId);
-    if (existingAttempt) return existingAttempt;
+  private async getNextSequence(attemptId: string): Promise<number> {
+    return this.getNextSequenceForTransaction(this.prisma, attemptId);
+  }
 
-    if (seqStart !== 0) {
-      throw new ConflictException("Pierwsza paczka telemetrii musi zaczynać się od sekwencji 0.");
+  private async getNextSequenceForTransaction(
+    tx: Prisma.TransactionClient | PrismaService,
+    attemptId: string
+  ): Promise<number> {
+    const lastEvent = await tx.telemetryEvent.findFirst({
+      where: { attemptId },
+      orderBy: { seqNo: "desc" },
+      select: { seqNo: true }
+    });
+
+    return lastEvent ? lastEvent.seqNo + 1 : 0;
+  }
+
+  private async assertRateLimit(tx: Prisma.TransactionClient, attemptId: string): Promise<void> {
+    const windowStart = new Date(Date.now() - RATE_LIMIT_WINDOW_MS);
+    const recentEvents = await tx.telemetryEvent.count({
+      where: {
+        attemptId,
+        timestamp: { gte: windowStart }
+      }
+    });
+
+    if (recentEvents >= MAX_BATCHES_PER_WINDOW * MAX_EVENTS_PER_BATCH) {
+      throw new HttpException("Przekroczono limit zapisu telemetrii dla próby.", HttpStatus.TOO_MANY_REQUESTS);
+    }
+  }
+
+  private async handlePrismaTelemetryError(error: unknown, attemptId: string, seqStart: number) {
+    if (this.isPrismaError(error, "P2002")) {
+      const existingSeqStart = await this.prisma.telemetryEvent.findUnique({
+        where: { attemptId_seqNo: { attemptId, seqNo: seqStart } },
+        select: { id: true }
+      });
+
+      if (existingSeqStart) {
+        return {
+          attemptId,
+          accepted: 0,
+          duplicated: true,
+          nextSequence: await this.getNextSequence(attemptId)
+        };
+      }
+
+      throw new ConflictException("Konflikt unikalności podczas zapisu telemetrii.");
     }
 
-    const now = new Date().toISOString();
-    const attempt: StoredAttempt = {
-      attemptId,
-      events: [],
-      nextSequence: 0,
-      status: "in_progress",
-      receivedBatches: 0,
-      recentBatchTimestamps: [],
-      createdAt: now,
-      updatedAt: now
-    };
-    this.attempts.set(attemptId, attempt);
-    return attempt;
+    throw this.mapPrismaError(error);
+  }
+
+  private mapPrismaError(error: unknown): Error {
+    if (error instanceof HttpException) return error;
+    if (this.isPrismaError(error, "P2002")) {
+      return new ConflictException("Konflikt unikalności danych.");
+    }
+    if (this.isPrismaError(error, "P2025")) {
+      return new NotFoundException("Nie znaleziono rekordu.");
+    }
+    return error instanceof Error ? error : new Error("Nieznany błąd bazy danych.");
+  }
+
+  private isPrismaError(error: unknown, code: string): error is Prisma.PrismaClientKnownRequestError {
+    return error instanceof Prisma.PrismaClientKnownRequestError && error.code === code;
   }
 
   private assertAttemptId(attemptId: string): void {
     if (typeof attemptId !== "string" || !/^[a-zA-Z0-9_-]{3,80}$/.test(attemptId)) {
       throw new BadRequestException("Identyfikator próby ma nieprawidłowy format.");
     }
-  }
-
-  private assertRateLimit(attempt: StoredAttempt): void {
-    const now = Date.now();
-    const windowStart = now - RATE_LIMIT_WINDOW_MS;
-    attempt.recentBatchTimestamps = attempt.recentBatchTimestamps.filter((timestamp) => timestamp >= windowStart);
-
-    if (attempt.recentBatchTimestamps.length >= MAX_BATCHES_PER_WINDOW) {
-      throw new HttpException("Przekroczono limit zapisu telemetrii dla próby.", HttpStatus.TOO_MANY_REQUESTS);
-    }
-
-    attempt.recentBatchTimestamps.push(now);
-  }
-
-  private sanitizeEvent(event: TelemetryEventDto): TelemetryEventDto {
-    return {
-      timestamp: event.timestamp,
-      type: event.type,
-      questionId: event.questionId,
-      payload: this.sanitizePayload(event)
-    };
   }
 
   private sanitizePayload(event: TelemetryEventDto): SanitizedPayload {
