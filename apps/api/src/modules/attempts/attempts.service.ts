@@ -332,7 +332,8 @@ export class AttemptsService implements OnModuleDestroy {
   }
 
   private assertAttemptTimeRemaining(startedAt: Date, durationSec: number, now: Date): void {
-    const deadlineMs = startedAt.getTime() + durationSec * 1000;
+    const GRACE_PERIOD_MS = 10_000; // 10 seconds grace period for network latency
+    const deadlineMs = startedAt.getTime() + durationSec * 1000 + GRACE_PERIOD_MS;
     if (now.getTime() > deadlineMs) {
       throw new ConflictException("Czas na zapis odpowiedzi w tej próbie minął.");
     }
