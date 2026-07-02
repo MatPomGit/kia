@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Param, Post, Put } from "@nestjs/common";
+import { Body, Controller, Get, Headers, Param, Post, Put } from "@nestjs/common";
 import { AttemptsService } from "./attempts.service";
 import { SaveAnswerDto } from "./dto/save-answer.dto";
 import { TelemetryBatchDto } from "./dto/telemetry.dto";
@@ -21,16 +21,17 @@ export class AttemptsController {
   }
 
   @Get(":attemptId")
-  findOne(@Param("attemptId") attemptId: string) {
-    return this.attemptsService.findOne(attemptId);
+  findOne(@Param("attemptId") attemptId: string, @Headers("authorization") authorization?: string) {
+    return this.attemptsService.findOne(attemptId, authorization);
   }
 
   @Put(":attemptId/answers/:questionId")
   saveAnswer(
     @Param("attemptId") attemptId: string,
     @Param("questionId") questionId: string,
-    @Body() body: SaveAnswerDto
+    @Body() body: SaveAnswerDto,
+    @Headers("authorization") authorization?: string
   ) {
-    return this.attemptsService.saveAnswer(attemptId, questionId, body);
+    return this.attemptsService.saveAnswer(attemptId, questionId, body, authorization);
   }
 }

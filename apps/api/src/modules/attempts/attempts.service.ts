@@ -1,5 +1,6 @@
 import { BadRequestException, ConflictException, HttpException, HttpStatus, Injectable, NotFoundException, OnModuleDestroy } from "@nestjs/common";
 import { AttemptStatus, Prisma } from "@prisma/client";
+import { AuthService } from "../auth/auth.service";
 import { PrismaService } from "../database/prisma.service";
 import { SaveAnswerDto } from "./dto/save-answer.dto";
 import { TelemetryBatchDto, TelemetryEventDto } from "./dto/telemetry.dto";
@@ -26,7 +27,10 @@ export class AttemptsService implements OnModuleDestroy {
   private readonly rateLimitBuckets = new Map<string, RateLimitBucket>();
   private readonly rateLimitCleanupInterval: NodeJS.Timeout;
 
-  constructor(private readonly prisma: PrismaService) {
+  constructor(
+    private readonly prisma: PrismaService,
+    private readonly authService: AuthService
+  ) {
     this.rateLimitCleanupInterval = setInterval(() => this.cleanupRateLimitBuckets(), RATE_LIMIT_WINDOW_MS);
     this.rateLimitCleanupInterval.unref?.();
   }
@@ -195,8 +199,9 @@ export class AttemptsService implements OnModuleDestroy {
     }
   }
 
-  async findOne(attemptId: string) {
+  async findOne(attemptId: string, authorization?: string) {
     this.assertAttemptId(attemptId);
+    const user = await this.getAuthenticatedUser(authorization);
 
     const attempt = await this.prisma.attempt.findUnique({
       where: { id: attemptId },
@@ -227,7 +232,7 @@ export class AttemptsService implements OnModuleDestroy {
       }
     });
 
-    if (!attempt) throw new NotFoundException("Nie znaleziono próby.");
+    if (!attempt || attempt.studentId !== user.id) throw new NotFoundException("Nie znaleziono próby.");
 
     return {
       ...attempt,
@@ -246,9 +251,11 @@ export class AttemptsService implements OnModuleDestroy {
     };
   }
 
-  async saveAnswer(attemptId: string, questionId: string, body: SaveAnswerDto) {
+  async saveAnswer(attemptId: string, questionId: string, body: SaveAnswerDto, authorization?: string) {
     this.assertAttemptId(attemptId);
     this.assertQuestionId(questionId);
+
+    const user = await this.getAuthenticatedUser(authorization);
 
     if (!this.isJsonCompatible(body.answer)) {
       throw new BadRequestException("Odpowiedź musi być poprawną wartością JSON.");
@@ -258,12 +265,23 @@ export class AttemptsService implements OnModuleDestroy {
       return await this.prisma.$transaction(async (tx) => {
         const attempt = await tx.attempt.findUnique({
           where: { id: attemptId },
-          select: { id: true, quizId: true, status: true }
+          select: {
+            id: true,
+            quizId: true,
+            studentId: true,
+            status: true,
+            startedAt: true,
+            quiz: { select: { durationSec: true } }
+          }
         });
-        if (!attempt) throw new NotFoundException("Nie znaleziono próby.");
+        if (!attempt || attempt.studentId !== user.id) throw new NotFoundException("Nie znaleziono próby.");
         if (TERMINAL_ATTEMPT_STATUSES.has(attempt.status)) {
           throw new ConflictException("Nie można zapisać odpowiedzi do zakończonej próby.");
         }
+
+        const now = new Date();
+        const effectiveStartedAt = attempt.startedAt ?? now;
+        this.assertAttemptTimeRemaining(effectiveStartedAt, attempt.quiz.durationSec, now);
 
         const question = await tx.question.findUnique({
           where: { id: questionId },
@@ -291,7 +309,7 @@ export class AttemptsService implements OnModuleDestroy {
           where: { id: attemptId },
           data: {
             status: attempt.status === AttemptStatus.CREATED ? AttemptStatus.IN_PROGRESS : attempt.status,
-            startedAt: attempt.status === AttemptStatus.CREATED ? new Date() : undefined
+            startedAt: attempt.status === AttemptStatus.CREATED ? effectiveStartedAt : undefined
           }
         });
 
@@ -299,6 +317,24 @@ export class AttemptsService implements OnModuleDestroy {
       });
     } catch (error) {
       throw this.mapPrismaError(error);
+    }
+  }
+
+  private async getAuthenticatedUser(authorization?: string): Promise<{ id: string; email: string }> {
+    const session = this.authService.getSessionFromAuthorization(authorization);
+    const user = await this.prisma.user.findUnique({
+      where: { email: session.sub },
+      select: { id: true, email: true }
+    });
+
+    if (!user) throw new NotFoundException("Nie znaleziono użytkownika dla podanego tokenu.");
+    return user;
+  }
+
+  private assertAttemptTimeRemaining(startedAt: Date, durationSec: number, now: Date): void {
+    const deadlineMs = startedAt.getTime() + durationSec * 1000;
+    if (now.getTime() > deadlineMs) {
+      throw new ConflictException("Czas na zapis odpowiedzi w tej próbie minął.");
     }
   }
 
